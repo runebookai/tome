@@ -1,0 +1,9 @@
+.git
+.svelte-kit
+build
+node_modules
+.DS_Store
+.npmrc
+src-tauri/.rust-analyzer
+src-tauri/gen
+src-tauri/target

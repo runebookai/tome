@@ -1,0 +1,119 @@
+pub(crate) mod process;
+pub(crate) mod server;
+
+use crate::state::State;
+
+use anyhow::Result;
+use rmcp::model::CallToolRequestParam;
+use rmcp::model::Tool;
+use server::McpServer;
+use tauri::{AppHandle, Manager};
+
+// Start an MCP Server
+//
+// # Process Management Shenanigans
+//
+// Most mcp commands use either `npx` or `uvx`. Those commands end up just spawning _another_
+// process, which is the actual mcp server.
+//
+// Since children of child processes DO NOT get killed, when you kill the child, we need to
+// manually do that. Otherwise we end up with a bunch of zombie, detached, mcp servers.
+//
+// To deal with this, we collect child pids before we launch the server and child pids after it's
+// launched. We track those, then explicitly kill them all when in `stop`.
+//
+pub async fn start(session_id: i32, command: String, app: AppHandle) -> Result<()> {
+    let handle = app.clone();
+    let state = handle.state::<State>();
+    let server = McpServer::start(command, app).await?;
+
+    let mut sessions = state.sessions.lock().await;
+    let mut session = sessions.remove(&session_id).unwrap_or_default();
+
+    // Server already running. Kill the one we just spun up. It's a little weird to start the
+    // process then immediately kill it, but we need it running to get the name :/
+    //
+    // Makes the `start_mcp_server` command idempotent.
+    //
+    if session.mcp_servers.contains_key(&server.name()) {
+        server.kill()?;
+        sessions.insert(session_id, session);
+        return Ok(());
+    }
+
+    server.tools().await?.iter().for_each(|tool| {
+        session.tools.insert(tool.name.to_string(), server.name());
+    });
+
+    session.mcp_servers.insert(server.name(), server);
+    sessions.insert(session_id, session);
+
+    Ok(())
+}
+
+pub async fn stop(session_id: i32, name: String, state: tauri::State<'_, State>) -> Result<()> {
+    let mut sessions = state.sessions.lock().await;
+
+    if let Some(mut session) = sessions.remove(&session_id) {
+        if let Some(server) = session.mcp_servers.remove(&name) {
+            server.kill()?;
+        }
+        sessions.insert(session_id, session);
+    }
+
+    Ok(())
+}
+
+pub async fn stop_session(session_id: i32, state: tauri::State<'_, State>) -> Result<()> {
+    let mut sessions = state.sessions.lock().await;
+
+    if let Some(session) = sessions.remove(&session_id) {
+        for server in session.mcp_servers.values() {
+            server.kill()?;
+        }
+    }
+
+    Ok(())
+}
+
+pub async fn get_tools(session_id: i32, state: tauri::State<'_, State>) -> Result<Vec<Tool>> {
+    let mut tools: Vec<Tool> = vec![];
+    let sessions = state.sessions.lock().await;
+
+    let running_session = match sessions.get(&session_id) {
+        Some(s) => s,
+        None => return Ok(vec![]),
+    };
+
+    for server in running_session.mcp_servers.values() {
+        tools.extend(server.tools().await?)
+    }
+
+    Ok(tools)
+}
+
+pub async fn call_tool(
+    session_id: i32,
+    name: String,
+    arguments: serde_json::Map<String, serde_json::Value>,
+    state: tauri::State<'_, State>,
+) -> Result<String> {
+    let sessions = state.sessions.lock().await;
+    let running_session = sessions.get(&session_id).unwrap();
+    let service_name = running_session.tools.get(&name).unwrap().clone();
+    let server = running_session.mcp_servers.get(&service_name).unwrap();
+
+    let tool_call = CallToolRequestParam {
+        name: std::borrow::Cow::from(name),
+        arguments: Some(arguments),
+    };
+
+    server.call_tool(tool_call).await
+}
+
+pub async fn peer_info(command: String, app: AppHandle) -> Result<String> {
+    let server = McpServer::start(command, app).await?;
+    let peer_info = server.peer_info();
+    server.kill()?;
+    Ok(serde_json::to_string(&peer_info)?)
+}

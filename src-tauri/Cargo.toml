@@ -1,0 +1,47 @@
+[package]
+name = "Tome"
+version = "0.1.0"
+description = "The easiest way to work with local models and MCP servers."
+authors = ["Runebook"]
+license = "MIT"
+repository = ""
+default-run = "Tome"
+edition = "2021"
+rust-version = "1.85"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "2", features = ["unstable", "macos-private-api"] }
+anyhow = "1.0.97"
+dotenv = "0.15.0"
+markdown = "0.3.0"
+chrono = { version = "0.4.31", features = ["serde"] }
+log = "0.4.26"
+log-panics = { version = "2", features = ["with-backtrace"] }
+futures = "0.3.31"
+rmcp = { version = "0.1.5", features = [
+  "client",
+  "transport-io",
+  "transport-child-process",
+] }
+tokio = "1.29.1"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+sysinfo = { version = "0.34.2", features = ["windows"] }
+tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }
+tauri-plugin-deep-link = "2"
+tauri-plugin-log = "2"
+tauri-plugin-fs = "2.2.1"
+pin-project-lite = "0.2.16"
+tauri-plugin-opener = "2"
+[target."cfg(target_os = \"macos\")".dependencies]
+cocoa = "0.26.0"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
+# If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

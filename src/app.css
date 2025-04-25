@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+@import './markdown.css';
+@config '../tailwind.config.cjs';
+
+@theme {
+    --color-purple-dark: #9d7cd8;
+    --color-purple: #bb9af7;
+    --color-red: #ff757f;
+    --color-green: #c3e88d;
+
+    --border-color-light: #171717;
+
+    --background-color-light: #191919;
+    --background-color-medium: #0c0c0c;
+    --background-color-dark: #0b0b0b;
+
+    --text-color-light: rgba(255, 255, 255, 0.75);
+    --text-color-medium: #666666;
+    --text-color-dark: #333333;
+
+    --height-titlebar: 60px;
+
+    --width-nav: 80px;
+
+    --height-content: calc(100% - var(--height-titlebar));
+    --width-content-minus-nav: calc(100dvw - var(--width-nav));
+}
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("/fonts/PlusJakartaSans-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: italic;
+    src: url("/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf");
+}
+
+* {
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    scrolbar-width: none;
+}
+
+/* Hide scrollbar */
+*::-webkit-scrollbar {
+    display: none;
+}
+
+html,
+body {
+    background: #0b0b0b;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+    line-height: 28px;
+    color: #FFFFFF;
+}
+
+input::placeholder {
+    color: #FFFFFF33;
+}
