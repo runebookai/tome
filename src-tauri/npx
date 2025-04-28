@@ -9,13 +9,14 @@
 # Copyright 2021 Square, Inc. All Rights Reserved.
 
 set -euo pipefail
-
-LOGFILE="/tmp/runebook_npx.log"
-> "$LOGFILE"
+LOGFILE="$HOME/Library/Logs/co.runebook/Tome.log"
+echo >> $LOGFILE
 
 log() {
     local LINE="$1"
-    echo "$(date +'%Y-%m-%d %H:%M:%S') :: $LINE" >> $LOGFILE
+    local DATE="$(date +'%Y-%m-%d')"
+    local TIME="$(date +'%H:%M:%S')"
+    echo "[$DATE][$TIME][hermit][DEBUG] $LINE" >> $LOGFILE
 }
 trap 'log "ERROR: Exiting w/ status: $?."' ERR
 

@@ -60,6 +60,9 @@ fn main() {
                 log::info!("deep link URLs: {:?}", event.urls());
             });
 
+            let handle = app.handle().clone();
+            tauri::async_runtime::spawn(mcp::bootstrap(handle));
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
