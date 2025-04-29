@@ -173,7 +173,13 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             });
         }
 
-        // Find the last record, by `id`
+        // Find the first record
+        //
+        static first(): Interface {
+            return repo[0];
+        }
+
+        // Find the last record
         //
         static last(): Interface {
             return repo[repo.length - 1];

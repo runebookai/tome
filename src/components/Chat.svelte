@@ -6,6 +6,7 @@
 	import { dispatch } from '$lib/dispatch';
 	import type { Role } from '$lib/llm';
 	import type { IMessage } from '$lib/models/message';
+	import Model from '$lib/models/model.svelte';
 	import Session, { type ISession } from '$lib/models/session';
 
 	interface Props {
@@ -129,7 +130,11 @@
 
 <Flex class="h-content w-full flex-col p-8 pb-0">
 	<!-- Chat Log -->
-	<div bind:this={content} class="bg-medium relative mb-8 h-full w-full overflow-auto px-2">
+	<div
+		bind:this={content}
+		class:opacity-25={!Model.exists(model)}
+		class="bg-medium relative mb-8 h-full w-full overflow-auto px-2"
+	>
 		{#each messages as message (message.id)}
 			<Flex class="mb-8 w-full flex-col items-start">
 				<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
@@ -153,6 +158,7 @@
 		bind:this={input}
 		oninput={resize}
 		onkeydown={onChatInput}
+		disabled={!Model.exists(model)}
 		placeholder="Message..."
 		class="disabled:text-dark item bg-dark border-light focus:border-purple/15
         mb-8 h-auto w-full grow rounded-xl border p-3 pl-4 outline-0 transition duration-300"
