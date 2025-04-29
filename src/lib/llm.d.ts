@@ -2,6 +2,7 @@ export interface Request {
     model: string;
     stream: boolean;
     tools: Tool[];
+    options: Options;
     messages: Message[];
 }
 
@@ -21,6 +22,11 @@ export interface Response {
     prompt_eval_count: number;
     prompt_eval_duration: number;
     total_duration: number;
+}
+
+export interface Options {
+    num_ctx?: number;
+    temperature?: number;
 }
 
 export interface Model {

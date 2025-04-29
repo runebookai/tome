@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import moment from "moment";
 
 import * as llm from '$lib/llm';
@@ -7,7 +6,7 @@ import App, { type IApp } from '$lib/models/app';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 import McpServer, { type IMcpServer } from "$lib/models/mcp-server";
 import Message, { type IMessage } from "$lib/models/message";
-import Model, { type IModel } from '$lib/models/model.svelte';
+import Model from '$lib/models/model.svelte';
 
 export const DEFAULT_SUMMARY = 'Untitled';
 export interface ISession {
@@ -16,6 +15,8 @@ export interface ISession {
     summary: string;
     config: {
         model: string;
+        contextWindow: number;
+        temperature: number;
         enabledMcpServers: string[];
     };
     created?: moment.Moment;
@@ -37,6 +38,8 @@ export default class Session extends Base<ISession, Row>('sessions') {
             summary: DEFAULT_SUMMARY,
             config: {
                 model: Model.default().name,
+                contextWindow: 4096,
+                temperature: 0.8,
                 enabledMcpServers: [],
             }
         }

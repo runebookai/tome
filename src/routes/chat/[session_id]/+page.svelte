@@ -23,6 +23,8 @@
 	const mcpServers: IMcpServer[] = $derived(McpServer.all());
 	const models: IModel[] = $derived(Model.all());
 
+	let advancedIsOpen = $state(false);
+
 	async function modelDidUpdate() {
 		// `session.config.model` has been updated, so save.
 		await Session.update(session);
@@ -63,6 +65,14 @@
 		if (!session) {
 			await goto(`/chat/${sessions[sessions.length - 1].id}`);
 		}
+	}
+
+	async function saveSession() {
+		await Session.save(session);
+	}
+
+	function toggleAdvanced() {
+		advancedIsOpen = advancedIsOpen ? false : true;
 	}
 
 	beforeNavigate(async () => {
@@ -137,7 +147,7 @@
 					onSelect={modelDidUpdate}
 					bind:value={session.config.model}
 					class="text-light z-50 mb-8 w-full"
-					options={models.map((m) => m.name)}
+					options={models.map((m) => m.name).sort()}
 				/>
 
 				{#if model && !Model.supportsTools(model)}
@@ -169,7 +179,61 @@
 						/>
 					</Flex>
 				{/each}
+
+				<Flex class="mt-8 w-full flex-col items-start">
+					<button
+						class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
+						onclick={() => toggleAdvanced()}
+					>
+						Advanced <span class="ml-4">{advancedIsOpen ? '⏷' : '⏵'}</span>
+					</button>
+
+					{#if advancedIsOpen}
+						<Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
+							<label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
+								Context Window Size
+							</label>
+							<input
+								name="ctx_num"
+								type="number"
+								autocomplete="off"
+								autocorrect="off"
+								class="border-light w-full rounded-lg border px-4 py-1 outline-none"
+								oninput={saveSession}
+								bind:value={session.config.contextWindow}
+							/>
+
+							<label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
+								Temperature
+							</label>
+
+							<Flex class="w-full pl-4">
+								<p>{session.config.temperature}</p>
+								<input
+									name="temperature"
+									type="range"
+									min="0"
+									max="1"
+									step="0.1"
+									autocomplete="off"
+									autocorrect="off"
+									oninput={saveSession}
+									class="bg-light ml-4 h-1 w-full appearance-none"
+									bind:value={session.config.temperature}
+								/>
+							</Flex>
+						</Flex>
+					{/if}
+				</Flex>
 			</Flex>
 		</Flex>
 	{/if}
 </Layout>
+
+<style>
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+</style>
