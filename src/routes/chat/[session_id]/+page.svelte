@@ -24,6 +24,7 @@
 	const models: IModel[] = $derived(Model.all());
 
 	async function modelDidUpdate() {
+		// `session.config.model` has been updated, so save.
 		await Session.update(session);
 	}
 
@@ -48,8 +49,8 @@
 	}
 
 	async function addSession() {
-		const sess = await Session.create({ appId: CHAT_APP_ID });
-		await goto(`/chat/${sess.id}`);
+		const session = await Session.create({ appId: CHAT_APP_ID });
+		await goto(`/chat/${session.id}`);
 	}
 
 	async function deleteSession(sess: ISession) {
@@ -71,7 +72,7 @@
 	});
 
 	afterNavigate(async () => {
-		if (model.capabilities?.includes('tools')) {
+		if (model && Model.supportsTools(model)) {
 			await startMcpServers(session);
 		}
 	});
@@ -139,12 +140,17 @@
 					options={models.map((m) => m.name)}
 				/>
 
-				{@const supportsTools = model.capabilities?.includes('tools')}
+				{#if model && !Model.supportsTools(model)}
+					<Flex class="text-red mb-8 w-full justify-start gap-2 pl-3">
+						<Svg class="h-6 w-6" name="Warning" />
+						Model doesn't support MCP
+					</Flex>
+				{/if}
 
-				{#if !Model.supportsTools(model)}
+				{#if !model}
 					<Flex class="text-red mb-8 w-full justify-center gap-2">
 						<Svg class="h-6 w-6" name="Warning" />
-						Doesn't support tools
+						Model no longer exists
 					</Flex>
 				{/if}
 
@@ -157,7 +163,7 @@
 							value={Session.hasMcpServer(session, name) && Model.supportsTools(model)
 								? 'on'
 								: 'off'}
-							disabled={!supportsTools}
+							disabled={!Model.supportsTools(model)}
 							onEnable={() => startMcpServer(server)}
 							onDisable={() => stopMcpServer(server)}
 						/>

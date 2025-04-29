@@ -34,11 +34,23 @@ export default class Model {
         return repo.find(m => m.name == name) as IModel;
     }
 
+    static exists(name: string): boolean {
+        return this.find(name) !== undefined;
+    }
+
+    static first(): IModel {
+        return repo[0];
+    }
+
+    static last(): IModel {
+        return repo[repo.length - 1];
+    }
+
     static all(): IModel[] {
         return repo;
     }
 
     static supportsTools(model: IModel): boolean {
-        return model.capabilities?.includes('tools') == true;
+        return model && model.capabilities?.includes('tools') == true;
     }
 }

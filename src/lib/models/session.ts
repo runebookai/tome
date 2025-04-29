@@ -4,10 +4,10 @@ import moment from "moment";
 import * as llm from '$lib/llm';
 import { getMCPTools } from '$lib/mcp';
 import App, { type IApp } from '$lib/models/app';
-import Model, { type ToSqlRow } from '$lib/models/base.svelte';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 import McpServer, { type IMcpServer } from "$lib/models/mcp-server";
 import Message, { type IMessage } from "$lib/models/message";
-import LLMModel from '$lib/models/model.svelte';
+import Model, { type IModel } from '$lib/models/model.svelte';
 
 export const DEFAULT_SUMMARY = 'Untitled';
 export interface ISession {
@@ -31,12 +31,12 @@ interface Row {
     modified: string;
 }
 
-export default class Session extends Model<ISession, Row>('sessions') {
+export default class Session extends Base<ISession, Row>('sessions') {
     static default(): ISession {
         return {
             summary: DEFAULT_SUMMARY,
             config: {
-                model: LLMModel.default().name,
+                model: Model.default().name,
                 enabledMcpServers: [],
             }
         }
@@ -53,9 +53,9 @@ export default class Session extends Model<ISession, Row>('sessions') {
     }
 
     static async tools(session: ISession): Promise<llm.Tool[]> {
-        const model = LLMModel.find(session.config.model);
+        const model = Model.find(session.config.model);
 
-        if (!LLMModel.supportsTools(model)) {
+        if (!Model.supportsTools(model)) {
             return [];
         }
 
