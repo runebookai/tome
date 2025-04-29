@@ -105,5 +105,14 @@ ALTER TABLE messages ADD COLUMN model TEXT NOT NULL DEFAULT "";
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 6,
+            description: "update_default_session_config",
+            sql: r#"
+UPDATE sessions SET config = json_insert(config, '$.contextWindow', 4096);
+UPDATE sessions SET config = json_insert(config, '$.temperature', 0.8);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

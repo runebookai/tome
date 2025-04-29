@@ -1,7 +1,7 @@
 import type { IMessage } from "./models/message";
 
 import { HttpClient } from "$lib/http";
-import type { Message, Model, Response, Tags, Tool } from "$lib/llm.d";
+import type { Message, Model, Options, Response, Tags, Tool } from "$lib/llm.d";
 import Setting from "$lib/models/setting";
 
 export * from '$lib/llm.d';
@@ -18,11 +18,12 @@ export class Client extends HttpClient {
         return Setting.OllamaUrl;
     }
 
-    async chat(model: string, messages: Message[], tools: Tool[] = []): Promise<IMessage> {
+    async chat(model: string, messages: Message[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
         const body = JSON.stringify({
             model,
             messages,
             tools,
+            options,
             stream: false,
         });
 

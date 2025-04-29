@@ -4,7 +4,6 @@ import * as llm from "$lib/llm";
 import App from "$lib/models/app";
 import type { IMessage } from "$lib/models/message";
 import Session, { type ISession } from "$lib/models/session";
-import Setting from "$lib/models/setting";
 
 export async function dispatch(session: ISession, model: string, prompt?: string): Promise<IMessage> {
     const app = App.find(session.appId as number);
@@ -28,10 +27,16 @@ export async function dispatch(session: ISession, model: string, prompt?: string
         tool_calls: m.toolCalls,
     }));
 
+    const options: llm.Options = {
+        num_ctx: session.config.contextWindow,
+        temperature: session.config.temperature,
+    };
+
     const message = await client.chat(
         model,
         messages,
         await Session.tools(session),
+        options,
     );
 
     if (message.toolCalls?.length) {
@@ -61,23 +66,4 @@ export async function dispatch(session: ISession, model: string, prompt?: string
     await Session.addMessage(session, message);
 
     return message;
-}
-
-export async function send(model: string, messages: llm.Message[], tools: llm.Tool[] = []): Promise<Response> {
-    const body: llm.Request = {
-        model,
-        tools,
-        messages,
-        stream: false,
-    };
-
-    return (
-        await fetch(`${Setting.OllamaUrl}/api/chat`, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-    );
 }
