@@ -114,5 +114,13 @@ UPDATE sessions SET config = json_insert(config, '$.temperature', 0.8);
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 7,
+            description: "associate_tool_call_with_response",
+            sql: r#"
+ALTER TABLE messages ADD COLUMN response_id INTEGER REFERENCES messages(id);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

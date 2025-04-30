@@ -2,10 +2,11 @@
 import moment from "moment";
 
 export enum Level {
-    LOG = 'LOG',
-    INFO = 'INFO',
-    DEBUG = 'DEBUG',
-    ERROR = 'ERROR',
+    LOG = 'log',
+    INFO = 'info',
+    DEBUG = 'debug',
+    WARN = 'warn',
+    ERROR = 'error',
 }
 
 const colors = {
@@ -13,6 +14,7 @@ const colors = {
     blue: '#a9b1d6',
     yellow: '#ffc777',
     green: '#c3e88d',
+    orange: '#ff9e64',
     red: '#ff757f',
     purple: '#bb9af7',
     white: '#ffffff',
@@ -23,32 +25,51 @@ const levelColors = {
     [Level.LOG]: 'grey',
     [Level.INFO]: 'blue',
     [Level.DEBUG]: 'yellow',
+    [Level.WARN]: 'orange',
     [Level.ERROR]: 'red',
 };
 
-export function log(text: string, ...rest: any[]) {
-    console.log(...fmt(Level.LOG, text), ...rest);
+export function log(...args: any[]) {
+    _log(args, Level.LOG);
 };
 
-export function info(text: string, ...rest: any[]) {
-    console.info(...fmt(Level.INFO, text), ...rest);
+export function info(...args: any[]) {
+    _log(args, Level.INFO);
 };
 
-export function debug(text: string, ...rest: any[]) {
-    console.debug(...fmt(Level.DEBUG, text), ...rest);
+export function debug(...args: any[]) {
+    _log(args, Level.DEBUG);
 };
 
-export function error(text: string, ...rest: any[]) {
-    console.error(...fmt(Level.ERROR, text), ...rest);
+export function warn(...args: any[]) {
+    _log(args, Level.WARN);
 };
+
+export function error(...args: any[]) {
+    _log(args, Level.ERROR);
+};
+
+function _log(args: any[], level: Level) {
+    if (typeof args[0] !== 'string') {
+        console[level](
+            ...fmt(level, ""),
+            ...args,
+        )
+    } else {
+        console[level](
+            ...args.flatMap(arg => (
+                typeof arg === 'string' ? fmt(level, arg) : arg
+            ))
+        );
+    }
+}
 
 function fmt(level: Level, text: string): string[] {
     const now = moment();
     const date = now.format('YYYY-MM-DD');
     const time = now.format('hh:mm:ss');
     const lvl = levelColors[level];
-
-    return colorize(`[grey]${date}\t${time}\t\ttome\t[${lvl}]${level}\t\t[white]${text}`);
+    return colorize(`[grey]${date}\t${time}\t\ttome\t[${lvl}]${level.toUpperCase()}\t\t[white]${text}`);
 }
 
 function colorize(text: string): string[] {

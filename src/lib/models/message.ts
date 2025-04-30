@@ -13,6 +13,7 @@ export interface IMessage {
     name: string;
     toolCalls: Record<string, any>[]; // eslint-disable-line
     sessionId?: number;
+    responseId?: number;
     created?: moment.Moment;
     modified?: moment.Moment;
 }
@@ -26,6 +27,7 @@ interface Row {
     name: string;
     tool_calls: string;
     session_id: number;
+    response_id?: number;
     created: string;
     modified: string;
 }
@@ -61,6 +63,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             name: row.name,
             toolCalls: JSON.parse(row.tool_calls),
             sessionId: row.session_id,
+            responseId: row.response_id,
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         };
@@ -75,6 +78,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             name: message.name,
             tool_calls: JSON.stringify(message.toolCalls),
             session_id: message.sessionId as number,
+            response_id: message.responseId,
         }
     }
 }
