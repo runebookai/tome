@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 import * as llm from "$lib/llm";
 import App from "$lib/models/app";
-import type { IMessage } from "$lib/models/message";
+import Message, { type IMessage } from "$lib/models/message";
 import Session, { type ISession } from "$lib/models/session";
 
 export async function dispatch(session: ISession, model: string, prompt?: string): Promise<IMessage> {
@@ -47,17 +47,20 @@ export async function dispatch(session: ISession, model: string, prompt?: string
                 arguments: call.function.arguments,
             });
 
-            await Session.addMessage(session, {
+            const toolCall = await Session.addMessage(session, {
                 role: 'assistant',
                 content: '',
                 toolCalls: [call],
             });
 
-            await Session.addMessage(session, {
+            const response = await Session.addMessage(session, {
                 role: 'tool',
                 content,
                 name: call.function.name,
             });
+
+            toolCall.responseId = response.id;
+            await Message.save(toolCall);
 
             return await dispatch(session, model);
         }

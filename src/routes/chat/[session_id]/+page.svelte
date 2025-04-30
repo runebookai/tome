@@ -102,132 +102,130 @@
 {/snippet}
 
 <Layout {titlebar}>
-	{#if session}
-		<Flex class="h-full">
-			<Flex class="border-light bg-medium h-full w-[300px] flex-col border-r">
-				{#each sessions as sess (sess.id)}
-					<Flex
-						class={`group text-medium border-b-light w-full justify-between border-b 
+	<Flex class="h-full">
+		<Flex class="border-light bg-medium h-full w-[300px] flex-col border-r">
+			{#each sessions as sess (sess.id)}
+				<Flex
+					class={`group text-medium border-b-light w-full justify-between border-b 
                         border-l-transparent pr-4 text-sm 
                         ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
+				>
+					<a
+						href={`/chat/${sess.id}`}
+						class:text-purple={sess.id == session.id}
+						class="w-full max-w-[220px] py-3 pl-8 text-left hover:cursor-pointer"
+						data-sveltekit-preload-data="off"
 					>
-						<a
-							href={`/chat/${sess.id}`}
-							class:text-purple={sess.id == session.id}
-							class="w-full max-w-[220px] py-3 pl-8 text-left hover:cursor-pointer"
-							data-sveltekit-preload-data="off"
-						>
-							<p class="overflow-hidden text-ellipsis whitespace-nowrap">
-								{sess.summary}
-							</p>
-						</a>
+						<p class="overflow-hidden text-ellipsis whitespace-nowrap">
+							{sess.summary}
+						</p>
+					</a>
 
-						<Menu
-							items={[
-								{
-									icon: 'Delete',
-									label: 'Delete',
-									onclick: async () => await deleteSession(sess),
-									style: 'text-red',
-								},
-							]}
+					<Menu
+						items={[
+							{
+								icon: 'Delete',
+								label: 'Delete',
+								onclick: async () => await deleteSession(sess),
+								style: 'text-red',
+							},
+						]}
+					/>
+				</Flex>
+			{/each}
+		</Flex>
+
+		<Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
+			{#key session.id}
+				<Chat {session} model={session.config.model} />
+			{/key}
+		</Flex>
+
+		<Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
+			<Select
+				onSelect={modelDidUpdate}
+				bind:value={session.config.model}
+				class="text-light z-50 mb-8 w-full"
+				options={models.map((m) => m.name).sort()}
+			/>
+
+			{#if model && !Model.supportsTools(model)}
+				<Flex class="text-red mb-8 w-full justify-start gap-2 pl-3">
+					<Svg class="h-6 w-6" name="Warning" />
+					Model doesn't support MCP
+				</Flex>
+			{/if}
+
+			{#if !model}
+				<Flex class="text-red mb-8 w-full justify-center gap-2">
+					<Svg class="h-6 w-6" name="Warning" />
+					Model no longer exists
+				</Flex>
+			{/if}
+
+			{#each mcpServers as server (server.id)}
+				{@const name = McpServer.name(server)}
+
+				<Flex class="text-light z-0 mb-4 ml-2">
+					<Toggle
+						label={name}
+						value={Session.hasMcpServer(session, name) && Model.supportsTools(model)
+							? 'on'
+							: 'off'}
+						disabled={!Model.supportsTools(model)}
+						onEnable={() => startMcpServer(server)}
+						onDisable={() => stopMcpServer(server)}
+					/>
+				</Flex>
+			{/each}
+
+			<Flex class="mt-8 w-full flex-col items-start">
+				<button
+					class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
+					onclick={() => toggleAdvanced()}
+				>
+					Advanced <span class="ml-4">{advancedIsOpen ? '⏷' : '⏵'}</span>
+				</button>
+
+				{#if advancedIsOpen}
+					<Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
+						<label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
+							Context Window Size
+						</label>
+						<input
+							name="ctx_num"
+							type="number"
+							autocomplete="off"
+							autocorrect="off"
+							class="border-light w-full rounded-lg border px-4 py-1 outline-none"
+							oninput={saveSession}
+							bind:value={session.config.contextWindow}
 						/>
-					</Flex>
-				{/each}
-			</Flex>
 
-			<Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
-				{#key session.id}
-					<Chat {session} model={session.config.model} />
-				{/key}
-			</Flex>
+						<label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
+							Temperature
+						</label>
 
-			<Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
-				<Select
-					onSelect={modelDidUpdate}
-					bind:value={session.config.model}
-					class="text-light z-50 mb-8 w-full"
-					options={models.map((m) => m.name).sort()}
-				/>
-
-				{#if model && !Model.supportsTools(model)}
-					<Flex class="text-red mb-8 w-full justify-start gap-2 pl-3">
-						<Svg class="h-6 w-6" name="Warning" />
-						Model doesn't support MCP
-					</Flex>
-				{/if}
-
-				{#if !model}
-					<Flex class="text-red mb-8 w-full justify-center gap-2">
-						<Svg class="h-6 w-6" name="Warning" />
-						Model no longer exists
-					</Flex>
-				{/if}
-
-				{#each mcpServers as server (server.id)}
-					{@const name = McpServer.name(server)}
-
-					<Flex class="text-light z-0 mb-4 ml-2">
-						<Toggle
-							label={name}
-							value={Session.hasMcpServer(session, name) && Model.supportsTools(model)
-								? 'on'
-								: 'off'}
-							disabled={!Model.supportsTools(model)}
-							onEnable={() => startMcpServer(server)}
-							onDisable={() => stopMcpServer(server)}
-						/>
-					</Flex>
-				{/each}
-
-				<Flex class="mt-8 w-full flex-col items-start">
-					<button
-						class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
-						onclick={() => toggleAdvanced()}
-					>
-						Advanced <span class="ml-4">{advancedIsOpen ? '⏷' : '⏵'}</span>
-					</button>
-
-					{#if advancedIsOpen}
-						<Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
-							<label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
-								Context Window Size
-							</label>
+						<Flex class="w-full pl-4">
+							<p>{session.config.temperature}</p>
 							<input
-								name="ctx_num"
-								type="number"
+								name="temperature"
+								type="range"
+								min="0"
+								max="1"
+								step="0.1"
 								autocomplete="off"
 								autocorrect="off"
-								class="border-light w-full rounded-lg border px-4 py-1 outline-none"
 								oninput={saveSession}
-								bind:value={session.config.contextWindow}
+								class="bg-light ml-4 h-1 w-full appearance-none"
+								bind:value={session.config.temperature}
 							/>
-
-							<label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
-								Temperature
-							</label>
-
-							<Flex class="w-full pl-4">
-								<p>{session.config.temperature}</p>
-								<input
-									name="temperature"
-									type="range"
-									min="0"
-									max="1"
-									step="0.1"
-									autocomplete="off"
-									autocorrect="off"
-									oninput={saveSession}
-									class="bg-light ml-4 h-1 w-full appearance-none"
-									bind:value={session.config.temperature}
-								/>
-							</Flex>
 						</Flex>
-					{/if}
-				</Flex>
+					</Flex>
+				{/if}
 			</Flex>
 		</Flex>
-	{/if}
+	</Flex>
 </Layout>
 
 <style>
