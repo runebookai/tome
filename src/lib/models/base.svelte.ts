@@ -1,6 +1,5 @@
-import Database from "@tauri-apps/plugin-sql";
-
 import { DATABASE_URL } from "$lib/const";
+import Database from "@tauri-apps/plugin-sql";
 import { info } from "$lib/logger";
 
 // Database connection

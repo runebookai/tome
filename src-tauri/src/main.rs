@@ -9,8 +9,6 @@ mod process;
 mod state;
 mod window;
 
-use std::env;
-
 use process::Process;
 use tauri::{Manager, RunEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
@@ -20,8 +18,26 @@ use crate::state::State;
 use crate::window::configure_window;
 #[cfg(target_os = "macos")]
 use crate::window::macos::configure_macos_window;
+// TODO: Clean if we decide to go with the proxy solution, this code runs but doesn't actually work currently
+// #[cfg(target_os = "windows")]
+// use webview2_com::WebResourceRequestedEventHandler;
+// #[cfg(target_os = "windows")]
+// use webview2_com_sys::Microsoft::Web::WebView2::Win32::{
+//     ICoreWebView2WebResourceRequest, COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+// };
+// #[cfg(target_os = "windows")]
+// use windows::core::HSTRING;
+// #[cfg(target_os = "windows")]
+// use std::{env, mem::MaybeUninit};
 
 fn main() {
+    if std::env::consts::OS == "windows" {
+        std::process::Command::new("setx")
+            .args(&["OLLAMA_ORIGINS", "https://tauri.localhost"])
+            .output()
+            .expect("failed to execute process");
+    };
+
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {}))
@@ -44,6 +60,56 @@ fn main() {
         )
         .setup(|app| {
             let window = app.get_window("main").expect("Couldn't get main window");
+
+            // TODO: Clean if we decide to go with the proxy solution, this code runs but doesn't actually work currently
+            // if std::env::consts::OS == "windows" {
+            //     let main_webview = app
+            //         .get_webview_window("main")
+            //         .expect("Couldn't get main webview window");
+
+            //     let _ = main_webview.with_webview(|webview| unsafe {
+            //         let core = webview
+            //             .controller()
+            //             .CoreWebView2()
+            //             .expect("Failed to get core web view 2 from controller");
+            //         let mut token: MaybeUninit<i64> = MaybeUninit::uninit();
+
+            //         core.AddWebResourceRequestedFilter(
+            //             &HSTRING::from("*"),
+            //             COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+            //         )
+            //         .expect("Failed to add web resource requested filter");
+
+            //         let handler = WebResourceRequestedEventHandler::create(Box::new(
+            //             move |_webview, args| {
+            //                 if let Some(args) = args {
+            //                     let request: ICoreWebView2WebResourceRequest =
+            //                         args.Request().expect("Failed to get request");
+
+            //                     request
+            //                         .Headers()
+            //                         .unwrap()
+            //                         .SetHeader(
+            //                             &HSTRING::from("Origin"),
+            //                             &HSTRING::from("http://localhost"),
+            //                         )
+            //                         .expect("Failed to set Origin");
+            //                     request
+            //                         .Headers()
+            //                         .unwrap()
+            //                         .SetHeader(
+            //                             &HSTRING::from("Referer"),
+            //                             &HSTRING::from("http://localhost"),
+            //                         )
+            //                         .expect("Failed to set Referer");
+            //                 }
+            //                 Ok(())
+            //             },
+            //         ));
+            //         core.add_WebResourceRequested(&handler, token.as_mut_ptr())
+            //             .expect("Failed to add web resource requested event handler");
+            //     });
+            // };
 
             log_panics::init();
 
@@ -74,6 +140,8 @@ fn main() {
             commands::stop_mcp_server,
             // Sessions
             commands::stop_session,
+            // Requests
+            commands::proxy_request,
         ])
         .build(tauri::generate_context!())
         .expect("error running Tome");

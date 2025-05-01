@@ -14,11 +14,20 @@ use tokio::process::Command;
 // Install Python (uv/uvx) and Node (npm/npx), via Hermit.
 //
 pub async fn bootstrap(app: AppHandle) -> Result<()> {
-    let mut uvx = Command::new(app.path().resolve("uvx", BaseDirectory::Resource)?);
+    let (mut uvx, mut npx) = match std::env::consts::OS {
+        "windows" => (
+            Command::new(app.path().resolve("uvx.exe", BaseDirectory::Resource)?),
+            Command::new(app.path().resolve("npx.cmd", BaseDirectory::Resource)?),
+        ),
+        _ => (
+            Command::new(app.path().resolve("uvx", BaseDirectory::Resource)?),
+            Command::new(app.path().resolve("npx", BaseDirectory::Resource)?),
+        ),
+    };
+
     let uvx = uvx.arg("--help");
     uvx.kill_on_drop(true);
 
-    let mut npx = Command::new(app.path().resolve("npx", BaseDirectory::Resource)?);
     let npx = npx.arg("--help");
     npx.kill_on_drop(true);
 

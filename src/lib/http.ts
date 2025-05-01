@@ -1,11 +1,19 @@
 import { info } from "$lib/logger";
+import { invoke } from '@tauri-apps/api/core';
 
 type Response<T> = globalThis.Response | T | undefined;
 
-interface Options extends RequestInit {
+export interface Options extends RequestInit {
     url?: string;
     raw?: boolean;
     raise?: boolean;
+}
+
+export interface FetchResponse {
+    status: number;
+    status_text: string;
+    headers: Record<string, string>;
+    body: string;
 }
 
 export abstract class HttpClient {
@@ -69,7 +77,12 @@ export abstract class HttpClient {
         const opt = { ...this.options, ...options };
 
         try {
-            response = await fetch(`${url}${uri}`, opt);
+            // response = await fetch(`${url}${uri}`, opt);
+            const fullUrl = url + uri;
+            response = await invoke<FetchResponse>("proxy_request", {
+                url: fullUrl,
+                options: options,
+            });
         } catch (err) {
             if (typeof err == 'string') {
                 info(`${opt.method} ${url}${uri}: ${err}`);
@@ -90,12 +103,18 @@ export abstract class HttpClient {
         }
 
         if (response.status > 399) {
-            info(`${opt.method} ${url}${uri}: ${response.status} ${response.statusText}`);
+            info(`${opt.method} ${url}${uri}: ${response.status} ${response.status_text}`);
         }
 
-        info(`${opt.method} ${url}${uri}: ${response.status} ${response.statusText}`);
+        info(`${opt.method} ${url}${uri}: ${response.status} ${response.status_text}`);
 
-        return response;
+        const headers = new Headers(response.headers);
+
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.status_text,
+            headers,
+          });
     }
 
     response(status: number = 500, body?: string): globalThis.Response {
