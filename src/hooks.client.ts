@@ -1,10 +1,11 @@
 import '$lib/ext';
 
-import type { ClientInit } from "@sveltejs/kit";
+import type { ClientInit, HandleClientError } from "@sveltejs/kit";
+import { goto } from '$app/navigation';
 
 import { WELCOME_AGREED } from "$lib/const";
 import Config from "$lib/config";
-import * as llm from '$lib/llm';
+import { OllamaClient } from '$lib/llm';
 import { info } from '$lib/logger';
 import App from "$lib/models/app";
 import McpServer from "$lib/models/mcp-server";
@@ -26,7 +27,7 @@ export const init: ClientInit = async () => {
 
     info('[green]✔ database synced');
 
-    const client = new llm.Client();
+    const client = new OllamaClient();
 
     await startup.addCheck(
         StartupCheck.Ollama,
@@ -43,4 +44,8 @@ export const init: ClientInit = async () => {
         StartupCheck.Agreement,
         async () => await Config.get(WELCOME_AGREED) === true,
     );
+}
+
+export const handleError: HandleClientError = async () => {
+    goto('/error');
 }

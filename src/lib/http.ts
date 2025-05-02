@@ -1,3 +1,5 @@
+import { invoke } from "@tauri-apps/api/core";
+
 import { info } from "$lib/logger";
 
 type Response<T> = globalThis.Response | T | undefined;
@@ -63,13 +65,15 @@ export abstract class HttpClient {
     }
 
     async request(uri: string, options: Options = {}): Promise<globalThis.Response> {
-        let response;
+        let response: globalThis.Response | undefined;
 
         const url = Object.remove(options, 'url') || this.url;
         const opt = { ...this.options, ...options };
 
         try {
-            response = await fetch(`${url}${uri}`, opt);
+            const resp: globalThis.Response = await invoke('fetch', { url: `${url}${uri}`, options: opt });
+            const { body, ...init } = resp;
+            response = new globalThis.Response(body, init);
         } catch (err) {
             if (typeof err == 'string') {
                 info(`${opt.method} ${url}${uri}: ${err}`);

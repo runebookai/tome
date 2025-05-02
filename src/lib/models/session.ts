@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import * as llm from '$lib/llm';
+import { type LlmTool, OllamaClient } from "$lib/llm";
 import { getMCPTools } from '$lib/mcp';
 import App, { type IApp } from '$lib/models/app';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
@@ -33,17 +33,15 @@ interface Row {
 }
 
 export default class Session extends Base<ISession, Row>('sessions') {
-    static default(): ISession {
-        return {
-            summary: DEFAULT_SUMMARY,
-            config: {
-                model: Model.default().name,
-                contextWindow: 4096,
-                temperature: 0.8,
-                enabledMcpServers: [],
-            }
+    static defaults = () => ({
+        summary: DEFAULT_SUMMARY,
+        config: {
+            model: Model.default().name,
+            contextWindow: 4096,
+            temperature: 0.8,
+            enabledMcpServers: [],
         }
-    }
+    });
 
     static app(session: ISession): IApp | undefined {
         if (!session.appId) return;
@@ -52,10 +50,10 @@ export default class Session extends Base<ISession, Row>('sessions') {
 
     static messages(session: ISession): IMessage[] {
         if (!session.id) return [];
-        return Message.findBy({ sessionId: session.id });
+        return Message.where({ sessionId: session.id });
     }
 
-    static async tools(session: ISession): Promise<llm.Tool[]> {
+    static async tools(session: ISession): Promise<LlmTool[]> {
         const model = Model.find(session.config.model);
 
         if (!Model.supportsTools(model)) {
@@ -105,7 +103,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
             return;
         }
 
-        const client = new llm.Client();
+        const client = new OllamaClient();
         const message: IMessage = await client.chat(
             model,
             [

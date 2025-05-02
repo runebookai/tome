@@ -47,17 +47,15 @@ export enum Interface {
 
 
 export default class App extends Model<IApp, Row>('apps') {
-    static default(): IApp {
-        return {
-            name: 'Unknown',
-            description: '',
-            readme: '',
-            image: '',
-            interface: Interface.Chat,
-            nodes: [],
-            mcpServers: [],
-        }
-    }
+    static defaults = {
+        name: 'Unknown',
+        description: '',
+        readme: '',
+        image: '',
+        interface: Interface.Chat,
+        nodes: [],
+        mcpServers: [],
+    };
 
     static hasContext(app: IApp): boolean {
         return app.nodes?.find(n => n.type == NodeType.Context) !== undefined;

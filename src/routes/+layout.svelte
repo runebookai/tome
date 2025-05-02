@@ -1,15 +1,28 @@
+<!-- App-wide event handlers -->
 <script lang="ts">
-	// App-wide event handlers
-
 	import closables from '$lib/closables';
+	import { resync } from '$lib/models';
 
 	const { children } = $props();
 
-	async function onWindowClick(e: Event) {
+	function onclick(e: Event) {
 		closables.close(e);
+	}
+
+	function onkeypress(e: KeyboardEvent) {
+		if (e.key == 'Escape') {
+			closables.close(e);
+		}
+	}
+
+	async function onkeydown(e: KeyboardEvent) {
+		// manually reload data from database
+		if (e.metaKey && e.key == 'r') {
+			await resync();
+		}
 	}
 </script>
 
-<svelte:window onclick={(e) => onWindowClick(e)} />
+<svelte:window {onclick} {onkeypress} {onkeydown} />
 
 {@render children?.()}

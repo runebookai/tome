@@ -5,6 +5,7 @@
 
 	import { CHAT_APP_ID } from '$lib/const';
 	import Chat from '$components/Chat.svelte';
+	import Deleteable from '$components/Deleteable.svelte';
 	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
 	import Menu from '$components/Menu.svelte';
@@ -102,35 +103,27 @@
 {/snippet}
 
 <Layout {titlebar}>
-	<Flex class="h-full">
-		<Flex class="border-light bg-medium h-full w-[300px] flex-col border-r">
+	<Flex class="h-full items-start">
+		<Flex
+			class="border-light bg-medium h-content w-[300px] flex-col overflow-y-scroll border-r"
+		>
 			{#each sessions as sess (sess.id)}
 				<Flex
 					class={`group text-medium border-b-light w-full justify-between border-b 
-                        border-l-transparent pr-4 text-sm 
-                        ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
+                    border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
 				>
-					<a
-						href={`/chat/${sess.id}`}
-						class:text-purple={sess.id == session.id}
-						class="w-full max-w-[220px] py-3 pl-8 text-left hover:cursor-pointer"
-						data-sveltekit-preload-data="off"
-					>
-						<p class="overflow-hidden text-ellipsis whitespace-nowrap">
-							{sess.summary}
-						</p>
-					</a>
-
-					<Menu
-						items={[
-							{
-								icon: 'Delete',
-								label: 'Delete',
-								onclick: async () => await deleteSession(sess),
-								style: 'text-red',
-							},
-						]}
-					/>
+					<Deleteable ondelete={() => deleteSession(sess)}>
+						<a
+							href={`/chat/${sess.id}`}
+							class:text-purple={sess.id == session.id}
+							class="block w-full max-w-[220px] py-3 pl-8 text-left hover:cursor-pointer"
+							data-sveltekit-preload-data="off"
+						>
+							<p class="overflow-hidden text-ellipsis whitespace-nowrap">
+								{sess.summary}
+							</p>
+						</a>
+					</Deleteable>
 				</Flex>
 			{/each}
 		</Flex>

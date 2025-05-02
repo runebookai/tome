@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	import Scrollable from './Scrollable.svelte';
+
 	import Flex from '$components/Flex.svelte';
 	import Message from '$components/Message.svelte';
 	import { dispatch } from '$lib/dispatch';
@@ -18,6 +20,8 @@
 
 	// DOM elements used via `bind:this`
 	let input: HTMLTextAreaElement;
+
+	// svelte-ignore non_reactive_update
 	let content: HTMLDivElement;
 
 	// Full history of chat messages in this session
@@ -84,27 +88,25 @@
 	});
 </script>
 
-<Flex class="h-content w-full flex-col p-8 pb-0">
-	<!-- Chat Log -->
-	<div
-		bind:this={content}
-		class:opacity-25={!Model.exists(model)}
-		class="bg-medium relative mb-8 h-full w-full overflow-auto px-2"
-	>
-		{#each messages as message (message.id)}
-			<Flex class="w-full flex-col items-start">
-				<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
-				<div use:scrollToBottom class="hidden"></div>
-				<Message {message} />
-			</Flex>
-		{/each}
+<Flex class="h-content w-full flex-col p-8 pr-2 pb-0">
+	<Scrollable bind:ref={content} class="mb-8">
+		<!-- Chat Log -->
+		<div class:opacity-25={!Model.exists(model)} class="bg-medium relative h-full w-full px-2">
+			{#each messages as message (message.id)}
+				<Flex id="messages" class="w-full flex-col items-start">
+					<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
+					<div use:scrollToBottom class="hidden"></div>
+					<Message {message} />
+				</Flex>
+			{/each}
 
-		{#if loading}
-			<Flex class="border-light h-12 w-24 rounded-lg text-center">
-				<div id="loading" class="m-auto"></div>
-			</Flex>
-		{/if}
-	</div>
+			{#if loading}
+				<Flex class="border-light h-12 w-24 rounded-lg text-center">
+					<div id="loading" class="m-auto"></div>
+				</Flex>
+			{/if}
+		</div>
+	</Scrollable>
 
 	<!-- Input Box -->
 	<textarea

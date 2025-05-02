@@ -1,5 +1,5 @@
 import { OLLAMA_URL_CONFIG_KEY } from '$lib/const';
-import * as llm from '$lib/llm';
+import { OllamaClient } from '$lib/llm';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import LLMModel from '$lib/models/model.svelte';
 
@@ -19,14 +19,12 @@ interface Row {
 
 export default class Setting extends Model<ISetting, Row>('settings') {
     static get OllamaUrl(): string {
-        return (
-            this.findBy({ key: OLLAMA_URL_CONFIG_KEY })
-        )[0].value as string;
+        return this.findBy({ key: OLLAMA_URL_CONFIG_KEY }).value as string;
     }
 
     static async validate(setting: ISetting): Promise<boolean> {
         if (setting.key == OLLAMA_URL_CONFIG_KEY) {
-            const client = new llm.Client({ url: setting.value as string })
+            const client = new OllamaClient({ url: setting.value as string })
             return await client.connected();
         }
         return true;

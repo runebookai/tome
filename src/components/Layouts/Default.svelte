@@ -26,7 +26,7 @@
 		</Titlebar>
 
 		<section
-			class="w-content-minus-nav fixed top-[var(--height-titlebar)] left-0 ml-[var(--width-nav)] h-full min-h-screen overflow-y-scroll"
+			class="w-content-minus-nav fixed top-[var(--height-titlebar)] left-0 ml-[var(--width-nav)] h-full min-h-screen"
 		>
 			{@render children?.()}
 		</section>

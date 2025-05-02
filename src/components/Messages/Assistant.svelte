@@ -15,7 +15,7 @@
 	<Thought thought={message.thought} />
 {/if}
 
-<Flex class="text-medium mb-6 w-full justify-between p-2 text-xs">
+<Flex class="assistant text-medium mb-6 w-full justify-between p-2 text-xs">
 	<p class="message markdown-body text-sm whitespace-normal">
 		{@html markdown.render(message.content)}
 	</p>

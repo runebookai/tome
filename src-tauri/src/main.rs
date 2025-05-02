@@ -4,6 +4,7 @@
 
 mod commands;
 mod deeplink;
+mod http;
 mod mcp;
 mod migrations;
 mod process;
@@ -73,6 +74,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            crate::http::fetch,
             // MCP
             commands::get_metadata,
             commands::get_mcp_tools,

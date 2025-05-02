@@ -1,12 +1,12 @@
 import moment from "moment";
 
-import type { Role } from '$lib/llm.d';
+import type { LlmMessageRole } from '$lib/llm.d';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Session, { type ISession } from "$lib/models/session";
 
 export interface IMessage {
     id?: number;
-    role: Role;
+    role: LlmMessageRole;
     content: string;
     thought?: string;
     model: string;
@@ -33,15 +33,13 @@ interface Row {
 }
 
 export default class Message extends Model<IMessage, Row>('messages') {
-    static default(): IMessage {
-        return {
-            role: 'user',
-            content: '',
-            model: '',
-            name: '',
-            toolCalls: [],
-        }
-    }
+    static defaults = {
+        role: 'user',
+        content: '',
+        model: '',
+        name: '',
+        toolCalls: [],
+    };
 
     static session(message: IMessage): ISession {
         return Session.find(message.sessionId as number);
@@ -56,7 +54,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
     protected static async fromSql(row: Row): Promise<IMessage> {
         return {
             id: row.id,
-            role: row.role as Role,
+            role: row.role as LlmMessageRole,
             content: row.content,
             thought: row.thought,
             model: row.model,
