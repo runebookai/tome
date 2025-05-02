@@ -1,6 +1,6 @@
 [package]
 name = "Tome"
-version = "0.1.0"
+version = "0.2.0"
 description = "The easiest way to work with local models and MCP servers."
 authors = ["Runebook"]
 license = "MIT"
