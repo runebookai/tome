@@ -3,6 +3,7 @@
 #![warn(unused_extern_crates)]
 
 mod commands;
+mod deeplink;
 mod mcp;
 mod migrations;
 mod process;
@@ -10,9 +11,10 @@ mod state;
 mod window;
 
 use std::env;
+use std::sync::OnceLock;
 
 use process::Process;
-use tauri::{Manager, RunEvent};
+use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
 
 use crate::migrations::migrations;
@@ -20,6 +22,9 @@ use crate::state::State;
 use crate::window::configure_window;
 #[cfg(target_os = "macos")]
 use crate::window::macos::configure_macos_window;
+
+// Globally available app handle
+static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
 
 fn main() {
     let app = tauri::Builder::default()
@@ -43,6 +48,8 @@ fn main() {
                 .build(),
         )
         .setup(|app| {
+            APP_HANDLE.set(app.handle().clone()).unwrap();
+
             let window = app.get_window("main").expect("Couldn't get main window");
 
             log_panics::init();
@@ -57,7 +64,7 @@ fn main() {
             configure_macos_window(&window);
 
             app.deep_link().on_open_url(|event| {
-                log::info!("deep link URLs: {:?}", event.urls());
+                deeplink::handle(event.urls()).unwrap();
             });
 
             let handle = app.handle().clone();
