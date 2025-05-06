@@ -3,8 +3,8 @@ use tauri::{Emitter, Url};
 use crate::APP_HANDLE;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-pub struct InstallMCPServerArgs<'a> {
-    query: &'a str,
+pub struct InstallMCPServerArgs {
+    query: String,
 }
 
 pub fn install_mcp_server(payload: InstallMCPServerArgs) {
@@ -30,7 +30,7 @@ pub fn handle(urls: Vec<Url>) -> Result<(), ()> {
             // And I think this gets you something like {'name': 'boop', ...} from the above - but don't quote me on it.
             // let mut query_pairs = urls[0].query_pairs();
             let payload = InstallMCPServerArgs {
-                query: urls[0].query().unwrap(),
+                query: urls[0].query().unwrap().into(),
             };
             install_mcp_server(payload);
         }
