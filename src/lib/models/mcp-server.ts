@@ -58,10 +58,6 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
         );
     }
 
-    static name(server: IMcpServer): string {
-        return server.metadata?.serverInfo.name || 'Unknown';
-    }
-
     static async start(server: IMcpServer, session: ISession) {
         await invoke('start_mcp_server', {
             sessionId: session.id,
@@ -74,7 +70,7 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
     static async stop(server: IMcpServer, session: ISession) {
         await invoke('stop_mcp_server', {
             sessionId: session.id,
-            name: McpServer.name(server),
+            name: server.name,
         });
     }
 

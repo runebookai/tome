@@ -33,7 +33,7 @@
 
 	async function startMcpServers(session: ISession) {
 		session.config.enabledMcpServers.forEach(async (name) => {
-			const server = mcpServers.find((s) => McpServer.name(s) == name);
+			const server = mcpServers.find((s) => s.name == name);
 
 			if (server) {
 				await startMcpServer(server);
@@ -157,12 +157,11 @@
 			{/if}
 
 			{#each mcpServers as server (server.id)}
-				{@const name = McpServer.name(server)}
-
 				<Flex class="text-light z-0 mb-4 ml-2">
 					<Toggle
-						label={name}
-						value={Session.hasMcpServer(session, name) && Model.supportsTools(model)
+						label={server.name}
+						value={Session.hasMcpServer(session, server.name) &&
+						Model.supportsTools(model)
 							? 'on'
 							: 'off'}
 						disabled={!Model.supportsTools(model)}
