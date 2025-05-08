@@ -63,7 +63,7 @@
 	<Menu items={items(server)}>
 		<Deleteable ondelete={() => destroy(server)}>
 			<Link
-				href={`/mcp-servers/${server.id}`}
+				href={`/mcp-servers/${server.name}`}
 				class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
 				activeClass="text-purple border-l border-l-purple"
 			>

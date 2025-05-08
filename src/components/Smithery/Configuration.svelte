@@ -3,7 +3,7 @@
 	import Flex from '$components/Flex.svelte';
 	import Input from '$components/Input.svelte';
 	import Modal from '$components/Modal.svelte';
-	import { debug, info } from '$lib/logger';
+	import { info } from '$lib/logger';
 	import type { McpConfig } from '$lib/mcp';
 	import type { Config, ConfigSchema, Server } from '$lib/smithery';
 

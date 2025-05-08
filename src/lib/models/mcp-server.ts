@@ -86,7 +86,8 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
         const name = metadata
             .serverInfo
             ?.name
-            ?.replace('mcp-server/', '') as string;
+            ?.replace('mcp-server/', '')
+            ?.replace('/', '-') as string;
 
         return await this.update({
             ...server,

@@ -4,7 +4,7 @@
 	import McpServerView from '$components/McpServer.svelte';
 	import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
 
-	const server: IMcpServer = $derived(McpServer.find(Number(page.params.id)));
+	const server: IMcpServer = $derived(McpServer.findBy({ name: page.params.name }));
 </script>
 
 <McpServerView {server} />
