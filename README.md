@@ -6,6 +6,12 @@
 
 <img src="static/images/screenshot.png" alt="Tome Screenshot" />
 
+<p align="center">
+    <a href="https://discord.gg/9CH6us29YA">
+        <img src=".github/images/discord.png" width="150">
+    </a>
+</p>
+
 ---
 
 # Introducing Tome
