@@ -13,10 +13,10 @@ Specifically, a SvelteKit application.
 
 ## Frontend
 
-The core of the domain logic lives in the frontend. It's a staticly generated
+The core of the domain logic lives in the frontend. It's a statically generated
 SvelteKit application. It's a little different than one you'd build for the web,
 since we're in a singleton environment inside of a Tauri application. This
-mostly effects our data layer, which the [Models](#models) section goes more
+mostly affects our data layer, which the [Models](#models) section goes more
 into.
 
 At a glance:
@@ -44,11 +44,11 @@ For all intents and purposes, the database and models are managed in the fronten
 It's done via a Tauri plugin called `tauri-plugin-sql`. Technically, the plugin
 just creates a bridge between the frontend and backend through Tauri's `invoke`
 mechanism. So while the queries are technically being made via Sqlx in Rust, as
-a developers it's all done via our Typescript models.
+a developer you only need to worry about the Typescript models.
 
 ### Models
 
-Models are a big a strange in this application, due to Svelte's reactivity
+Models are a bit strange in this application, due to Svelte's reactivity
 rules. Models are classes with _ONLY_ `static` functions. Svelte's reactivity
 doesn't support class instances so we need to always be passing around plain-old
 JS objects (which do work with reactivity).
@@ -79,7 +79,7 @@ we use throughout the application. So the `Session` model has an accompanying
 ### Global Reactivity
 
 Each model has an underlying `repo`, which is a Svelte `$state()` object,
-meaning it, and it's contents, are deeply reactive.
+meaning it, and its contents, are deeply reactive.
 
 The base model logic handles updating the objects within and keeps them up to
 date with persisted database changes. When the app loads, we sync all models
@@ -96,7 +96,7 @@ updating a database record and the UI will react appropriately.
 
 > [!IMPORTANT] > _ALWAYS_ work with models via `const model = $derived(Model.all())` and _NEVER_ `$state()`.
 
-The beauty of working with a singleton static application if that you can have
+The beauty of working with a singleton static application is that you can have
 top-level objects like `repo` to track things and not have to worry about
 isolation between requests, users, etc.
 
@@ -115,7 +115,7 @@ At a glance:
 ### Commands
 
 We use commands like you would controllers in an MVC web framework. They're the
-entrypoint for the frontend to accomplish something only the backend can do.
+entry point for the frontend to accomplish something only the backend can do.
 With that, they should be extremely concise. Often, if not always, calling a
 single function in another module where the logic actually lives
 
@@ -137,7 +137,7 @@ supported and their associated payloads.
 
 ### Install MCP Server
 
-To trigger an MCP Server installation, navigrate a user to the following URL:
+To trigger an MCP Server installation, navigate a user to the following URL:
 
 ```
 tome://install-mcp-server?payload=<payload>
