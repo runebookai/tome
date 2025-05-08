@@ -10,29 +10,18 @@
 		server: IMcpServer;
 	}
 
-	interface Env {
-		key: string;
-		value: string;
-	}
-
 	let { server }: Props = $props();
 
-	let command: string = $state('');
-	let env: Env[] = $state([]);
+	let command = $state('');
+	let env: [string, string][] = $state([]);
 
-	let newKey: string = $state('');
-	let newValue: string = $state('');
+	let key: string = $state('');
+	let value: string = $state('');
 
-	// Derive the computed `command` and mutable `env` from `server`. Must
-	// happen before the UI renders (via `$effect.raw`) so that we use the most
-	// recently set `server`.
 	$effect.pre(() => {
 		if (server) {
 			command = `${server.command} ${server.args.join(' ')}`.trim();
-			env = Object.entries(server.env).map(([key, value]) => ({
-				key: constantCase(key),
-				value,
-			}));
+			env = Object.entries(server.env);
 		}
 	});
 
@@ -40,20 +29,19 @@
 		const cmd = command.split(' ');
 		server.command = cmd[0];
 		server.args = cmd.slice(1);
-		server.env = Object.fromEntries(env.map((e) => [constantCase(e.key), e.value]));
+		server.env = Object.fromEntries(env.map(([k, v]) => [constantCase(k), v]));
 		server = await McpServer.save(server);
 	}
 
 	async function addEnv() {
-		env.push({ key: newKey, value: newValue });
+		env.push([key, value]);
 		await save();
-
-		newKey = '';
-		newValue = '';
+		key = '';
+		value = '';
 	}
 
 	async function remove(key: string) {
-		env = env.filter((e) => e.key !== key);
+		env = env.filter((e) => e[0] !== key);
 		await save();
 	}
 </script>
@@ -71,32 +59,32 @@
 		placeholder="uvx | npx COMMAND [args]"
 	/>
 
-	<h2 class="text-medium mt-8 mb-4 ml-4 text-xl">Env</h2>
+	<h2 class="text-medium mt-8 mb-4 ml-4 text-xl">ENV</h2>
 	<Flex class="grid w-full auto-cols-max auto-rows-max grid-cols-2 gap-4">
-		{#each env as entry (entry.key)}
+		{#each env, i (i)}
 			<Input
 				onchange={save}
 				label={false}
 				placeholder="Key"
-				bind:value={entry.key}
+				bind:value={env[i][0]}
 				class="uppercase"
 			/>
 
 			<Flex>
-				<Input onchange={save} label={false} placeholder="Value" bind:value={entry.value} />
+				<Input onchange={save} label={false} placeholder="Value" bind:value={env[i][1]} />
 				<button
 					class="text-dark hover:text-red ml-4 transition duration-300 hover:cursor-pointer"
-					onclick={() => remove(entry.key)}
+					onclick={() => remove(env[i][0])}
 				>
 					<Svg name="Delete" class="h-4 w-4" />
 				</button>
 			</Flex>
 		{/each}
 
-		<Input bind:value={newKey} label={false} placeholder="Key" class="uppercase" />
+		<Input bind:value={key} label={false} placeholder="Key" class="uppercase" />
 
 		<Flex>
-			<Input bind:value={newValue} onchange={addEnv} label={false} placeholder="Value" />
+			<Input bind:value onchange={addEnv} label={false} placeholder="Value" />
 			<div class="ml-4 h-4 w-4"></div>
 		</Flex>
 	</Flex>

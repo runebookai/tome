@@ -9,6 +9,8 @@ export enum DeepLinks {
     InstallMcpServer = 'install-mcp-server',
 }
 
-listen<InstallMcpServerPayload>(DeepLinks.InstallMcpServer, event => {
-    goto(`/mcp-servers/install?payload=${event.payload}`);
-});
+export function setupDeeplinks() {
+    listen<InstallMcpServerPayload>(DeepLinks.InstallMcpServer, event => {
+        goto(`/mcp-servers/install?payload=${event.payload}`);
+    });
+}

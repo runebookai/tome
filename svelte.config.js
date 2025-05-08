@@ -17,6 +17,7 @@ const config = {
                 "/chat/[session_id]",
                 "/mcp-servers",
                 "/mcp-servers/new",
+                "/mcp-servers/install",
                 "/mcp-servers/[name]",
                 "/mcp-servers/smithery",
                 "/models",

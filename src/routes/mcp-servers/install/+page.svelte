@@ -27,13 +27,10 @@
 		<Flex class="w-full flex-col items-start">
 			<h2 class="ml-2">Install {cmd.args[0]}?</h2>
 
-			<Flex
-				class="border-light mt-4 w-full flex-col items-start rounded-md
-                border border-b-0"
-			>
-				<h3 class="text-medium p-2 text-sm">Command</h3>
-				<Flex class="border-light w-full overflow-x-scroll border p-2 pl-4">
-					<code>
+			<Flex class="border-light mt-4 w-full flex-col items-start rounded-md border">
+				<h3 class="text-medium p-2 pl-4 text-sm">Command</h3>
+				<Flex class="border-t-light w-full overflow-x-scroll border-t p-2 pl-4">
+					<code class="whitespace-nowrap">
 						{cmd.command}
 						{cmd.args.join(' ')}
 					</code>
@@ -44,13 +41,15 @@
 				class="border-light mt-4 w-full flex-col items-start
                 rounded-md border border-b-0"
 			>
-				<h3 class="text-medium p-2 text-sm">ENV</h3>
+				<h3 class="text-medium p-2 pl-4 text-sm">ENV</h3>
 				<Flex
 					class="border-t-light grid w-full auto-cols-max
                     auto-rows-max grid-cols-2 border-t text-sm"
 				>
 					{#each Object.entries(cmd.env) as [key, value] (key)}
-						<p class="border-b-light border-r-light border-r border-b p-2 pl-4">
+						<p
+							class="border-b-light border-r-light border-r border-b p-2 pl-4 uppercase"
+						>
 							{key}
 						</p>
 						<p class="border-b-light border-b p-2 pl-4">{value}</p>
