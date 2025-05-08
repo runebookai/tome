@@ -18,7 +18,7 @@
 
 Tome is the simplest way to get started with local LLMs and MCP. Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama, find an MCP server via our [Smithery](https://smithery.ai) marketplace integration (or paste your own uvx/npx command), and chat with an MCP-powered model in seconds.
 
-This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Also make sure to star this repo on GitHub to stay on top of updates and feature releases!
+This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
 
 ## Features
 
