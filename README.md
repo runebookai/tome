@@ -23,7 +23,7 @@ This is a Technical Preview so bear in mind things will be rough around the edge
 ## Features
 
 - Instant connection to Ollama (local or remote) for model management
-- Chat interface to interact with models, customize context window and temperature
+- Chat with MCP-powered models, customize context window and temperature
 - Install MCP servers by pasting in a command `uvx mcp-server-fetch` or through the built-in Smithery marketplace which offers thousands of servers via a single click
 
 # Getting Started
