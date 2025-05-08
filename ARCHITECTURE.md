@@ -1,4 +1,3 @@
-
 <img src="static/images/repo-header.png" alt="Tome" />
 
 # Contributing to Tome
@@ -37,12 +36,12 @@ a `+page.ts` could be handy.
 
 **LIB**
 If it's not orchestration logic, and it's not a UI component, it lives in
-`lib`. This is where most of the supporting domain logic resides. 
+`lib`. This is where most of the supporting domain logic resides.
 
 ### Database
 
-For all intents and purposes, the database and models are managed in the frontend. 
-It's done via a Tauri plugin called `tauri-plugin-sql`. Technically, the plugin 
+For all intents and purposes, the database and models are managed in the frontend.
+It's done via a Tauri plugin called `tauri-plugin-sql`. Technically, the plugin
 just creates a bridge between the frontend and backend through Tauri's `invoke`
 mechanism. So while the queries are technically being made via Sqlx in Rust, as
 a developers it's all done via our Typescript models.
@@ -95,8 +94,7 @@ always working with the same set of reactive objects.
 You don't need to manage state manually. Just update a model like you're
 updating a database record and the UI will react appropriately.
 
-> [!IMPORTANT]
-> _ALWAYS_ work with models via `const model = $derived(Model.all())` and _NEVER_ `$state()`.
+> [!IMPORTANT] > _ALWAYS_ work with models via `const model = $derived(Model.all())` and _NEVER_ `$state()`.
 
 The beauty of working with a singleton static application if that you can have
 top-level objects like `repo` to track things and not have to worry about
@@ -123,7 +121,7 @@ single function in another module where the logic actually lives
 
 ### npx/uvx
 
-Tome uses a project from the CashApp folks, called [Hermit](https://github.com/cashapp/hermit), 
+Tome uses a project from the CashApp folks, called [Hermit](https://github.com/cashapp/hermit),
 which "manages isolated, self-bootstrapping sets of tools in software projects."
 
 `uvx` and `npx` are two pass-through scripts bundled with the app. Each one
@@ -131,3 +129,57 @@ first checks if we've previously installed the corresponding command and if not,
 uses Hermit to do so, then runs the original command.
 
 This is how we run MCP servers.
+
+## Deep Links
+
+Tome supports deep links in the form of `tome://*`. Below is a list of links
+supported and their associated payloads.
+
+### Install MCP Server
+
+To trigger an MCP Server installation, navigrate a user to the following URL:
+
+```
+tome://install-mcp-server?payload=<payload>
+```
+
+MCP server installation requires static args and ENV vars, for now. There is no
+way to allow the user to configure a server, yet. This means you need to collect
+those configuration properties from the user before making the request to Tome.
+
+#### `payload`
+
+The `payload` query param must be a URL encoded object that conforms to the
+following shape.
+
+> [!NOTE]
+> All keys, and all values, must be `string`.
+
+```json
+{
+	"version": "1",
+	"command": "uvx|npx",
+	"args": ["mcp-server-thing", "--flag", "flag-value"],
+	"env": {
+		"VAR_NAME": "VAR_VALUE"
+	}
+}
+```
+
+##### `version`
+
+The only valid `version`, for now, is `"1"`. If we ever make backwards
+incompatible changes to how Deep Links work, we'll increment this version.
+
+##### `command`
+
+Tome supports `npx` or `uvx` based MCP servers for now. `command` must be one of
+these two options.
+
+##### `args`
+
+An array of strings, passed to the CLI command as args.
+
+##### `env`
+
+A key-value object used as ENV vars when starting up the server.
