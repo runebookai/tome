@@ -4,7 +4,7 @@ import { type LlmTool, OllamaClient } from "$lib/llm";
 import { getMCPTools } from '$lib/mcp';
 import App, { type IApp } from '$lib/models/app';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
-import McpServer, { type IMcpServer } from "$lib/models/mcp-server";
+import { type IMcpServer } from "$lib/models/mcp-server";
 import Message, { type IMessage } from "$lib/models/message";
 import Model from '$lib/models/model.svelte';
 
@@ -76,13 +76,11 @@ export default class Session extends Base<ISession, Row>('sessions') {
     }
 
     static async addMcpServer(session: ISession, server: IMcpServer): Promise<ISession> {
-        const name = McpServer.name(server);
-
-        if (this.hasMcpServer(session, name)) {
+        if (this.hasMcpServer(session, server.name)) {
             return session;
         }
 
-        session.config.enabledMcpServers.push(name);
+        session.config.enabledMcpServers.push(server.name);
         return await this.update(session);
     }
 
@@ -90,7 +88,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
         session.config.enabledMcpServers = session
             .config
             .enabledMcpServers
-            .filter(s => s !== McpServer.name(server));
+            .filter(s => s !== server.name);
         return await this.update(session);
     }
 

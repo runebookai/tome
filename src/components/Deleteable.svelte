@@ -7,7 +7,7 @@
 	let width = $derived(open ? 'w-24' : 'w-0');
 
 	function onwheel(e: WheelEvent) {
-		if (e.deltaX < 0) {
+		if (e.deltaX < 0 && e.deltaY == 0) {
 			open = true;
 		} else if (e.deltaX > 0) {
 			open = false;

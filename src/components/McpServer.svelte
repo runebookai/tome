@@ -27,11 +27,13 @@
 	// happen before the UI renders (via `$effect.raw`) so that we use the most
 	// recently set `server`.
 	$effect.pre(() => {
-		command = `${server.command} ${server.args.join(' ')}`.trim();
-		env = Object.entries(server.env).map(([key, value]) => ({
-			key: constantCase(key),
-			value,
-		}));
+		if (server) {
+			command = `${server.command} ${server.args.join(' ')}`.trim();
+			env = Object.entries(server.env).map(([key, value]) => ({
+				key: constantCase(key),
+				value,
+			}));
+		}
 	});
 
 	async function save() {
@@ -57,7 +59,7 @@
 </script>
 
 <Flex class="w-full flex-col items-start">
-	<h1 class="text-purple mb-4 ml-4 text-2xl">{server.name}</h1>
+	<h1 class="text-purple mb-4 ml-4 text-2xl">{server?.name}</h1>
 
 	<h2 class="text-medium mt-8 mb-4 ml-4 text-xl">Command</h2>
 	<Input

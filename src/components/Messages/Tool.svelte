@@ -48,7 +48,7 @@
 
 		{#if isOpen}
 			<div
-				class="border-light mt-4 mb-1 w-full overflow-auto rounded-md border p-2 px-4 whitespace-pre"
+				class="border-light mt-4 mb-1 w-full overflow-x-scroll rounded-md border p-2 px-4 whitespace-pre"
 			>
 				{@html markdown.render(format(response))}
 			</div>

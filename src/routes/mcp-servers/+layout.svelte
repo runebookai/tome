@@ -1,9 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
 	import Deleteable from '$components/Deleteable.svelte';
 	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
 	import Link from '$components/Link.svelte';
 	import List from '$components/List.svelte';
+	import type { MenuItem } from '$components/Menu.svelte';
+	import Menu from '$components/Menu.svelte';
 	import Svg from '$components/Svg.svelte';
 	import Titlebar from '$components/Titlebar.svelte';
 	import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
@@ -23,8 +27,19 @@
 		},
 	];
 
+	function items(server: IMcpServer): MenuItem[] {
+		return [
+			{
+				label: 'Delete',
+				style: 'text-red hover:bg-red hover:text-white',
+				onclick: async () => await destroy(server),
+			},
+		];
+	}
+
 	async function destroy(server: IMcpServer) {
 		await McpServer.delete(server.id as number);
+		goto(`/mcp-servers`);
 	}
 </script>
 
@@ -45,15 +60,17 @@
 {/snippet}
 
 {#snippet McpServerView(server: IMcpServer)}
-	<Deleteable ondelete={() => destroy(server)}>
-		<Link
-			href={`/mcp-servers/${server.name}`}
-			class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
-			activeClass="text-purple border-l border-l-purple"
-		>
-			{server.name}
-		</Link>
-	</Deleteable>
+	<Menu items={items(server)}>
+		<Deleteable ondelete={() => destroy(server)}>
+			<Link
+				href={`/mcp-servers/${server.name}`}
+				class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
+				activeClass="text-purple border-l border-l-purple"
+			>
+				{server.name}
+			</Link>
+		</Deleteable>
+	</Menu>
 {/snippet}
 
 {#snippet RegistryView(registry: Registry)}

@@ -1,5 +1,7 @@
 <!-- App-wide event handlers -->
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
 	import closables from '$lib/closables';
 	import { resync } from '$lib/models';
 
@@ -19,6 +21,7 @@
 		// manually reload data from database
 		if (e.metaKey && e.key == 'r') {
 			await resync();
+			goto('/');
 		}
 	}
 </script>

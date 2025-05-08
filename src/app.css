@@ -40,6 +40,18 @@
     src: url("/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf");
 }
 
+*::-webkit-scrollbar {
+    background: transparent;
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: 1px solid var(--border-color-light);
+    border-radius: 6px;
+}
+
 html,
 body {
     background: #0b0b0b;

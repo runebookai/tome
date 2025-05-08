@@ -20,6 +20,12 @@ export default {
         closables = closables.filter(([e, _]) => ele !== e);
     },
 
+    closeAll() {
+        closables.forEach(([_, fn]) => {
+            fn();
+        });
+    },
+
     close(e: Event) {
         closables.forEach(([ele, fn]) => {
             if (!ele.contains?.(e.target as Node)) {
