@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	export interface MenuItem {
-		icon: string;
+		icon?: string;
 		label: string;
 		style?: string;
 		onclick: () => void;
@@ -20,13 +20,26 @@
 		items: MenuItem[];
 	};
 
-	const { items, class: cls = '' }: Props = $props();
+	const { items, children }: Props = $props();
 
 	let isOpen = $state(false);
-	let ref: HTMLButtonElement;
 
-	function toggle() {
+	let outer: HTMLButtonElement;
+	// svelte-ignore non_reactive_update
+	let inner: HTMLDivElement;
+
+	function toggle(e: MouseEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		closables.closeAll();
+		inner.style.left = `${e.clientX}px`;
+		inner.style.top = `${e.clientY}px`;
 		isOpen = isOpen ? false : true;
+	}
+
+	function onclick(item: MenuItem) {
+		item.onclick();
+		isOpen = false;
 	}
 
 	function close() {
@@ -34,42 +47,34 @@
 	}
 
 	onMount(() => {
-		closables.register(ref, close);
+		closables.register(outer, close);
 	});
 </script>
 
-<Flex class={twMerge('relative justify-center', cls?.toString())}>
-	<button
-		bind:this={ref}
-		onclick={() => toggle()}
-		class={`${isOpen ? 'bg-medium border-light z-30 border' : ''} border-light
-        text-dark/75 z-10 h-8 w-10 rounded-t-md
-        border-b-0 text-center text-[6px]
-        leading-8 font-bold transition-none hover:cursor-pointer`}
-	>
-		•••
-	</button>
+<button bind:this={outer} onclick={close} oncontextmenu={toggle} class="h-full w-full text-left">
+	{@render children?.()}
 
-	{#if isOpen}
-		<Flex
-			class="border-light bg-medium absolute top-[calc(--spacing(8)-1px)] right-0 
-            z-20 min-w-56 flex-col rounded-md rounded-tr-none 
-            border p-1 group-hover:block"
-		>
-			{#each items as item, i (i)}
-				<button
-					onclick={item.onclick}
-					class={twMerge(
-						'hover:bg-light/25 flex w-full flex-row items-start justify-between rounded-md p-3 py-2 hover:cursor-pointer',
-						item.style
-					)}
-				>
-					<div class="h-4 w-4">
+	<Flex
+		bind:ref={inner}
+		class={`${isOpen ? 'fixed' : 'hidden'} bg-light z-20 min-w-56 flex-col 
+        rounded-lg border border-white/5 py-2 text-base shadow-md shadow-black/10 group-hover:block`}
+	>
+		{#each items as item, i (i)}
+			<button
+				onclick={() => onclick(item)}
+				class={twMerge(
+					'hover:bg-purple flex w-full flex-row items-center p-8 py-1 hover:cursor-pointer',
+					item.style
+				)}
+			>
+				{#if item.icon}
+					<div class="mr-4 h-4 w-4">
 						<Svg name={item.icon} />
 					</div>
-					<p>{item.label}</p>
-				</button>
-			{/each}
-		</Flex>
-	{/if}
-</Flex>
+				{/if}
+
+				<p>{item.label}</p>
+			</button>
+		{/each}
+	</Flex>
+</button>

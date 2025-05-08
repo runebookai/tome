@@ -23,6 +23,7 @@ export default {
     // things like sync the database, load models, etc.
     //
     async addCheck(check: StartupCheck, condition: Condition, onSuccess?: OnSuccess) {
+        // Immediately run the check to see if it's already satisfied.
         if (!await condition()) {
             info(`[red]ⅹ startup check failed:[default] ${check}`);
             checks.push([check, condition, onSuccess]);

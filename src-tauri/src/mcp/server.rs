@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::process::Process;
 
 use anyhow::Result;
@@ -19,8 +21,13 @@ pub struct McpServer {
 }
 
 impl McpServer {
-    pub async fn start(command: String, app: AppHandle) -> Result<Self> {
-        let proc = McpProcess::start(command, app)?;
+    pub async fn start(
+        command: String,
+        args: Vec<String>,
+        env: HashMap<String, String>,
+        app: AppHandle,
+    ) -> Result<Self> {
+        let proc = McpProcess::start(command, args, env, app)?;
         let pid = proc.pid();
         let service = ().serve(proc).await?;
         Ok(Self { service, pid })

@@ -1,4 +1,4 @@
-export interface Request {
+export interface OllamaRequest {
     model: string;
     stream: boolean;
     tools: Tool[];
@@ -6,7 +6,7 @@ export interface Request {
     messages: Message[];
 }
 
-export interface Response {
+export interface OllamaResponse {
     created_at: string;
     done: boolean;
     done_reason: string;
@@ -15,7 +15,7 @@ export interface Response {
     load_duration: number;
     message: {
         content: string;
-        role: Role;
+        role: LlmMessageRole;
         tool_calls: ToolCall[];
     };
     model: string;
@@ -24,12 +24,12 @@ export interface Response {
     total_duration: number;
 }
 
-export interface Options {
+export interface LlmOptions {
     num_ctx?: number;
     temperature?: number;
 }
 
-export interface Model {
+export interface OllamaModel {
     name: string;
     modifiedAt: string;
     size: number;
@@ -68,21 +68,21 @@ export interface Model {
     capabilities?: string[];
 }
 
-export type Tag = Pick<Model, 'name' | 'modifiedAt' | 'size' | 'digest' | 'details'>;
-export type Role = 'system' | 'tool' | 'user' | 'assistant';
+export type OllamaTag = Pick<OllamaModel, 'name' | 'modifiedAt' | 'size' | 'digest' | 'details'>;
+export type LlmMessageRole = 'system' | 'tool' | 'user' | 'assistant';
 
-export interface Tags {
+export interface OllamaTags {
     models: Tag[];
 }
 
-export interface Message {
-    role: Role;
+export interface LlmMessage {
+    role: LlmMessageRole;
     content: string;
     name: string;
     tool_calls?: Record<string, any>; // eslint-disable-line
 }
 
-export interface ToolCall {
+export interface LlmToolCall {
     function: {
         name: string;
         // We have no way of knowing what the LLM will pass
@@ -91,7 +91,7 @@ export interface ToolCall {
     }
 }
 
-export interface Tool {
+export interface LlmTool {
     type: string;
     function: {
         name: string;
@@ -104,7 +104,7 @@ export interface Tool {
     }
 }
 
-interface Property {
+interface LlmProperty {
     type: string;
     description: string;
 }

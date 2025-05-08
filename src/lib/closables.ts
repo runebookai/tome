@@ -2,8 +2,7 @@
 type Closable = (() => Promise<void>) | (() => void);
 
 // List of callables to invoke
-// eslint-disable-next-line
-const closables: Array<[any, Closable]> = [];
+let closables: Array<[Node, Closable]> = [];
 
 // Manage a list of functions that should be called when the window is clicked.
 //
@@ -13,13 +12,23 @@ const closables: Array<[any, Closable]> = [];
 // Triggered by `routes/+layout.svelte`
 // 
 export default {
-    register(ele: any, fn: Closable) { // eslint-disable-line
+    register(ele: Node, fn: Closable) {
         closables.push([ele, fn]);
+    },
+
+    unregister(ele: Node) {
+        closables = closables.filter(([e, _]) => ele !== e);
+    },
+
+    closeAll() {
+        closables.forEach(([_, fn]) => {
+            fn();
+        });
     },
 
     close(e: Event) {
         closables.forEach(([ele, fn]) => {
-            if (e.target !== ele) {
+            if (!ele.contains?.(e.target as Node)) {
                 fn();
             }
         });

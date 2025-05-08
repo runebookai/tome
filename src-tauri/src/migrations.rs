@@ -122,5 +122,23 @@ ALTER TABLE messages ADD COLUMN response_id INTEGER REFERENCES messages(id);
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 8,
+            description: "expand_mcp_servers",
+            sql: r#"
+ALTER TABLE mcp_servers ADD COLUMN args JSON NOT NULL DEFAULT "[]";
+ALTER TABLE mcp_servers ADD COLUMN env JSON NOT NULL DEFAULT "{}";
+            "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 9,
+            description: "add_explicit_name_to_mcp_servers",
+            sql: r#"
+ALTER TABLE mcp_servers ADD COLUMN name TEXT NOT NULL DEFAULT "Unknown";
+UPDATE mcp_servers SET name = json_extract(metadata, '$.serverInfo.name');
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

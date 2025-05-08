@@ -1,9 +1,10 @@
 <script lang="ts">
-	import type { SvelteHTMLElements } from 'svelte/elements';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { twMerge } from 'tailwind-merge';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 
-	type Props = SvelteHTMLElements['a'] & {
+	type Props = HTMLAttributes<HTMLAnchorElement> & {
 		href: string;
 		prefix?: string;
 		activeClass?: string;
@@ -11,20 +12,22 @@
 
 	const { children, class: cls = '', href, prefix, activeClass, ...rest }: Props = $props();
 
-	const path = page.url.pathname;
-	const isActive = path == href || (prefix && path.startsWith(prefix));
+	let isActive = $state(false);
+
+	afterNavigate(() => {
+		const path = page.url.pathname;
+		const prefixMatch = path.startsWith(href);
+		const explicitPrefixMatch = path.startsWith(prefix as string);
+		const pathMatch = path == href;
+		isActive = pathMatch || prefixMatch || explicitPrefixMatch;
+	});
 </script>
 
 <a
 	{...rest}
 	{href}
-	class={twMerge('border-l border-transparent', cls?.toString(), isActive ? activeClass : '')}
+	class={twMerge('block duration-300', cls?.toString(), isActive ? activeClass : '')}
+	data-sveltekit-preload-data="off"
 >
 	{@render children?.()}
 </a>
-
-<style>
-	a {
-		transition: all 0.3s linear;
-	}
-</style>

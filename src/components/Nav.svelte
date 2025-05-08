@@ -18,17 +18,16 @@
     This link MUST NOT preload data on hover, since it redirects when it does.
     Which means we'd navigate on hover instead of click.
     -->
-	<Link
-		href="/chat/latest"
-		aria-label="chat"
-		prefix="/chat"
-		activeClass="text-purple"
-		data-sveltekit-preload-data="off"
-	>
+	<Link href="/chat/latest" aria-label="chat" prefix="/chat" activeClass="text-purple">
 		<Svg name="Chat" />
 	</Link>
 
-	<Link href="/mcp-servers" aria-label="mcp-servers" activeClass="text-purple">
+	<Link
+		href="/mcp-servers"
+		aria-label="mcp-servers"
+		prefix="/mcp-servers"
+		activeClass="text-purple"
+	>
 		<Svg name="MCP" />
 	</Link>
 

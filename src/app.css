@@ -9,7 +9,9 @@
     --color-green: #c3e88d;
     --color-yellow: #ffc777;
 
-    --border-color-light: #171717;
+    --border-color-light: #191919;
+    --border-color-medium: #0c0c0c;
+    --border-color-dark: #0b0b0b;
 
     --background-color-light: #191919;
     --background-color-medium: #0c0c0c;
@@ -38,15 +40,16 @@
     src: url("/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf");
 }
 
-* {
-    /* Hide scrollbar */
-    -ms-overflow-style: none;
-    scrolbar-width: none;
+*::-webkit-scrollbar {
+    background: transparent;
+    width: 10px;
+    height: 10px;
 }
 
-/* Hide scrollbar */
-*::-webkit-scrollbar {
-    display: none;
+*::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: 1px solid var(--border-color-light);
+    border-radius: 6px;
 }
 
 html,

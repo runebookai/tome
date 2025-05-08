@@ -1,6 +1,8 @@
 pub(crate) mod process;
 pub(crate) mod server;
 
+use std::collections::HashMap;
+
 use crate::state::State;
 
 use anyhow::Result;
@@ -41,10 +43,16 @@ pub async fn bootstrap(app: AppHandle) -> Result<()> {
 // To deal with this, we collect child pids before we launch the server and child pids after it's
 // launched. We track those, then explicitly kill them all when in `stop`.
 //
-pub async fn start(session_id: i32, command: String, app: AppHandle) -> Result<()> {
+pub async fn start(
+    session_id: i32,
+    command: String,
+    args: Vec<String>,
+    env: HashMap<String, String>,
+    app: AppHandle,
+) -> Result<()> {
     let handle = app.clone();
     let state = handle.state::<State>();
-    let server = McpServer::start(command, app).await?;
+    let server = McpServer::start(command, args, env, app).await?;
 
     let mut sessions = state.sessions.lock().await;
     let mut session = sessions.remove(&session_id).unwrap_or_default();
@@ -130,8 +138,13 @@ pub async fn call_tool(
     server.call_tool(tool_call).await
 }
 
-pub async fn peer_info(command: String, app: AppHandle) -> Result<String> {
-    let server = McpServer::start(command, app).await?;
+pub async fn peer_info(
+    command: String,
+    args: Vec<String>,
+    env: HashMap<String, String>,
+    app: AppHandle,
+) -> Result<String> {
+    let server = McpServer::start(command, args, env, app).await?;
     let peer_info = server.peer_info();
     server.kill()?;
     Ok(serde_json::to_string(&peer_info)?)

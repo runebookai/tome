@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::{anyhow, Result};
 use rmcp::service::ServiceRole;
 use rmcp::transport::IntoTransport;
@@ -15,22 +17,23 @@ pub(crate) struct McpProcess {
 }
 
 impl McpProcess {
-    pub fn start(command: String, app: AppHandle) -> Result<Self> {
-        let args: Vec<&str> = command.split(" ").collect();
-
-        let main = *args.first().unwrap();
-        let args = args.clone().drain(1..).collect::<Vec<&str>>();
-
-        let main = match main {
+    pub fn start(
+        command: String,
+        args: Vec<String>,
+        env: HashMap<String, String>,
+        app: AppHandle,
+    ) -> Result<Self> {
+        let command = match &*command {
             "uvx" => app.path().resolve("uvx", BaseDirectory::Resource)?,
             "npx" => app.path().resolve("npx", BaseDirectory::Resource)?,
             s => return Err(anyhow!("{} servers not supported", s)),
         };
 
-        let mut cmd = Command::new(main);
+        let mut cmd = Command::new(command);
         let cmd = cmd.args(args);
 
         cmd.kill_on_drop(true)
+            .envs(env)
             .stdin(std::process::Stdio::piped())
             .stdout(std::process::Stdio::piped());
 

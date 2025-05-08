@@ -1,12 +1,20 @@
+import { info } from "./logger";
 import type { IMessage } from "./models/message";
 
 import { HttpClient } from "$lib/http";
-import type { Message, Model, Options, Response, Tags, Tool } from "$lib/llm.d";
+import type {
+    LlmMessage,
+    LlmOptions,
+    LlmTool,
+    OllamaModel,
+    OllamaResponse,
+    OllamaTags
+} from "$lib/llm.d";
 import Setting from "$lib/models/setting";
 
 export * from '$lib/llm.d';
 
-export class Client extends HttpClient {
+export class OllamaClient extends HttpClient {
     options: RequestInit = {
         signal: AbortSignal.timeout(30000),
         headers: {
@@ -18,7 +26,7 @@ export class Client extends HttpClient {
         return Setting.OllamaUrl;
     }
 
-    async chat(model: string, messages: Message[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
+    async chat(model: string, messages: LlmMessage[], tools: LlmTool[] = [], options: LlmOptions = {}): Promise<IMessage> {
         const body = JSON.stringify({
             model,
             messages,
@@ -27,7 +35,7 @@ export class Client extends HttpClient {
             stream: false,
         });
 
-        const response = await this.post('/api/chat', { body }) as Response;
+        const response = await this.post('/api/chat', { body }) as OllamaResponse;
 
         let thought: string | undefined;
         let content: string = response
@@ -53,18 +61,18 @@ export class Client extends HttpClient {
         };
     }
 
-    async list(): Promise<Model[]> {
+    async list(): Promise<OllamaModel[]> {
         return (
-            await this.get('/api/tags') as Tags
-        ).models as Model[];
+            await this.get('/api/tags') as OllamaTags
+        ).models as OllamaModel[];
     }
 
-    async info(name: string): Promise<Model> {
+    async info(name: string): Promise<OllamaModel> {
         const body = JSON.stringify({ name });
 
         return (
             await this.post('/api/show', { body })
-        ) as Model;
+        ) as OllamaModel;
     }
 
     async connected(): Promise<boolean> {
@@ -74,8 +82,12 @@ export class Client extends HttpClient {
     }
 
     async hasModels(): Promise<boolean> {
+        if (!await this.connected()) {
+            return false;
+        }
+
         return (
-            await this.get('/api/tags', { raise: false }) as Tags
-        )?.models.length > 0;
+            await this.get('/api/tags') as OllamaTags
+        ).models.length > 0;
     }
 }

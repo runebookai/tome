@@ -1,6 +1,6 @@
-import * as llm from '$lib/llm';
+import { OllamaClient, type OllamaModel } from "$lib/llm";
 
-export type IModel = llm.Model;
+export type IModel = OllamaModel;
 
 export interface Details {
     parentModel: string;
@@ -15,7 +15,7 @@ let repo: IModel[] = $state([]);
 
 export default class Model {
     static async sync(): Promise<void> {
-        const client = new llm.Client();
+        const client = new OllamaClient();
         const models: IModel[] = await client.list();
 
         repo = await Promise.all(

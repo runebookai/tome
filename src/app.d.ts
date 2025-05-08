@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
@@ -10,16 +12,19 @@ declare global {
     }
 
     // Utility type for plain, unknown-value, JS Objects
-    type Obj = { [key: string]: any }; // eslint-disable-line
+    type Obj = { [key: string]: any };
 
     interface ObjectConstructor {
         compact<T>(o: Obj): T;
         without<T>(o: Obj, keys: string[]): T;
         remove<T>(o: Obj, key: string): T | undefined;
+        map<T>(o: Obj, fn: (key: string, value: any) => any): T;
     }
 
     interface Array<T> {
-        sortBy(key: string): Array<T>;
+        sortBy<T extends Obj>(key: string): Array<T>;
+        findBy<T extends Obj>(key: string, value: any): T | undefined;
+        compact(): Array<T>;
     }
 
     interface CheckboxEvent extends Event {
