@@ -12,7 +12,7 @@
 
 Tome is a MacOS app (Windows and Linux support coming soon) designed for working with local LLMs and MCP servers, built by the team at [Runebook](https://runebook.ai). Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama, copy/paste some MCP servers, and chat with an MCP-powered model in seconds.
 
-This is our very first Technical Preview so bear in mind things will be rough around the edges. Since the world of MCP servers and local models is ever-shifting (read: very janky), we recommend [joining us on Discord](https://discord.gg/3e7YP8MR) to share tips, tricks, and issues you run into. Also make sure to star this repo on GitHub to stay on top of updates and feature releases.
+This is our very first Technical Preview so bear in mind things will be rough around the edges. Since the world of MCP servers and local models is ever-shifting (read: very janky), we recommend [joining us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Also make sure to star this repo on GitHub to stay on top of updates and feature releases.
 
 # Getting Started
 
@@ -50,4 +50,4 @@ of whether you're an engineer, tinkerer, hobbyist, or anyone in between.
 
 # Community
 
-[Discord](https://discord.gg/3e7YP8MR) [Bluesky](https://bsky.app/profile/runebook.ai) [Twitter](https://twitter.com/runebookai)
+[Discord](https://discord.gg/9CH6us29YA) [Bluesky](https://bsky.app/profile/runebook.ai) [Twitter](https://twitter.com/runebookai)
