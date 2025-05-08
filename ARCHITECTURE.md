@@ -44,7 +44,7 @@ For all intents and purposes, the database and models are managed in the fronten
 It's done via a Tauri plugin called `tauri-plugin-sql`. Technically, the plugin
 just creates a bridge between the frontend and backend through Tauri's `invoke`
 mechanism. So while the queries are technically being made via Sqlx in Rust, as
-a developer, it's all done via our Typescript models.
+a developer you only need to worry about the Typescript models.
 
 ### Models
 
