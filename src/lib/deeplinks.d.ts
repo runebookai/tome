@@ -1,5 +1,6 @@
-export interface InstallMcpServerPayload {
+export interface VSCodeMcpInstallConfig {
+    name: string;
+    type: string;
     command: string;
     args: string[];
-    env: Record<string, string>;
 }

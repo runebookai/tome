@@ -65,7 +65,7 @@ fn main() {
             configure_macos_window(&window);
 
             app.deep_link().on_open_url(|event| {
-                deeplink::handle(event.urls()).unwrap();
+                deeplink::handle(event.urls());
             });
 
             let handle = app.handle().clone();
