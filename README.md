@@ -60,4 +60,4 @@ of whether you're an engineer, tinkerer, hobbyist, or anyone in between.
 
 # Community
 
-[Discord](https://discord.gg/9CH6us29YA) [Bluesky](https://bsky.app/profile/runebook.ai) [Twitter](https://twitter.com/runebookai)
+[Discord](https://discord.gg/9CH6us29YA) [Bluesky](https://bsky.app/profile/gettome.app) [Twitter](https://twitter.com/get_tome)
