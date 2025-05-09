@@ -6,14 +6,15 @@
 	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
 	import Modal from '$components/Modal.svelte';
-	import type { InstallMcpServerPayload } from '$lib/deeplinks';
+	import Svg from '$components/Svg.svelte';
+	import type { VSCodeMcpInstallConfig } from '$lib/deeplinks';
 	import McpServer from '$lib/models/mcp-server';
 
-	const payload = page.url.searchParams.get('payload') as string;
-	const cmd: InstallMcpServerPayload = JSON.parse(payload);
+	const payload = page.url.searchParams.get('config') as string;
+	const config: VSCodeMcpInstallConfig = JSON.parse(decodeURIComponent(payload));
 
 	async function install() {
-		const server = await McpServer.create(cmd);
+		const server = await McpServer.create(config);
 		goto(`/mcp-servers/${server.name}`);
 	}
 
@@ -24,42 +25,30 @@
 
 <Layout>
 	<Modal close={cancel}>
-		<Flex class="w-full flex-col items-start">
-			<h2 class="ml-2">Install {cmd.args[0]}?</h2>
+		{#if config.type !== 'stdio'}
+			<Flex class="text-red w-full">
+				<Svg name="Warning" class="mr-8 h-6 w-6" />
+				<p>Tome only supports <code>stdio</code> MCP servers</p>
+			</Flex>
+		{:else}
+			<Flex class="w-full flex-col items-start">
+				<h2 class="ml-2">Install {config.args[0]}?</h2>
 
-			<Flex class="border-light mt-4 w-full flex-col items-start rounded-md border">
-				<h3 class="text-medium p-2 pl-4 text-sm">Command</h3>
-				<Flex class="border-t-light w-full overflow-x-scroll border-t p-2 pl-4">
-					<code class="whitespace-nowrap">
-						{cmd.command}
-						{cmd.args.join(' ')}
-					</code>
+				<Flex class="border-light mt-4 w-full flex-col items-start rounded-md border">
+					<h3 class="text-medium p-2 pl-4 text-sm">Command</h3>
+					<Flex class="border-t-light w-full overflow-x-scroll border-t p-2 pl-4">
+						<code class="whitespace-nowrap">
+							{config.command}
+							{config.args.join(' ')}
+						</code>
+					</Flex>
+				</Flex>
+
+				<Flex class="mt-8 self-end">
+					<Button onclick={cancel} class="text-medium border-0">Cancel</Button>
+					<Button onclick={install} class="border-purple text-purple">Install</Button>
 				</Flex>
 			</Flex>
-
-			<Flex
-				class="border-light mt-4 w-full flex-col items-start
-                rounded-md border border-b-0"
-			>
-				<h3 class="text-medium p-2 pl-4 text-sm">ENV</h3>
-				<Flex
-					class="border-t-light grid w-full auto-cols-max
-                    auto-rows-max grid-cols-2 border-t text-sm"
-				>
-					{#each Object.entries(cmd.env) as [key, value] (key)}
-						<p
-							class="border-b-light border-r-light border-r border-b p-2 pl-4 uppercase"
-						>
-							{key}
-						</p>
-						<p class="border-b-light border-b p-2 pl-4">{value}</p>
-					{/each}
-				</Flex>
-			</Flex>
-			<Flex class="mt-8 self-end">
-				<Button onclick={cancel} class="text-medium border-0">Cancel</Button>
-				<Button onclick={install} class="border-purple text-purple">Install</Button>
-			</Flex>
-		</Flex>
+		{/if}
 	</Modal>
 </Layout>
