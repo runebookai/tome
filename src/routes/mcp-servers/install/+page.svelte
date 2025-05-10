@@ -32,7 +32,7 @@
 			</Flex>
 		{:else}
 			<Flex class="w-full flex-col items-start">
-				<h2 class="ml-2">Install {config.args[0]}?</h2>
+				<h2 class="ml-2">Install {config.name}?</h2>
 
 				<Flex class="border-light mt-4 w-full flex-col items-start rounded-md border">
 					<h3 class="text-medium p-2 pl-4 text-sm">Command</h3>
