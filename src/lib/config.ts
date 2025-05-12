@@ -2,6 +2,8 @@ import { BaseDirectory, exists, readTextFile, writeTextFile } from "@tauri-apps/
 
 export const FILENAME = "tome.conf.json";
 
+export const SKIPPED_VERSIONS = 'skipped-versions';
+
 export default class Config {
     static async all(): Promise<Record<string, unknown>> {
         return await this.config();

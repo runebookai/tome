@@ -15,6 +15,7 @@ import Model from '$lib/models/model.svelte';
 import Session from "$lib/models/session";
 import Setting from "$lib/models/setting";
 import startup, { StartupCheck } from "$lib/startup";
+import { isUpToDate } from '$lib/updates';
 
 // App Initialization
 export const init: ClientInit = async () => {
@@ -46,6 +47,11 @@ export const init: ClientInit = async () => {
     await startup.addCheck(
         StartupCheck.Agreement,
         async () => await Config.get(WELCOME_AGREED) === true,
+    );
+
+    await startup.addCheck(
+        StartupCheck.UpdateAvailable,
+        async () => await isUpToDate(),
     );
 }
 

@@ -1,7 +1,12 @@
-import { OLLAMA_URL_CONFIG_KEY } from '$lib/const';
 import { OllamaClient } from '$lib/llm';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import LLMModel from '$lib/models/model.svelte';
+
+// Ollama URL
+export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
+
+// Has the user opted into auto updates
+export const AUTOMATIC_UPDATES = 'automatic-updates';
 
 export interface ISetting {
     id?: number;

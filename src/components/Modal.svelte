@@ -5,15 +5,23 @@
 	import closables from '$lib/closables';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
-		close: () => void | Promise<void>;
+		close?: () => void | Promise<void>;
+		noclose?: boolean;
 	}
 
-	const { children, close, class: cls = '' }: Props = $props();
+	const { children, close, noclose = false, class: cls = '' }: Props = $props();
 	let ref: HTMLDivElement;
 
 	$effect(() => {
-		closables.register(ref, close);
-		return () => closables.unregister(ref);
+		if (close && !noclose) {
+			closables.register(ref, close);
+		}
+
+		return () => {
+			if (close && !noclose) {
+				closables.unregister(ref);
+			}
+		};
 	});
 </script>
 
@@ -22,7 +30,7 @@
 <div
 	bind:this={ref}
 	class={twMerge(
-		'border-light bg-dark fixed top-[50%] left-[50%] z-50 max-h-3/4 w-[400px] -translate-[50%] overflow-y-scroll rounded-xl border p-8',
+		'border-light bg-dark fixed top-[50%] left-[50%] z-50 max-h-3/4 min-w-[400px] -translate-[50%] rounded-xl border p-8',
 		cls?.toString()
 	)}
 >
