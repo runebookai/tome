@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+version = ARGV[0]
+changelog = File.read("CHANGELOG.md")
+puts changelog.split(/^##\s+(\d+\.\d+\.\d+)\s+-\s+\d{4}-\d{2}-\d{2}$/)[1..].each_slice(2).to_h[version].strip
