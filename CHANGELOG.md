@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 - 2025-05-13
+
+### Fixes
+
+- Fixed build script to include updater JSON
+- Fixed build script to pull changelog from CHANGELOG.md
+
 ## 0.3.2 - 2025-05-09
 
 ### Fixes
