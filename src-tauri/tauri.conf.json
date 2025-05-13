@@ -10,6 +10,7 @@
         "active": true,
         "category": "DeveloperTool",
         "copyright": "",
+        "createUpdaterArtifacts": true,
         "targets": "all",
         "externalBin": [],
         "icon": [
@@ -95,7 +96,8 @@
                         "fs:allow-appdata-write",
                         "fs:allow-resource-read",
                         "sql:default",
-                        "sql:allow-execute"
+                        "sql:allow-execute",
+                        "updater:default"
                     ]
                 },
                 {
