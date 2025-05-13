@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
+	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
 	import Modal from '$components/Modal.svelte';
 	import Svg from '$components/Svg.svelte';
@@ -51,18 +52,24 @@
 </script>
 
 <Layout>
-	{#if check && check[0] == StartupCheck.Agreement}
-		<Welcome />
-	{:else if check && check[0] == StartupCheck.UpdateAvailable}
-		<Updater />
-	{:else if check}
-		<h1 class="text-red flex items-center gap-4 text-2xl">
-			<Svg class="h-6 w-6" name="Warning" />
-			{message}
-		</h1>
+	{#if check}
+		<Modal class="max-w-[500px]">
+			{#if check[0] == StartupCheck.Agreement}
+				<Welcome />
+			{:else if check[0] == StartupCheck.UpdateAvailable}
+				<Updater />
+			{:else}
+				<Flex class="flex-col items-center">
+					<h1 class="text-red flex items-center gap-4 text-2xl">
+						<Svg class="h-6 w-6" name="Warning" />
+						{message}
+					</h1>
 
-		<a href="/settings">Settings</a>
+					<a class="self" href="/settings">Settings</a>
+				</Flex>
+			{/if}
+		</Modal>
 	{:else}
-		<Svg name="Logo" class="text-dark h-48 w-48" />
+		<Svg name="Logo" class="text-dark fixed top-[50%] left-[50%] h-32 w-32 -translate-[50%]" />
 	{/if}
 </Layout>

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
 use serde::{Deserialize, Serialize};
 use tauri::http::{HeaderMap, HeaderName, HeaderValue};
@@ -17,6 +17,7 @@ pub struct ProxyOptions {
     method: HttpMethod,
     body: Option<String>,
     headers: Option<HashMap<String, String>>,
+    timeout: Option<u64>,
 }
 
 #[derive(Serialize)]
@@ -53,6 +54,12 @@ pub async fn fetch(url: String, options: ProxyOptions) -> Result<HTTPResponse, S
     }
 
     let request = request.headers(headers);
+
+    let request = if let Some(timeout) = options.timeout {
+        request.timeout(Duration::from_millis(timeout))
+    } else {
+        request
+    };
 
     let request = if let Some(json) = options.body {
         request.body(json)

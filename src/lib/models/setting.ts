@@ -5,9 +5,6 @@ import LLMModel from '$lib/models/model.svelte';
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
 
-// Has the user opted into auto updates
-export const AUTOMATIC_UPDATES = 'automatic-updates';
-
 export interface ISetting {
     id?: number;
     display: string;
