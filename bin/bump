@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Update the version number across all files that contain it.
+#
+# NOTE: src-tauri/tauri.conf.json is the canonical source of the version. When
+# you bump the version, it's based on what in there.
+#
+# Usage:
+#
+#   bin/bump major|minor|patch
+#
+TIER=$1
+COMMIT=$2
+TIERS=("major" "minor" "patch")
+
+VERSION=$(cat src-tauri/tauri.conf.json | jq -r '.version')
+SEMVER=(${VERSION//./ })
+
+MAJOR=${SEMVER[0]}
+MINOR=${SEMVER[1]}
+PATCH=${SEMVER[2]}
+
+case "$TIER" in
+    "major") MAJOR=$((MAJOR + 1)) ;;
+    "minor") MINOR=$((MINOR + 1)) ;;
+    "patch") PATCH=$((PATCH + 1)) ;;
+    *)
+        echo "Error: missing bump tier"
+        echo "Usage: bump major|minor|patch"
+        exit 1 ;;
+esac
+
+# Update tauri.conf.json
+cat src-tauri/tauri.conf.json | jq --indent 4 ".version |= \"$MAJOR.$MINOR.$PATCH\"" | tee src-tauri/tauri.conf.json 2>&1 >/dev/null
+
+# Update package.json
+cat package.json | jq --indent 4 ".version |= \"$MAJOR.$MINOR.$PATCH\"" | tee package.json 2>&1 >/dev/null
+
+# Update Cargo.toml
+cat src-tauri/Cargo.toml | sed -E "s/^version = \"[0-9]+.[0-9+].[0-9]+\"$/version = \"$MAJOR.$MINOR.$PATCH\"/" | tee src-tauri/Cargo.toml 2>&1 >/dev/null
