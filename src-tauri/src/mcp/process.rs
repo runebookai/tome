@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use rmcp::service::ServiceRole;
 use rmcp::transport::IntoTransport;
 use sysinfo::Pid;
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use tokio::io::AsyncRead;
-use tokio::process::{Child, ChildStdin, ChildStdout, Command};
+use tokio::process::{Child, ChildStdin, ChildStdout};
+
+use super::get_os_specific_command;
 
 #[derive(Debug)]
 pub(crate) struct McpProcess {
@@ -23,19 +24,19 @@ impl McpProcess {
         env: HashMap<String, String>,
         app: AppHandle,
     ) -> Result<Self> {
-        let command = match &*command {
-            "uvx" => app.path().resolve("uvx", BaseDirectory::Resource)?,
-            "npx" => app.path().resolve("npx", BaseDirectory::Resource)?,
-            s => return Err(anyhow!("{} servers not supported", s)),
-        };
-
-        let mut cmd = Command::new(command);
-        let cmd = cmd.args(args);
+        let mut cmd = get_os_specific_command(&command, &app)?;
+        let cmd = cmd.args(&args);
 
         cmd.kill_on_drop(true)
             .envs(env)
             .stdin(std::process::Stdio::piped())
             .stdout(std::process::Stdio::piped());
+
+        #[cfg(windows)]
+        {
+            const CREATE_NO_WINDOW: u32 = 0x08000000;
+            cmd.creation_flags(CREATE_NO_WINDOW);
+        }
 
         let mut child = cmd.spawn()?;
         let child_stdin = child.stdin.take().unwrap();
