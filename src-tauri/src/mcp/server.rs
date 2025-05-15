@@ -23,13 +23,15 @@ pub struct McpServer {
 impl McpServer {
     pub async fn start(
         command: String,
-        args: Vec<String>,
+        mut args: Vec<String>,
         env: HashMap<String, String>,
         app: AppHandle,
     ) -> Result<Self> {
-        let mut args_with_yes = vec!["-y".to_string()];
-        args_with_yes.extend(args);
-        let proc = McpProcess::start(command, args_with_yes, env, app)?;
+        if command.contains("npx") {
+            args.insert(0, "-y".to_string());
+        }
+
+        let proc = McpProcess::start(command, args, env, app)?;
         let pid = proc.pid();
         let service = ().serve(proc).await?;
         Ok(Self { service, pid })

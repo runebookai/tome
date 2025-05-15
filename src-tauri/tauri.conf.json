@@ -23,6 +23,9 @@
         "windows": {
             "certificateThumbprint": null,
             "digestAlgorithm": "sha256",
+            "nsis": {
+                "installerHooks": "./windows/hooks.nsi"
+            },
             "timestampUrl": ""
         },
         "longDescription": "",

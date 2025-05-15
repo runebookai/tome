@@ -27,6 +27,8 @@ impl McpProcess {
         let mut cmd = get_os_specific_command(&command, &app)?;
         let cmd = cmd.args(&args);
 
+        log::info!("Executing command: {:?} {:?}", cmd, args);
+
         cmd.kill_on_drop(true)
             .envs(env)
             .stdin(std::process::Stdio::piped())
