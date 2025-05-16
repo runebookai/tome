@@ -1,17 +1,17 @@
 import moment from "moment";
 
-import type { LlmMessageRole } from '$lib/llm.d';
+import type { Role, ToolCall } from "$lib/engines/types";
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Session, { type ISession } from "$lib/models/session";
 
 export interface IMessage {
     id?: number;
-    role: LlmMessageRole;
+    role: Role;
     content: string;
     thought?: string;
     model: string;
     name: string;
-    toolCalls: Record<string, any>[]; // eslint-disable-line
+    toolCalls: ToolCall[];
     sessionId?: number;
     responseId?: number;
     created?: moment.Moment;
@@ -54,7 +54,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
     protected static async fromSql(row: Row): Promise<IMessage> {
         return {
             id: row.id,
-            role: row.role as LlmMessageRole,
+            role: row.role as Role,
             content: row.content,
             thought: row.thought,
             model: row.model,

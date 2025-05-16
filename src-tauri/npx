@@ -59,7 +59,7 @@ log "chmod +x hermit"
 chmod +x ~/.config/runebook/hermit/bin/hermit
 
 log "hermit install node >> "$LOGFILE""
-hermit install node >> "$LOGFILE"
+hermit install node@lts >> "$LOGFILE"
 
 log "npx $*"
 npx "$@" || log "Error running npx $*"

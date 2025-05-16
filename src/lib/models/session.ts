@@ -1,12 +1,14 @@
 import moment from "moment";
 
-import { type LlmTool, OllamaClient } from "$lib/llm";
+import Engine from "./engine";
+
+import type { Tool } from "$lib/engines/types";
 import { getMCPTools } from '$lib/mcp';
 import App, { type IApp } from '$lib/models/app';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
-import { type IMcpServer } from "$lib/models/mcp-server";
+import type { IMcpServer } from "$lib/models/mcp-server";
 import Message, { type IMessage } from "$lib/models/message";
-import Model from '$lib/models/model.svelte';
+import Model from '$lib/models/model';
 
 export const DEFAULT_SUMMARY = 'Untitled';
 export interface ISession {
@@ -36,7 +38,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
     static defaults = () => ({
         summary: DEFAULT_SUMMARY,
         config: {
-            model: Model.default().name,
+            model: Model.default().id,
             contextWindow: 4096,
             temperature: 0.8,
             enabledMcpServers: [],
@@ -53,10 +55,8 @@ export default class Session extends Base<ISession, Row>('sessions') {
         return Message.where({ sessionId: session.id });
     }
 
-    static async tools(session: ISession): Promise<LlmTool[]> {
-        const model = Model.find(session.config.model);
-
-        if (!Model.supportsTools(model)) {
+    static async tools(session: ISession): Promise<Tool[]> {
+        if (!Model.find(session.config.model)?.supportsTools) {
             return [];
         }
 
@@ -92,7 +92,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
         return await this.update(session);
     }
 
-    static async summarize(session: ISession, model: string) {
+    static async summarize(session: ISession, modelId: string) {
         if (!session.id) {
             return;
         }
@@ -101,9 +101,15 @@ export default class Session extends Base<ISession, Row>('sessions') {
             return;
         }
 
-        const client = new OllamaClient();
-        const message: IMessage = await client.chat(
-            model,
+        const engine = Engine.fromModelId(modelId);
+        const model = Model.find(modelId);
+
+        if (!engine || !model) {
+            return;
+        }
+
+        const message: IMessage = await engine.client.chat(
+            model.name,
             [
                 ...this.messages(session),
                 {

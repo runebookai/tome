@@ -35,7 +35,7 @@ interface Metadata {
 
 export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
     static defaults = {
-        name: 'Unknown',
+        name: 'Installing...',
         command: '',
         metadata: {
             protocolVersion: '',

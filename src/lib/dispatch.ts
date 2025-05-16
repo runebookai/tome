@@ -1,17 +1,25 @@
 import { invoke } from "@tauri-apps/api/core";
 
-import { type LlmOptions, OllamaClient } from "./llm";
-
+import type { Options } from "$lib/engines/types";
+import { error } from "$lib/logger";
 import App from "$lib/models/app";
+import Engine from "$lib/models/engine";
 import Message, { type IMessage } from "$lib/models/message";
+import type { IModel } from "$lib/models/model";
 import Session, { type ISession } from "$lib/models/session";
 
-export async function dispatch(session: ISession, model: string, prompt?: string): Promise<IMessage> {
+export async function dispatch(session: ISession, model: IModel, prompt?: string): Promise<IMessage> {
     const app = App.find(session.appId as number);
-    const client = new OllamaClient();
+    const engine = Engine.fromModelId(model.id);
+
+    if (!engine) {
+        error(`MissingEngineError`, model.id);
+        throw `MissingEngineError: ${model.id}`;
+    }
 
     if (!app) {
-        throw "Missing app";
+        error(`MissingAppError`, session.appId);
+        throw `MissingAppError: ${session.appId}`;
     }
 
     if (prompt) {
@@ -28,12 +36,12 @@ export async function dispatch(session: ISession, model: string, prompt?: string
         tool_calls: m.toolCalls,
     }));
 
-    const options: LlmOptions = {
+    const options: Options = {
         num_ctx: session.config.contextWindow,
         temperature: session.config.temperature,
     };
 
-    const message = await client.chat(
+    const message = await engine.client.chat(
         model,
         messages,
         await Session.tools(session),

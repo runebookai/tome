@@ -6,8 +6,13 @@
 	import Flex from '$components/Flex.svelte';
 	import closables from '$lib/closables';
 
+	interface Option {
+		display: string;
+		value: string;
+	}
+
 	interface Props extends HTMLAttributes<HTMLDivElement> {
-		options: string[];
+		options: Option[];
 		value?: string;
 		onSelect: () => Promise<void>;
 	}
@@ -55,10 +60,10 @@
 		>
 			{#each options as option (option)}
 				<button
-					onclick={async () => await select(option)}
+					onclick={async () => await select(option.value)}
 					class="bg-dark border-b-light w-full border-b p-2 px-4 text-left last:border-b-0 hover:cursor-pointer"
 				>
-					{option}
+					{option.display}
 				</button>
 			{/each}
 		</Flex>

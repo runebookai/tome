@@ -4,7 +4,7 @@
 	import Box from '$components/Box.svelte';
 	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
-	import Model, { type IModel } from '$lib/models/model.svelte';
+	import Model, { type IModel } from '$lib/models/model';
 
 	const models: IModel[] = Model.all().sortBy('name');
 </script>
@@ -32,9 +32,9 @@
 			<Box class="border-b-light text-light w-full border-b px-8 py-4">
 				<h2 class="mr-2">{model.name}</h2>
 				<div class="grow"></div>
-				{@render label(model.details.format, 'bg-[#7aa2f7]')}
-				{@render label(model.details.parameter_size, 'bg-[#ff9e64]')}
-				{@render label(model.details.quantization_level, 'bg-[#41a6b5]')}
+				{@render label(model.metadata.details.format, 'bg-[#7aa2f7]')}
+				{@render label(model.metadata.details.parameter_size, 'bg-[#ff9e64]')}
+				{@render label(model.metadata.details.quantization_level, 'bg-[#41a6b5]')}
 			</Box>
 		{/each}
 	</Flex>

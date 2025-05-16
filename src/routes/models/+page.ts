@@ -1,7 +1,7 @@
 import type { PageLoad } from "./$types";
 
-import Model from "$lib/models/model.svelte";
+import { Engine } from "$lib/models";
 
 export const load: PageLoad = async (): Promise<void> => {
-    await Model.sync();
+    await Engine.sync();
 }

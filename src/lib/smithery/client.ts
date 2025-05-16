@@ -1,7 +1,5 @@
 import { HttpClient } from "$lib/http";
-import type { CompactServer, Server, ServerList } from '$lib/smithery.d';
-
-export * from '$lib/smithery.d';
+import type { CompactServer, Server, ServerList } from '$lib/smithery/types';
 
 export class Client extends HttpClient {
     options: RequestInit = {
