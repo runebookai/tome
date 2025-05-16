@@ -13,6 +13,7 @@ export interface ISetting {
     display: string;
     key: string;
     value: unknown;
+    type: string;
 }
 
 interface Row {
@@ -20,6 +21,7 @@ interface Row {
     display: string;
     key: string;
     value: string;
+    type: string;
 }
 
 export default class Setting extends Model<ISetting, Row>('settings') {
@@ -51,6 +53,7 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             display: row.display,
             key: row.key,
             value: JSON.parse(row.value),
+            type: row.type,
         }
     }
 
@@ -59,6 +62,7 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             display: setting.display,
             key: setting.key,
             value: JSON.stringify(setting.value),
+            type: setting.type,
         }
     }
 }

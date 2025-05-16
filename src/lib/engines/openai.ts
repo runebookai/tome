@@ -1,7 +1,9 @@
 import { OpenAI as OpenAIClient } from 'openai';
 
-import type { Client, Message, Options, Tool, ToolCall } from '$lib/engines/types';
-import type { IMessage, IModel } from "$lib/models";
+import type { Client, Options, Tool, ToolCall } from '$lib/engines/types';
+import type { IMessage } from '$lib/models/message';
+import OpenAiMessage from '$lib/models/message/openai';
+import type { IModel } from "$lib/models/model";
 
 const SUPPORTED_MODELS = [
     'gpt-4o',
@@ -21,15 +23,12 @@ export default class OpenAI implements Client {
         });
     }
 
-    async chat(model: IModel, messages: Message[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
+    async chat(model: IModel, history: IMessage[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
+        const messages = history.map(m => OpenAiMessage.from(m));
         const response = await this.client.chat.completions.create({
             model: model.name,
-            // @ts-expect-error For some reason, the type of `messages` is marked
-            // incorrect because of a difference in the `role`. Our `Role` type is
-            // ripped straight from the OpenAI code, though, so :shrug:
             messages,
             tools,
-            temperature: options.temperature,
         });
 
         const {

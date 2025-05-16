@@ -20,7 +20,7 @@
 	import Session, { type ISession } from '$lib/models/session';
 
 	const session: ISession = $derived(Session.find(page.params.session_id));
-	const model: IModel = $derived(Model.findOrDefault(session.config.model));
+	const model: IModel | undefined = $derived(Model.find(session.config.model));
 
 	const sessions: ISession[] = $derived(Session.all());
 	const mcpServers: IMcpServer[] = $derived(McpServer.all());
@@ -92,7 +92,7 @@
 	});
 
 	afterNavigate(async () => {
-		if (model.supportsTools) {
+		if (model?.supportsTools) {
 			await startMcpServers(session);
 		}
 	});
@@ -138,7 +138,7 @@
 		{#if session}
 			<Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
 				{#key session.id}
-					<Chat {session} {model} />
+					<Chat {session} bind:model={session.config.model} />
 				{/key}
 			</Flex>
 
@@ -151,17 +151,17 @@
 					/>
 				{/key}
 
-				{#if model && !model.supportsTools}
-					<Flex class="text-red w-full justify-start gap-2 pl-3">
-						<Svg class="h-6 w-6" name="Warning" />
-						Model doesn't support MCP
-					</Flex>
-				{/if}
-
 				{#if !model}
 					<Flex class="text-red mb-8 w-full justify-center gap-2">
 						<Svg class="h-6 w-6" name="Warning" />
 						Model no longer exists
+					</Flex>
+				{/if}
+
+				{#if model && !model.supportsTools}
+					<Flex class="text-red w-full justify-start gap-2 pl-3">
+						<Svg class="h-6 w-6" name="Warning" />
+						Model doesn't support MCP
 					</Flex>
 				{/if}
 
@@ -171,10 +171,10 @@
 							<Toggle
 								label={server.name}
 								value={Session.hasMcpServer(session, server.name) &&
-								model.supportsTools
+								model?.supportsTools
 									? 'on'
 									: 'off'}
-								disabled={!model.supportsTools}
+								disabled={!model?.supportsTools}
 								onEnable={() => startMcpServer(server)}
 								onDisable={() => stopMcpServer(server)}
 							/>

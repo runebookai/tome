@@ -7,16 +7,18 @@
 	import Message from '$components/Message.svelte';
 	import { dispatch } from '$lib/dispatch';
 	import type { IMessage } from '$lib/models/message';
-	import type { IModel } from '$lib/models/model';
+	import Model from '$lib/models/model';
 	import Session, { type ISession } from '$lib/models/session';
 
 	interface Props {
 		session: ISession;
-		model: IModel;
+		model: string;
 		onMessages?: (message: IMessage[]) => Promise<void>;
 	}
 
-	const { session, model = $bindable() }: Props = $props();
+	const { session, model: modelId = $bindable() }: Props = $props();
+
+	const model = $derived(Model.find(modelId));
 
 	// DOM elements used via `bind:this`
 	let input: HTMLTextAreaElement;
@@ -65,6 +67,10 @@
 	//
 	async function send() {
 		const content = input.value;
+
+		if (!model) {
+			return;
+		}
 
 		loading = true;
 

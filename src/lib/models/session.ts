@@ -109,14 +109,12 @@ export default class Session extends Base<ISession, Row>('sessions') {
         }
 
         const message: IMessage = await engine.client.chat(
-            model.name,
+            model,
             [
                 ...this.messages(session),
                 {
                     role: 'user',
                     content: 'Summarize all previous messages in a concise and comprehensive manner. The summary can be 3 words or less. Only respond with the summary and nothing else. Remember, the length of the summary can be 3 words or less.',
-                    name: '',
-                    tool_calls: [],
                 }
             ]
         );

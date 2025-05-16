@@ -13,7 +13,6 @@ export interface Options {
 }
 
 export type Role =
-    | 'developer'
     | 'system'
     | 'user'
     | 'assistant'
@@ -23,11 +22,13 @@ export type Role =
 export interface Message {
     role: Role;
     content: string;
-    name: string;
+    name?: string;
     tool_calls?: ToolCall[];
 }
 
 export interface ToolCall {
+    id?: string;
+    type?: 'function';
     function: {
         name: string;
         arguments: {

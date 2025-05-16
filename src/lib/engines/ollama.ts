@@ -1,8 +1,9 @@
 import { Ollama as OllamaClient } from 'ollama/browser';
 
-import type { Client, Message, Options, Tool } from '$lib/engines/types';
+import type { Client, Options, Tool } from '$lib/engines/types';
 import type { IModel } from '$lib/models';
-import type { IMessage } from "$lib/models/message";
+import Message, { type IMessage } from "$lib/models/message";
+import OllamaMessage from '$lib/models/message/ollama';
 import Setting from "$lib/models/setting";
 
 export default class Ollama implements Client {
@@ -12,7 +13,8 @@ export default class Ollama implements Client {
         this.client = new OllamaClient({ host });
     }
 
-    async chat(model: IModel, messages: Message[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
+    async chat(model: IModel, history: IMessage[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
+        const messages = history.map(m => OllamaMessage.from(m));
         const response = await this.client.chat({
             model: model.name,
             messages,
@@ -35,14 +37,13 @@ export default class Ollama implements Client {
             content = content.trim();
         }
 
-        return {
+        return Message.default({
             model: model.name,
             role: 'assistant',
             content,
             thought,
-            name: '',
             toolCalls: response.message.tool_calls || [],
-        };
+        });
     }
 
     async models(): Promise<IModel[]> {

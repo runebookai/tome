@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	import Flex from '$components/Flex.svelte';
+	import closables from '$lib/closables';
 	import type { IEngine } from '$lib/models/engine';
 	import Model, { type IModel } from '$lib/models/model';
 
@@ -11,6 +14,7 @@
 
 	let { engines, onselect, value = $bindable() }: Props = $props();
 	let isOpen = $state(false);
+	let ref: ReturnType<typeof Flex>;
 
 	const model = $derived(Model.find(value));
 
@@ -28,9 +32,13 @@
 	function close() {
 		isOpen = false;
 	}
+
+	onMount(() => {
+		closables.register(ref as Node, close);
+	});
 </script>
 
-<Flex class="bg-medium relative h-16 w-full hover:cursor-pointer">
+<Flex bind:this={ref} class="bg-medium relative h-16 w-full hover:cursor-pointer">
 	<Flex
 		onclick={(e) => toggle(e)}
 		class="border-light absolute top-0 left-0 w-full justify-between
@@ -47,7 +55,7 @@
             rounded-t-none border"
 		>
 			{#each engines as engine (engine.id)}
-				<p class="text-medium px-4 pt-4 pb-2 text-sm font-[500] uppercase">
+				<p class="text-medium px-4 pt-2 pb-2 text-sm font-[500] uppercase">
 					{engine.name}
 				</p>
 

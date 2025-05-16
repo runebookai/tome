@@ -14,6 +14,7 @@ export interface IMessage {
     toolCalls: ToolCall[];
     sessionId?: number;
     responseId?: number;
+    toolCallId?: string;
     created?: moment.Moment;
     modified?: moment.Moment;
 }
@@ -28,6 +29,7 @@ interface Row {
     tool_calls: string;
     session_id: number;
     response_id?: number;
+    tool_call_id?: string;
     created: string;
     modified: string;
 }
@@ -62,6 +64,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             toolCalls: JSON.parse(row.tool_calls),
             sessionId: row.session_id,
             responseId: row.response_id,
+            toolCallId: row.tool_call_id,
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         };
@@ -77,6 +80,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             tool_calls: JSON.stringify(message.toolCalls),
             session_id: message.sessionId as number,
             response_id: message.responseId,
+            tool_call_id: message.toolCallId,
         }
     }
 }
