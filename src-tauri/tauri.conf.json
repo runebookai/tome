@@ -26,7 +26,8 @@
             "nsis": {
                 "installerHooks": "./windows/hooks.nsi"
             },
-            "timestampUrl": ""
+            "timestampUrl": "",
+            "signCommand": "relic sign --file %1 --key azure --config relic.conf"
         },
         "longDescription": "",
         "macOS": {
