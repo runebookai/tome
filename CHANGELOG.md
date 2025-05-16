@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 - 2025-05-16
+
+Adds in-app update notifications and update process. We no longer have to download new
+releases from Github every time. Hooray! 🎉
+
 ## 0.3.3 - 2025-05-13
 
 ### Fixes
