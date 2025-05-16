@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 use crate::state::State;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use rmcp::model::CallToolRequestParam;
 use rmcp::model::Tool;
 use server::McpServer;
@@ -13,14 +13,49 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tokio::process::Command;
 
+// Maps uvx/npx/any future command to whatever command we need to run for the user's OS
+//
+pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command> {
+    let os_specific_command = match command {
+        "uvx" => {
+            if cfg!(windows) {
+                "uvx.exe"
+            } else {
+                "uvx"
+            }
+        }
+        "npx" => {
+            if cfg!(windows) {
+                "npx.cmd"
+            } else {
+                "npx"
+            }
+        }
+        _ => return Err(anyhow!("{} servers not supported.", command)),
+    };
+
+    Ok(Command::new(
+        app.path()
+            .resolve(os_specific_command, BaseDirectory::Resource)?,
+    ))
+}
+
 // Install Python (uv/uvx) and Node (npm/npx), via Hermit.
 //
 pub async fn bootstrap(app: AppHandle) -> Result<()> {
-    let mut uvx = Command::new(app.path().resolve("uvx", BaseDirectory::Resource)?);
+    let mut uvx = get_os_specific_command("uvx", &app)?;
+    let mut npx = get_os_specific_command("npx", &app)?;
+
+    #[cfg(windows)]
+    {
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        uvx.creation_flags(CREATE_NO_WINDOW);
+        npx.creation_flags(CREATE_NO_WINDOW);
+    }
+
     let uvx = uvx.arg("--help");
     uvx.kill_on_drop(true);
 
-    let mut npx = Command::new(app.path().resolve("npx", BaseDirectory::Resource)?);
     let npx = npx.arg("--help");
     npx.kill_on_drop(true);
 
