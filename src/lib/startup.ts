@@ -4,6 +4,7 @@ export enum StartupCheck {
     Ollama = 'ollama',
     Agreement = 'agreement',
     MissingModels = 'missing-models',
+    UpdateAvailable = 'update-available',
 }
 
 export type Condition = () => Promise<boolean>;

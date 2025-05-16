@@ -1,7 +1,6 @@
-import { info } from "./logger";
 import type { IMessage } from "./models/message";
 
-import { HttpClient } from "$lib/http";
+import { HttpClient, type HttpOptions } from "$lib/http";
 import type {
     LlmMessage,
     LlmOptions,
@@ -15,8 +14,8 @@ import Setting from "$lib/models/setting";
 export * from '$lib/llm.d';
 
 export class OllamaClient extends HttpClient {
-    options: RequestInit = {
-        signal: AbortSignal.timeout(30000),
+    options: HttpOptions = {
+        timeout: 30000,
         headers: {
             'Content-Type': 'application/json',
         }
@@ -77,7 +76,7 @@ export class OllamaClient extends HttpClient {
 
     async connected(): Promise<boolean> {
         return (
-            await this.get('', { raw: true }) as globalThis.Response
+            await this.get('', { raw: true, timeout: 500, }) as globalThis.Response
         ).status == 200;
     }
 

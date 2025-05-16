@@ -4,50 +4,51 @@ import { info } from "$lib/logger";
 
 type Response<T> = globalThis.Response | T | undefined;
 
-interface Options extends RequestInit {
+export interface HttpOptions extends RequestInit {
     url?: string;
     raw?: boolean;
     raise?: boolean;
+    timeout?: number;
 }
 
 export abstract class HttpClient {
-    options: Options = {};
+    options: HttpOptions = {};
 
     abstract get url(): string;
 
-    constructor(options: Options = {}) {
+    constructor(options: HttpOptions = {}) {
         this.options = { ...this.options, ...options };
     }
 
-    async get<T>(uri: string, options: Options = {}): Promise<Response<T>> {
+    async get<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
         const response = await this.request(uri, { ...options, method: 'GET' });
         return raw ? response : await this.parse(response, raise);
     }
 
-    async post<T>(uri: string, options: Options = {}): Promise<Response<T>> {
+    async post<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
         const response = await this.request(uri, { ...options, method: 'POST' });
         return raw ? response : await this.parse(response, raise);
     }
 
-    async put<T>(uri: string, options: Options = {}): Promise<Response<T>> {
+    async put<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
         const response = await this.request(uri, { ...options, method: 'PUT' });
         return raw ? response : await this.parse(response, raise);
     }
 
-    async delete<T>(uri: string, options: Options = {}): Promise<Response<T>> {
+    async delete<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
         const response = await this.request(uri, { ...options, method: 'DELETE' });
         return raw ? response : await this.parse(response, raise);
     }
 
-    async head<T>(uri: string, options: Options = {}): Promise<Response<T>> {
+    async head<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
         const response = await this.request(uri, { ...options, method: 'HEAD' });
@@ -64,7 +65,7 @@ export abstract class HttpClient {
         }
     }
 
-    async request(uri: string, options: Options = {}): Promise<globalThis.Response> {
+    async request(uri: string, options: HttpOptions = {}): Promise<globalThis.Response> {
         let response: globalThis.Response | undefined;
 
         const url = Object.remove(options, 'url') || this.url;

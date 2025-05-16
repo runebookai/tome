@@ -8,10 +8,7 @@
 	}
 </script>
 
-<Flex
-	class="border-light absolute top-[50%] left-[50%] w-[calc(100vw*0.5)]
-    -translate-[50%] items-start rounded-3xl border p-12"
->
+<Flex class="w-full items-start">
 	<img class="mr-12 h-48 w-48" src="/images/tome.png" alt="tome" />
 
 	<Flex class="flex-col items-start gap-4">

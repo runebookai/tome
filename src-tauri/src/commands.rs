@@ -71,3 +71,8 @@ pub async fn call_mcp_tool(
 pub async fn stop_session(session_id: i32, state: tauri::State<'_, State>) -> Result<(), String> {
     ok_or_err!(mcp::stop_session(session_id, state).await)
 }
+
+#[tauri::command]
+pub fn restart(app: AppHandle) {
+    app.restart();
+}

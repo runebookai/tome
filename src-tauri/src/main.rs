@@ -11,7 +11,6 @@ mod process;
 mod state;
 mod window;
 
-use std::env;
 use std::sync::OnceLock;
 
 use process::Process;
@@ -84,6 +83,8 @@ fn main() {
             commands::stop_mcp_server,
             // Sessions
             commands::stop_session,
+            // Misc
+            commands::restart,
         ])
         .build(tauri::generate_context!())
         .expect("error running Tome");

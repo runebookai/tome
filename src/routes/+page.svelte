@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
+	import Flex from '$components/Flex.svelte';
 	import Layout from '$components/Layouts/Default.svelte';
+	import Modal from '$components/Modal.svelte';
 	import Svg from '$components/Svg.svelte';
+	import Updater from '$components/Updater.svelte';
 	import Welcome from '$components/Welcome.svelte';
 	import startup, { type Condition, type OnSuccess, StartupCheck } from '$lib/startup';
 
@@ -10,6 +13,7 @@
 		[StartupCheck.Ollama]: 'Cannot connect to Ollama',
 		[StartupCheck.MissingModels]: 'Ollama has no models',
 		[StartupCheck.Agreement]: 'Non Agreement',
+		[StartupCheck.UpdateAvailable]: 'Update Available',
 	};
 
 	let checks = $state(startup.checks);
@@ -47,21 +51,25 @@
 	});
 </script>
 
-<div class="absolute top-0 left-0 z-10 h-full w-full bg-black/70"></div>
+<Layout>
+	{#if check}
+		<Modal class="max-w-[500px]">
+			{#if check[0] == StartupCheck.Agreement}
+				<Welcome />
+			{:else if check[0] == StartupCheck.UpdateAvailable}
+				<Updater />
+			{:else}
+				<Flex class="flex-col items-center">
+					<h1 class="text-red flex items-center gap-4 text-2xl">
+						<Svg class="h-6 w-6" name="Warning" />
+						{message}
+					</h1>
 
-<div class="absolute top-[50%] left-[50%] z-50 flex -translate-[50%] flex-col items-center gap-4">
-	{#if check && check[0] == StartupCheck.Agreement}
-		<Welcome />
-	{:else if check}
-		<h1 class="text-red flex items-center gap-4 text-2xl">
-			<Svg class="h-6 w-6" name="Warning" />
-			{message}
-		</h1>
-
-		<a href="/settings">Settings</a>
+					<a class="self" href="/settings">Settings</a>
+				</Flex>
+			{/if}
+		</Modal>
 	{:else}
-		<Svg name="Logo" class="text-dark h-48 w-48" />
+		<Svg name="Logo" class="text-dark fixed top-[50%] left-[50%] h-32 w-32 -translate-[50%]" />
 	{/if}
-</div>
-
-<Layout></Layout>
+</Layout>
