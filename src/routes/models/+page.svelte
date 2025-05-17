@@ -7,6 +7,7 @@
 	import Svg from '$components/Svg.svelte';
 	import { Engine, type IEngine, type IModel } from '$lib/models';
 	import Config from '$lib/models/config';
+	import { onMount } from 'svelte';
 
 	const engines: IEngine[] = Engine.all();
 
@@ -17,6 +18,10 @@
 	function setDefault(model: IModel) {
 		Config.defaultModel = model.id;
 	}
+
+	onMount(async () => {
+		await Engine.sync();
+	});
 </script>
 
 {#snippet titlebar()}
