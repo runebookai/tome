@@ -4,6 +4,8 @@ export const FILENAME = "tome.conf.json";
 
 export const SKIPPED_VERSIONS = 'skipped-versions';
 
+export const DEFAULT_MODEL = 'default-model';
+
 export default class Config {
     static async all(): Promise<Record<string, unknown>> {
         return await this.config();

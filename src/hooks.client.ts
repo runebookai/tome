@@ -3,11 +3,10 @@ import '$lib/ext';
 import type { ClientInit, HandleClientError } from "@sveltejs/kit";
 import { goto } from '$app/navigation';
 
-import { WELCOME_AGREED } from "$lib/const";
-import Config from "$lib/config";
 import { setupDeeplinks } from '$lib/deeplinks';
 import { info } from '$lib/logger';
 import App from "$lib/models/app";
+import Config from "$lib/models/config";
 import Engine from '$lib/models/engine';
 import McpServer from "$lib/models/mcp-server";
 import Message from "$lib/models/message";
@@ -28,12 +27,16 @@ export const init: ClientInit = async () => {
     await Message.sync();
     await McpServer.sync();
     await Setting.sync();
+    await Config.sync();
     await Engine.sync();
     info('[green]✔ database synced');
 
+    await Config.migrate();
+    info('[green]✔ config migrated');
+
     await startup.addCheck(
         StartupCheck.Agreement,
-        async () => await Config.get(WELCOME_AGREED) === true,
+        async () => Config.agreedToWelcome,
     );
 
     await startup.addCheck(

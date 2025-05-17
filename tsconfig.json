@@ -4,6 +4,7 @@
         "allowJs": true,
         "checkJs": true,
         "esModuleInterop": true,
+        "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "inlineSourceMap": true,
