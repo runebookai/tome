@@ -3,6 +3,7 @@ use std::{collections::HashMap, time::Duration};
 use serde::{Deserialize, Serialize};
 use tauri::http::{HeaderMap, HeaderName, HeaderValue};
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Deserialize)]
 enum HttpMethod {
     GET,
