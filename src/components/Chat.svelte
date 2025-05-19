@@ -97,7 +97,7 @@
 <Flex class="h-content w-full flex-col p-8 pr-2 pb-0">
 	<Scrollable bind:ref={content} class="mb-8">
 		<!-- Chat Log -->
-		<div class:opacity-25={false} class="bg-medium relative h-full w-full px-2">
+		<div class:opacity-25={!model} class="bg-medium relative h-full w-full px-2">
 			{#each messages as message (message.id)}
 				<Flex id="messages" class="w-full flex-col items-start">
 					<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
@@ -122,7 +122,7 @@
 		bind:this={input}
 		oninput={resize}
 		onkeydown={onChatInput}
-		disabled={false}
+		disabled={!model}
 		placeholder="Message..."
 		class="disabled:text-dark item bg-dark border-light focus:border-purple/15 mb-8
         h-auto w-[calc(100%-calc(var(--spacing)*6))] grow self-start rounded-xl border
