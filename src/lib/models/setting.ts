@@ -26,11 +26,11 @@ interface Row {
 
 export default class Setting extends Model<ISetting, Row>('settings') {
     static get OllamaUrl(): string | undefined {
-        return this.findBy({ key: OLLAMA_URL_CONFIG_KEY })?.value as string;
+        return this.findBy({ key: OLLAMA_URL_CONFIG_KEY })?.value as string | undefined;
     }
 
     static get OpenAIKey(): string | undefined {
-        return this.findBy({ key: OPENAI_API_KEY })?.value as string;
+        return this.findBy({ key: OPENAI_API_KEY })?.value as string | undefined;
     }
 
     static async validate(setting: ISetting): Promise<boolean> {
@@ -52,7 +52,7 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             id: row.id,
             display: row.display,
             key: row.key,
-            value: JSON.parse(row.value),
+            value: row.value ? JSON.parse(row.value) : null,
             type: row.type,
         }
     }
