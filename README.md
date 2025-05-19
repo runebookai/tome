@@ -32,11 +32,11 @@ This is a Technical Preview so bear in mind things will be rough around the edge
 
 - MacOS (Sequoia 15.0 or higher recommended. Windows and Linux support coming soon!)
 - [Ollama](https://ollama.com/) (Either local or remote, you can configure any Ollama URL in settings)
-- [Download the latest release of Tome](https://github.com/runebookai/tome/releases/download/v0.3.2/Tome_0.3.2_aarch64.dmg)
+- [Download the latest release of Tome](https://github.com/runebookai/tome/releases/download/0.4.0/Tome_0.4.0_aarch64.dmg)
 
 ## Quickstart
 
-1. Install [Tome](https://github.com/runebookai/tome/releases/download/v0.3.2/Tome_0.3.2_aarch64.dmg) and [Ollama](https://ollama.com)
+1. Install [Tome](https://github.com/runebookai/tome/releases/download/0.4.0/Tome_0.4.0_aarch64.dmg) and [Ollama](https://ollama.com)
 2. Install a [Tool supported model](https://ollama.com/search?c=tools) (we're partial to [Qwen3](https://ollama.com/library/qwen3), either 14B or 8B depending on your RAM)
 3. Open the MCP tab in Tome and install your first [MCP server](https://github.com/modelcontextprotocol/servers) (Fetch is an easy one to get started with, just paste `uvx mcp-server-fetch` into the server field).
 4. Chat with your MCP-powered model! Ask it to fetch the top story on Hacker News.
