@@ -53,7 +53,7 @@
 
 <Layout>
 	{#if check}
-		<Modal class="max-w-[500px]">
+		<Modal>
 			{#if check[0] == StartupCheck.Agreement}
 				<Welcome />
 			{:else if check[0] == StartupCheck.UpdateAvailable}

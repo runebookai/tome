@@ -1,5 +1,4 @@
-import jsonSchema from 'json-schema';
-const { JSONSchema7 } = jsonSchema;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface ServerList {
     servers: CompactServer[];
@@ -52,7 +51,7 @@ export interface ConfigSchema {
     properties: {
         [key: string]: {
             type: 'string';
-            default?: any; // eslint-disable-line
+            default?: any;
             description: string;
         };
     };
@@ -65,3 +64,4 @@ export interface Config {
     value: string;
     valid: boolean;
 }
+

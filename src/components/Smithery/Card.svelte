@@ -2,7 +2,7 @@
 	import Box from '$components/Box.svelte';
 	import Flex from '$components/Flex.svelte';
 	import Svg from '$components/Svg.svelte';
-	import type { CompactServer } from '$lib/smithery';
+	import type { CompactServer } from '$lib/smithery/types';
 
 	interface Props {
 		server: CompactServer;
@@ -18,8 +18,10 @@
 	}
 
 	async function install(e: MouseEvent) {
+		e.preventDefault();
 		e.stopPropagation();
 		await onInstall(server);
+		return false;
 	}
 </script>
 

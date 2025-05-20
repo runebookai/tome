@@ -1,19 +1,21 @@
 import moment from "moment";
 
-import type { LlmMessageRole } from '$lib/llm.d';
+import type { Role, ToolCall } from "$lib/engines/types";
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Session, { type ISession } from "$lib/models/session";
+import { info } from "$lib/logger";
 
 export interface IMessage {
     id?: number;
-    role: LlmMessageRole;
+    role: Role;
     content: string;
     thought?: string;
     model: string;
     name: string;
-    toolCalls: Record<string, any>[]; // eslint-disable-line
+    toolCalls: ToolCall[];
     sessionId?: number;
     responseId?: number;
+    toolCallId?: string;
     created?: moment.Moment;
     modified?: moment.Moment;
 }
@@ -28,6 +30,7 @@ interface Row {
     tool_calls: string;
     session_id: number;
     response_id?: number;
+    tool_call_id?: string;
     created: string;
     modified: string;
 }
@@ -40,6 +43,11 @@ export default class Message extends Model<IMessage, Row>('messages') {
         name: '',
         toolCalls: [],
     };
+
+    static response(message: IMessage): IMessage | undefined {
+        info(message.toolCalls[0].id);
+        return Message.findBy({ toolCallId: message.toolCalls[0].id });
+    }
 
     static session(message: IMessage): ISession {
         return Session.find(message.sessionId as number);
@@ -54,7 +62,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
     protected static async fromSql(row: Row): Promise<IMessage> {
         return {
             id: row.id,
-            role: row.role as LlmMessageRole,
+            role: row.role as Role,
             content: row.content,
             thought: row.thought,
             model: row.model,
@@ -62,6 +70,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             toolCalls: JSON.parse(row.tool_calls),
             sessionId: row.session_id,
             responseId: row.response_id,
+            toolCallId: row.tool_call_id,
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         };
@@ -77,6 +86,7 @@ export default class Message extends Model<IMessage, Row>('messages') {
             tool_calls: JSON.stringify(message.toolCalls),
             session_id: message.sessionId as number,
             response_id: message.responseId,
+            tool_call_id: message.toolCallId,
         }
     }
 }

@@ -10,25 +10,26 @@
 	import Layout from '$components/Layouts/Default.svelte';
 	import Link from '$components/Link.svelte';
 	import Menu, { type MenuItem } from '$components/Menu.svelte';
-	import Select from '$components/Select.svelte';
+	import ModelMenu from '$components/ModelMenu.svelte';
 	import Svg from '$components/Svg.svelte';
 	import Toggle from '$components/Toggle.svelte';
+	import Engine, { type IEngine } from '$lib/models/engine';
 	import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
 	import Message from '$lib/models/message';
-	import Model, { type IModel } from '$lib/models/model.svelte';
+	import Model, { type IModel } from '$lib/models/model';
 	import Session, { type ISession } from '$lib/models/session';
 
 	const session: ISession = $derived(Session.find(page.params.session_id));
-	const model: IModel = $derived(Model.find(session.config.model));
+	const model: IModel | undefined = $derived(Model.find(session.config.model));
 
 	const sessions: ISession[] = $derived(Session.all());
 	const mcpServers: IMcpServer[] = $derived(McpServer.all());
-	const models: IModel[] = $derived(Model.all());
+	const engines: IEngine[] = $derived(Engine.all());
 
 	let advancedIsOpen = $state(false);
 
-	async function modelDidUpdate() {
-		// `session.config.model` has been updated, so save.
+	async function modelDidUpdate(model: IModel) {
+		session.config.model = model.id;
 		await Session.update(session);
 	}
 
@@ -91,7 +92,7 @@
 	});
 
 	afterNavigate(async () => {
-		if (model && Model.supportsTools(model)) {
+		if (model?.supportsTools) {
 			await startMcpServers(session);
 		}
 	});
@@ -137,24 +138,18 @@
 		{#if session}
 			<Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
 				{#key session.id}
-					<Chat {session} model={session.config.model} />
+					<Chat {session} bind:model={session.config.model} />
 				{/key}
 			</Flex>
 
 			<Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
-				<Select
-					onSelect={modelDidUpdate}
-					bind:value={session.config.model}
-					class="text-light z-50 mb-8 w-full"
-					options={models.map((m) => m.name).sort()}
-				/>
-
-				{#if model && !Model.supportsTools(model)}
-					<Flex class="text-red mb-8 w-full justify-start gap-2 pl-3">
-						<Svg class="h-6 w-6" name="Warning" />
-						Model doesn't support MCP
-					</Flex>
-				{/if}
+				{#key session.config.model}
+					<ModelMenu
+						{engines}
+						bind:value={session.config.model}
+						onselect={modelDidUpdate}
+					/>
+				{/key}
 
 				{#if !model}
 					<Flex class="text-red mb-8 w-full justify-center gap-2">
@@ -163,20 +158,29 @@
 					</Flex>
 				{/if}
 
-				{#each mcpServers as server (server.id)}
-					<Flex class="text-light z-0 mb-4 ml-2">
-						<Toggle
-							label={server.name}
-							value={Session.hasMcpServer(session, server.name) &&
-							Model.supportsTools(model)
-								? 'on'
-								: 'off'}
-							disabled={!Model.supportsTools(model)}
-							onEnable={() => startMcpServer(server)}
-							onDisable={() => stopMcpServer(server)}
-						/>
+				{#if model && !model.supportsTools}
+					<Flex class="text-red w-full justify-start gap-2 pl-3">
+						<Svg class="h-6 w-6" name="Warning" />
+						Model doesn't support MCP
 					</Flex>
-				{/each}
+				{/if}
+
+				<div class="mt-4">
+					{#each mcpServers as server (server.id)}
+						<Flex class="text-light z-0 mb-4 ml-2">
+							<Toggle
+								label={server.name}
+								value={Session.hasMcpServer(session, server.name) &&
+								model?.supportsTools
+									? 'on'
+									: 'off'}
+								disabled={!model?.supportsTools}
+								onEnable={() => startMcpServer(server)}
+								onDisable={() => stopMcpServer(server)}
+							/>
+						</Flex>
+					{/each}
+				</div>
 
 				<Flex class="mt-8 w-full flex-col items-start">
 					<button

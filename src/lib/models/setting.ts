@@ -1,6 +1,9 @@
-import { OllamaClient } from '$lib/llm';
+import Ollama from '$lib/engines/ollama';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
-import LLMModel from '$lib/models/model.svelte';
+import Engine from '$lib/models/engine';
+
+// OpenAI API Key
+const OPENAI_API_KEY = 'openai-api-key';
 
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
@@ -10,6 +13,7 @@ export interface ISetting {
     display: string;
     key: string;
     value: unknown;
+    type: string;
 }
 
 interface Row {
@@ -17,26 +21,29 @@ interface Row {
     display: string;
     key: string;
     value: string;
+    type: string;
 }
 
 export default class Setting extends Model<ISetting, Row>('settings') {
-    static get OllamaUrl(): string {
-        return this.findBy({ key: OLLAMA_URL_CONFIG_KEY }).value as string;
+    static get OllamaUrl(): string | undefined {
+        return this.findBy({ key: OLLAMA_URL_CONFIG_KEY })?.value as string | undefined;
+    }
+
+    static get OpenAIKey(): string | undefined {
+        return this.findBy({ key: OPENAI_API_KEY })?.value as string | undefined;
     }
 
     static async validate(setting: ISetting): Promise<boolean> {
         if (setting.key == OLLAMA_URL_CONFIG_KEY) {
-            const client = new OllamaClient({ url: setting.value as string })
+            const client = new Ollama(setting.value as string);
             return await client.connected();
         }
         return true;
     }
 
     protected static async afterUpdate(setting: ISetting): Promise<ISetting> {
-        if (setting.key == OLLAMA_URL_CONFIG_KEY) {
-            await LLMModel.sync();
-        }
-
+        // Resync models in case a Provider key/url was updated.
+        await Engine.sync();
         return setting;
     }
 
@@ -45,7 +52,8 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             id: row.id,
             display: row.display,
             key: row.key,
-            value: JSON.parse(row.value),
+            value: row.value ? JSON.parse(row.value) : null,
+            type: row.type,
         }
     }
 
@@ -54,6 +62,7 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             display: setting.display,
             key: setting.key,
             value: JSON.stringify(setting.value),
+            type: setting.type,
         }
     }
 }

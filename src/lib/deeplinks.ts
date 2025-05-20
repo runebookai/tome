@@ -1,7 +1,12 @@
 import { listen } from "@tauri-apps/api/event";
 import { goto } from "$app/navigation";
 
-export * from '$lib/deeplinks.d';
+export interface VSCodeMcpInstallConfig {
+    name: string;
+    type: string;
+    command: string;
+    args: string[];
+}
 
 export enum DeepLinks {
     InstallMcpServer = 'mcp/install',

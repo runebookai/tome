@@ -31,13 +31,15 @@
 <Layout {titlebar}>
 	<Flex class="w-full flex-col gap-4 p-8">
 		{#each settings as setting (setting.id)}
-			<Box class="w-full flex-col items-start">
+			<Box class="mt-4 w-full flex-col items-start">
 				<label for={setting.key} class="text-light/80 -mt-8 ml-3">
 					{setting.display}
 				</label>
 
 				<input
-					class="border-light bg-medium text-light mt-2 w-full rounded-lg border p-2 px-4 outline-none"
+					type={setting.type}
+					class="border-light bg-medium text-light mt-2 w-full
+                    rounded-md border p-2 px-4 outline-none"
 					name={setting.key}
 					bind:value={setting.value}
 					onchange={() => save(setting)}

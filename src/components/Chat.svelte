@@ -7,7 +7,7 @@
 	import Message from '$components/Message.svelte';
 	import { dispatch } from '$lib/dispatch';
 	import type { IMessage } from '$lib/models/message';
-	import Model from '$lib/models/model.svelte';
+	import Model from '$lib/models/model';
 	import Session, { type ISession } from '$lib/models/session';
 
 	interface Props {
@@ -16,7 +16,9 @@
 		onMessages?: (message: IMessage[]) => Promise<void>;
 	}
 
-	const { session, model }: Props = $props();
+	const { session, model: modelId = $bindable() }: Props = $props();
+
+	const model = $derived(Model.find(modelId));
 
 	// DOM elements used via `bind:this`
 	let input: HTMLTextAreaElement;
@@ -54,7 +56,7 @@
 	// When the User submits a message
 	//
 	async function onChatInput(e: KeyboardEvent) {
-		if (e.key == 'Enter') {
+		if (e.key == 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			await send();
 			return false;
@@ -65,6 +67,10 @@
 	//
 	async function send() {
 		const content = input.value;
+
+		if (!model) {
+			return;
+		}
 
 		loading = true;
 
@@ -91,7 +97,7 @@
 <Flex class="h-content w-full flex-col p-8 pr-2 pb-0">
 	<Scrollable bind:ref={content} class="mb-8">
 		<!-- Chat Log -->
-		<div class:opacity-25={!Model.exists(model)} class="bg-medium relative h-full w-full px-2">
+		<div class:opacity-25={!model} class="bg-medium relative h-full w-full px-2">
 			{#each messages as message (message.id)}
 				<Flex id="messages" class="w-full flex-col items-start">
 					<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
@@ -116,7 +122,7 @@
 		bind:this={input}
 		oninput={resize}
 		onkeydown={onChatInput}
-		disabled={!Model.exists(model)}
+		disabled={!model}
 		placeholder="Message..."
 		class="disabled:text-dark item bg-dark border-light focus:border-purple/15 mb-8
         h-auto w-[calc(100%-calc(var(--spacing)*6))] grow self-start rounded-xl border

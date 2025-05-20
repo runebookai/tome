@@ -9,8 +9,8 @@
 	import Configuration from '$components/Smithery/Configuration.svelte';
 	import type { McpConfig } from '$lib/mcp';
 	import McpServer from '$lib/models/mcp-server';
-	import type { CompactServer, ConfigSchema, Server } from '$lib/smithery';
 	import { Client } from '$lib/smithery/client';
+	import type { CompactServer, ConfigSchema, Server } from '$lib/smithery/types';
 	import { debounce } from '$lib/util.svelte';
 
 	const { data }: PageProps = $props();

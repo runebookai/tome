@@ -16,7 +16,7 @@
 
 	afterNavigate(() => {
 		const path = page.url.pathname;
-		const prefixMatch = path.startsWith(href);
+		const prefixMatch = path.startsWith(`${href}/`);
 		const explicitPrefixMatch = path.startsWith(prefix as string);
 		const pathMatch = path == href;
 		isActive = pathMatch || prefixMatch || explicitPrefixMatch;

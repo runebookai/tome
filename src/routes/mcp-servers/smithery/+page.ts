@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 
-import type { CompactServer } from '$lib/smithery';
 import { Client } from '$lib/smithery/client';
+import type { CompactServer } from '$lib/smithery/types';
 
 interface Response {
     servers: CompactServer[];

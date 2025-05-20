@@ -140,5 +140,34 @@ UPDATE mcp_servers SET name = json_extract(metadata, '$.serverInfo.name');
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 10,
+            description: "add_tool_call_id_and_openai_setting",
+            sql: r#"
+ALTER TABLE settings ADD COLUMN type TEXT NOT NULL DEFAULT "text";
+ALTER TABLE settings ADD COLUMN value_null TEXT;
+UPDATE settings SET value_null = value;
+ALTER TABLE settings DROP COLUMN value;
+ALTER TABLE settings RENAME COLUMN value_null TO value;
+
+INSERT INTO settings ("display", "key", "type") VALUES ("OpenAI API Key", "openai-api-key", "password");
+
+ALTER TABLE messages ADD COLUMN tool_call_id TEXT;
+            "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 11,
+            description: "add_config_table",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS config (
+    id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    key     TEXT NOT NULL,
+    value   TEXT NOT NULL,
+    UNIQUE(key)
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

@@ -9,7 +9,7 @@
 	}
 
 	const { message }: Props = $props();
-	const response = $derived(Message.find(message.responseId as number));
+	const response = $derived(Message.response(message) as IMessage);
 
 	let isOpen = $state(false);
 	let css = $derived.by(() => (isOpen ? 'rounded-xl w-full' : 'rounded-full'));
@@ -30,7 +30,7 @@
 </script>
 
 {#each message.toolCalls as call, i (i)}
-	<Flex class={`border-light flex-col items-start ${css} mb-8 border p-2 px-3`}>
+	<Flex class={`border-light flex-col items-start ${css} mb-4 border p-2 px-3`}>
 		<Flex onclick={toggle} class="hover:cursor-pointer">
 			<Svg name="MCP" class="text-dark h-4 w-4" />
 
