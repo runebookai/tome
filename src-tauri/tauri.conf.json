@@ -23,7 +23,11 @@
         "windows": {
             "certificateThumbprint": null,
             "digestAlgorithm": "sha256",
-            "timestampUrl": ""
+            "nsis": {
+                "installerHooks": "./windows/hooks.nsi"
+            },
+            "timestampUrl": "",
+            "signCommand": "relic.exe sign --file %1 --key azure --config relic.conf"
         },
         "longDescription": "",
         "macOS": {
@@ -33,10 +37,11 @@
             "providerShortName": null,
             "signingIdentity": null
         },
-        "resources": [
-            "uvx",
-            "npx"
-        ],
+        "resources": {
+            "uvx": "uvx",
+            "npx": "npx",
+            "build/platform/windows/bin/*": ""
+        },
         "shortDescription": "",
         "linux": {
             "deb": {
@@ -77,8 +82,7 @@
                 "resizable": true,
                 "title": "",
                 "width": 800,
-                "useHttpsScheme": true,
-                "transparent": true
+                "useHttpsScheme": true
             }
         ],
         "security": {

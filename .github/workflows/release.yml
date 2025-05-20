@@ -9,13 +9,22 @@ on:
 jobs:
   dmg:
     environment: ci
-    runs-on: macos-latest
 
     permissions:
       id-token: write
       packages: write
       contents: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            args: '--target aarch64-apple-darwin'
+          - os: windows-latest
+            args: ''
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +34,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - name: pnpm
         run: npm install -g pnpm
@@ -34,6 +43,7 @@ jobs:
         run: pnpm install
 
       - name: keychain
+        if: matrix.os == 'macos-latest'
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -48,12 +58,19 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
           security find-identity -v -p codesigning build.keychain
 
-      - name: verify certificate
+      - name: verify-certificate
+        if: matrix.os == 'macos-latest'
         run: |
           CERT_INFO=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID Application")
           CERT_ID=$(echo "$CERT_INFO" | awk -F'"' '{print $2}')
           echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
           echo "Certificate imported."
+
+      - name: download-relic
+        if: matrix.os == 'windows-latest'
+        run: |
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/sassoftware/relic/releases/download/v8.2.0/relic-windows-amd64.exe","relic.exe");
+          echo "$((Get-Item .).FullName)/relic.exe" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - id: version
         name: version
@@ -87,4 +104,4 @@ jobs:
           releaseDraft: false
           prerelease: false
           includeUpdaterJson: true
-          args: "--target aarch64-apple-darwin"
+          args: ${{ matrix.args }}
