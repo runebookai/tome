@@ -56,7 +56,7 @@
 	// When the User submits a message
 	//
 	async function onChatInput(e: KeyboardEvent) {
-		if (e.key == 'Enter') {
+		if (e.key == 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			await send();
 			return false;
