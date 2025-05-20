@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { WELCOME_AGREED } from '$lib/const';
 	import Flex from '$components/Flex.svelte';
-	import Config from '$lib/config';
+	import Config from '$lib/models/config';
 
 	async function accept() {
-		await Config.set(WELCOME_AGREED, true);
+		Config.agreedToWelcome = true;
 	}
 </script>
 

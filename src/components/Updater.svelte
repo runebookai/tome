@@ -6,8 +6,7 @@
 	import Button from '$components/Button.svelte';
 	import Flex from '$components/Flex.svelte';
 	import Svg from '$components/Svg.svelte';
-	import Config from '$lib/config';
-	import { SKIPPED_VERSIONS } from '$lib/config';
+	import Config from '$lib/models/config';
 	import { availableUpdate } from '$lib/updates';
 
 	let update: Update | null = $state(null);
@@ -43,10 +42,10 @@
 
 	async function skip() {
 		const update = (await availableUpdate()) as Update;
-		const skipped: string[] = (await Config.get(SKIPPED_VERSIONS)) || [];
+		const skipped: string[] = Config.skippedVersions || [];
 
 		skipped.push(update.version);
-		await Config.set(SKIPPED_VERSIONS, skipped);
+		Config.skippedVersions = skipped;
 		await goto('/');
 	}
 

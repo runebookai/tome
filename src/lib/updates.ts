@@ -1,6 +1,6 @@
 import { check, type Update } from '@tauri-apps/plugin-updater';
 
-import Config, { SKIPPED_VERSIONS } from '$lib/config';
+import Config from '$lib/models/config';
 
 export async function availableUpdate(): Promise<Update | null> {
     return await check();
@@ -9,13 +9,12 @@ export async function availableUpdate(): Promise<Update | null> {
 export async function isUpToDate(): Promise<boolean> {
     try {
         const update = await availableUpdate();
-        const skipped = await Config.get(SKIPPED_VERSIONS) as unknown as string[];
 
         if (!update) {
             return true;
         }
 
-        if (skipped && skipped.includes(update.version)) {
+        if (Config.skippedVersions && Config.skippedVersions.includes(update.version)) {
             return true;
         }
 
