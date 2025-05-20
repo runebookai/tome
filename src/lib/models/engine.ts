@@ -1,7 +1,6 @@
 import Ollama from '$lib/engines/ollama';
 import OpenAI from '$lib/engines/openai'
 import type { Client } from '$lib/engines/types';
-import { info } from '$lib/logger';
 import { Setting } from '$lib/models';
 import { BareModel } from '$lib/models/base.svelte';
 import Model, { type IModel } from '$lib/models/model';
@@ -29,7 +28,7 @@ export default class Engine extends BareModel<IEngine>() {
                 name: 'Ollama',
                 client,
                 models: (await client.models()).sortBy('name'),
-            })
+            });
         }
 
         if (Setting.OpenAIKey) {
