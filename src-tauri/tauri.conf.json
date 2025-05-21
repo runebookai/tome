@@ -82,7 +82,8 @@
                 "resizable": true,
                 "title": "",
                 "width": 800,
-                "useHttpsScheme": true
+                "useHttpsScheme": true,
+                "backgroundColor": "#0b0b0b"
             }
         ],
         "security": {
