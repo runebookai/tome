@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { RequestInit } from "openai/_shims/web-types.mjs";
 
 import { info } from "$lib/logger";
 
@@ -9,6 +10,12 @@ export interface HttpOptions extends RequestInit {
     raw?: boolean;
     raise?: boolean;
     timeout?: number;
+}
+
+export async function fetch(url: string | URL | Request, options?: RequestInit) {
+    const response: globalThis.Response = await invoke('fetch', { url, options });
+    const { body, ...init } = response;
+    return new globalThis.Response(body, init);
 }
 
 export abstract class HttpClient {
@@ -72,9 +79,7 @@ export abstract class HttpClient {
         const opt = { ...this.options, ...options };
 
         try {
-            const resp: globalThis.Response = await invoke('fetch', { url: `${url}${uri}`, options: opt });
-            const { body, ...init } = resp;
-            response = new globalThis.Response(body, init);
+            response = await fetch(`${url}${uri}`, opt);
         } catch (err) {
             if (typeof err == 'string') {
                 info(`${opt.method} ${url}${uri}: ${err}`);
