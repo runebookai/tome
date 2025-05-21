@@ -15,6 +15,7 @@ enum HttpMethod {
 
 #[derive(Deserialize)]
 pub struct ProxyOptions {
+    #[serde(default = "default_method")]
     method: HttpMethod,
     body: Option<String>,
     headers: Option<HashMap<String, String>>,
@@ -27,6 +28,10 @@ pub struct HTTPResponse {
     status_text: String,
     headers: HashMap<String, String>,
     body: String,
+}
+
+fn default_method() -> HttpMethod {
+    HttpMethod::GET
 }
 
 #[tauri::command]
