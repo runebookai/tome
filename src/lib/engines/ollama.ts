@@ -1,6 +1,7 @@
 import { Ollama as OllamaClient } from 'ollama/browser';
 
 import type { Client, Options, Tool } from '$lib/engines/types';
+import { fetch } from '$lib/http';
 import type { IModel } from '$lib/models';
 import Message, { type IMessage } from "$lib/models/message";
 import OllamaMessage from '$lib/models/message/ollama';
@@ -10,7 +11,7 @@ export default class Ollama implements Client {
     client: OllamaClient;
 
     constructor(host: string) {
-        this.client = new OllamaClient({ host });
+        this.client = new OllamaClient({ host, fetch });
     }
 
     async chat(model: IModel, history: IMessage[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
