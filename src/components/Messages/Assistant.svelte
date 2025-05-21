@@ -16,7 +16,7 @@
 {/if}
 
 <Flex class="assistant text-medium mb-8 w-full justify-between p-2 text-xs">
-	<p class="message markdown-body text-sm whitespace-normal">
+	<p class="message markdown-body w-full text-sm whitespace-normal">
 		{@html markdown.render(message.content)}
 	</p>
 </Flex>

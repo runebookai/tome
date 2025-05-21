@@ -3,7 +3,6 @@ import moment from "moment";
 import type { Role, ToolCall } from "$lib/engines/types";
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Session, { type ISession } from "$lib/models/session";
-import { info } from "$lib/logger";
 
 export interface IMessage {
     id?: number;
@@ -45,7 +44,6 @@ export default class Message extends Model<IMessage, Row>('messages') {
     };
 
     static response(message: IMessage): IMessage | undefined {
-        info(message.toolCalls[0].id);
         return Message.findBy({ toolCallId: message.toolCalls[0].id });
     }
 

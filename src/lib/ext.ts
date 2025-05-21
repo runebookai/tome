@@ -61,7 +61,7 @@ Object.remove = function <T>(o: Obj, key: string): T | undefined {
 /**
  * Map over the entries of an object
  */
-Object.map = function <T>(o: Obj, fn: (key: string, value: any) => any): T {
+Object.map = function <T extends Obj>(o: T, fn: (key: string, value: any) => any): T {
     return Object.fromEntries(Object.entries(o).map(([k, v]) => fn(k, v))) as T;
 }
 
@@ -105,6 +105,6 @@ Array.prototype.findBy = function <T extends Obj>(this: T[], key: string, value:
  * assertEq(items.compact(), [1, 2, 3]);
  * ```
  */
-Array.prototype.compact = function <T>(this: T[]): T[] {
-    return this.filter(i => i !== undefined);
+Array.prototype.compact = function <T>(this: T[]): Exclude<T, undefined>[] {
+    return this.filter(i => i !== undefined) as Exclude<T, undefined>[];
 }

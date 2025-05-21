@@ -1,7 +1,7 @@
 import type { IMessage, IModel } from "$lib/models";
 
 export interface Client {
-    chat(model: IModel, messages: Message[], tools?: Tool[], options?: Options): Promise<IMessage>;
+    chat(model: IModel, history: IMessage[], tools?: Tool[], options?: Options): Promise<IMessage>;
     models(): Promise<IModel[]>;
     info(model: string): Promise<IModel>;
     connected(): Promise<boolean>;
@@ -17,7 +17,10 @@ export type Role =
     | 'user'
     | 'assistant'
     | 'tool'
-    | 'function';
+    | 'function'
+    | 'developer' // openai
+    | 'model' // gemini
+    ;
 
 export interface Message {
     role: Role;
@@ -50,7 +53,7 @@ export interface Tool {
     }
 }
 
-interface Property {
+export interface Property {
     type: string;
     description: string;
 }

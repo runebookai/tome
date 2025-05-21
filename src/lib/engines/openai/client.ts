@@ -1,24 +1,28 @@
-import { OpenAI as OpenAIClient } from 'openai';
+import { type ClientOptions, OpenAI as OpenAIClient } from 'openai';
 
+import OpenAiMessage from '$lib/engines/openai/message';
 import type { Client, Options, Tool, ToolCall } from '$lib/engines/types';
+import { fetch } from '$lib/http';
 import type { IMessage } from '$lib/models/message';
-import OpenAiMessage from '$lib/models/message/openai';
 import type { IModel } from "$lib/models/model";
 
-const SUPPORTED_MODELS = [
-    'gpt-4o',
-    'o4-mini',
-    'gpt-4.5-preview',
-    'gpt-4.1',
-    'gpt-4.1-mini',
-];
-
 export default class OpenAI implements Client {
-    client: OpenAIClient;
+    private client: OpenAIClient;
 
-    constructor(apiKey: string) {
+    id = 'openai';
+
+    supportedModels: string[] | 'all' = [
+        'gpt-4o',
+        'o4-mini',
+        'gpt-4.5-preview',
+        'gpt-4.1',
+        'gpt-4.1-mini',
+    ];
+
+    constructor(options: ClientOptions) {
         this.client = new OpenAIClient({
-            apiKey,
+            ...options,
+            fetch,
             dangerouslyAllowBrowser: true,
         });
     }
@@ -58,16 +62,20 @@ export default class OpenAI implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        return (
-            await this.client.models.list()
-        )
-            .data
-            .filter(model => SUPPORTED_MODELS.includes(model.id))
+        let allModels = (await this.client.models.list()).data;
+
+        if (this.supportedModels !== 'all') {
+            allModels = allModels.filter(model => this.supportedModels.includes(model.id))
+        }
+
+        return allModels
             .map(model => {
                 const { id, ...metadata } = model;
+                const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
+
                 return {
-                    id: `openai:${id}`,
-                    name: id,
+                    id: `${this.id}:${name}`,
+                    name,
                     metadata,
                     supportsTools: true,
                 };
@@ -93,3 +101,4 @@ export default class OpenAI implements Client {
         ).status == 200;
     }
 }
+

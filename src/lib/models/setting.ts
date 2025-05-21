@@ -1,9 +1,12 @@
-import Ollama from '$lib/engines/ollama';
+import Ollama from '$lib/engines/ollama/client';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Engine from '$lib/models/engine';
 
 // OpenAI API Key
 const OPENAI_API_KEY = 'openai-api-key';
+
+// Gemini API Key
+const GEMINI_API_KEY = 'gemini-api-key';
 
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
@@ -31,6 +34,10 @@ export default class Setting extends Model<ISetting, Row>('settings') {
 
     static get OpenAIKey(): string | undefined {
         return this.findBy({ key: OPENAI_API_KEY })?.value as string | undefined;
+    }
+
+    static get GeminiApiKey(): string | undefined {
+        return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
     }
 
     static async validate(setting: ISetting): Promise<boolean> {
