@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { invoke } from '@tauri-apps/api/core';
+	import { platform } from '@tauri-apps/plugin-os';
+
 	import Flex from '$components/Flex.svelte';
 	import Config from '$lib/models/config';
 
 	async function accept() {
 		Config.agreedToWelcome = true;
+
+		if (platform() == 'windows') {
+			await invoke('restart');
+		}
 	}
 </script>
 
