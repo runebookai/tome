@@ -6,7 +6,7 @@
     import Config from '$lib/models/config';
 
     async function accept() {
-        Config.agreedToWelcome = true;
+        await Config.set('welcome-agreed', true);
 
         if (platform() == 'windows') {
             await invoke('restart');

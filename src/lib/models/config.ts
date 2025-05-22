@@ -14,6 +14,12 @@ interface Row {
     value: string;
 }
 
+type ConfigKey =
+    | 'latest-session-id'
+    | 'welcome-agreed'
+    | 'skipped-version'
+    | 'default-model';
+
 export default class Config extends Model<IConfig, Row>('config') {
     @getset('latest-session-id')
     static latestSessionId: number;
@@ -31,10 +37,10 @@ export default class Config extends Model<IConfig, Row>('config') {
         return this.findBy({ key })?.value;
     }
 
-    static set(key: string, value: unknown) {
+    static async set(key: ConfigKey, value: unknown) {
         const config = this.findBy({ key }) || this.default({ key });
         config.value = value;
-        this.save(config);
+        await this.save(config);
     }
 
     static async migrate() {
@@ -74,8 +80,8 @@ export default class Config extends Model<IConfig, Row>('config') {
     }
 }
 
-function getset(key: string) {
-    return function (target: object, property: string) {
+function getset(key: ConfigKey) {
+    return function(target: object, property: string) {
         function get() {
             return Config.get(key);
         }
