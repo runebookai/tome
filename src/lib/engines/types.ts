@@ -1,4 +1,4 @@
-import type { IMessage, IModel } from "$lib/models";
+import type { IMessage, IModel } from '$lib/models';
 
 export interface Client {
     chat(model: IModel, history: IMessage[], tools?: Tool[], options?: Options): Promise<IMessage>;
@@ -19,8 +19,7 @@ export type Role =
     | 'tool'
     | 'function'
     | 'developer' // openai
-    | 'model' // gemini
-    ;
+    | 'model'; // gemini
 
 export interface Message {
     role: Role;
@@ -36,8 +35,8 @@ export interface ToolCall {
         name: string;
         arguments: {
             [key: string]: any; // eslint-disable-line
-        }
-    }
+        };
+    };
 }
 
 export interface Tool {
@@ -49,8 +48,8 @@ export interface Tool {
             type: string;
             required: string[];
             properties: Record<string, Property>;
-        }
-    }
+        };
+    };
 }
 
 export interface Property {

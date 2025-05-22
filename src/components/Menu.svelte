@@ -1,80 +1,80 @@
 <script lang="ts" module>
-	export interface MenuItem {
-		icon?: string;
-		label: string;
-		style?: string;
-		onclick: () => void;
-	}
+    export interface MenuItem {
+        icon?: string;
+        label: string;
+        style?: string;
+        onclick: () => void;
+    }
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { SvelteHTMLElements } from 'svelte/elements';
-	import { twMerge } from 'tailwind-merge';
+    import { onMount } from 'svelte';
+    import type { SvelteHTMLElements } from 'svelte/elements';
+    import { twMerge } from 'tailwind-merge';
 
-	import Flex from '$components/Flex.svelte';
-	import Svg from '$components/Svg.svelte';
-	import closables from '$lib/closables';
+    import Flex from '$components/Flex.svelte';
+    import Svg from '$components/Svg.svelte';
+    import closables from '$lib/closables';
 
-	type Props = SvelteHTMLElements['div'] & {
-		items: MenuItem[];
-	};
+    type Props = SvelteHTMLElements['div'] & {
+        items: MenuItem[];
+    };
 
-	const { items, children }: Props = $props();
+    const { items, children }: Props = $props();
 
-	let isOpen = $state(false);
+    let isOpen = $state(false);
 
-	let outer: HTMLButtonElement;
-	// svelte-ignore non_reactive_update
-	let inner: HTMLDivElement;
+    let outer: HTMLButtonElement;
+    // svelte-ignore non_reactive_update
+    let inner: HTMLDivElement;
 
-	function toggle(e: MouseEvent) {
-		e.preventDefault();
-		e.stopPropagation();
-		closables.closeAll();
-		inner.style.left = `${e.clientX}px`;
-		inner.style.top = `${e.clientY}px`;
-		isOpen = isOpen ? false : true;
-	}
+    function toggle(e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        closables.closeAll();
+        inner.style.left = `${e.clientX}px`;
+        inner.style.top = `${e.clientY}px`;
+        isOpen = isOpen ? false : true;
+    }
 
-	function onclick(item: MenuItem) {
-		item.onclick();
-		isOpen = false;
-	}
+    function onclick(item: MenuItem) {
+        item.onclick();
+        isOpen = false;
+    }
 
-	function close() {
-		isOpen = false;
-	}
+    function close() {
+        isOpen = false;
+    }
 
-	onMount(() => {
-		closables.register(outer, close);
-	});
+    onMount(() => {
+        closables.register(outer, close);
+    });
 </script>
 
 <button bind:this={outer} onclick={close} oncontextmenu={toggle} class="h-full w-full text-left">
-	{@render children?.()}
+    {@render children?.()}
 
-	<Flex
-		bind:ref={inner}
-		class={`${isOpen ? 'fixed' : 'hidden'} bg-light z-20 min-w-56 flex-col 
+    <Flex
+        bind:ref={inner}
+        class={`${isOpen ? 'fixed' : 'hidden'} bg-light z-20 min-w-56 flex-col 
         rounded-lg border border-white/5 py-2 text-base shadow-md shadow-black/10 group-hover:block`}
-	>
-		{#each items as item, i (i)}
-			<button
-				onclick={() => onclick(item)}
-				class={twMerge(
-					'hover:bg-purple flex w-full flex-row items-center p-8 py-1 hover:cursor-pointer',
-					item.style
-				)}
-			>
-				{#if item.icon}
-					<div class="mr-4 h-4 w-4">
-						<Svg name={item.icon} />
-					</div>
-				{/if}
+    >
+        {#each items as item, i (i)}
+            <button
+                onclick={() => onclick(item)}
+                class={twMerge(
+                    'hover:bg-purple flex w-full flex-row items-center p-8 py-1 hover:cursor-pointer',
+                    item.style
+                )}
+            >
+                {#if item.icon}
+                    <div class="mr-4 h-4 w-4">
+                        <Svg name={item.icon} />
+                    </div>
+                {/if}
 
-				<p>{item.label}</p>
-			</button>
-		{/each}
-	</Flex>
+                <p>{item.label}</p>
+            </button>
+        {/each}
+    </Flex>
 </button>

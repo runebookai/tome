@@ -53,8 +53,6 @@ export default class Engine extends BareModel<IEngine>() {
                 models: (await client.models()).sortBy('name'),
             });
         }
-        Model.reset(
-            this.all().flatMap(engine => engine.models)
-        );
+        Model.reset(this.all().flatMap((engine) => engine.models));
     }
 }

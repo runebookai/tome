@@ -13,6 +13,6 @@ export interface McpTool {
 export interface McpInputSchema {
     type: string;
     title: string;
-    properties: { [k: string]: any; }; // eslint-disable-line
+    properties: { [k: string]: any }; // eslint-disable-line
     required: string[];
 }

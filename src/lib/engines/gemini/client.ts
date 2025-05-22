@@ -23,8 +23,13 @@ export default class Gemini implements Client {
         this.client = new GoogleGenAI(options);
     }
 
-    async chat(model: IModel, history: IMessage[], tools?: Tool[], options?: Options): Promise<IMessage> {
-        const messages = history.map(m => GeminiMessage.from(m)).compact();
+    async chat(
+        model: IModel,
+        history: IMessage[],
+        tools?: Tool[],
+        options?: Options
+    ): Promise<IMessage> {
+        const messages = history.map((m) => GeminiMessage.from(m)).compact();
 
         let config: GenerateContentConfig = {
             temperature: options?.temperature,
@@ -33,7 +38,7 @@ export default class Gemini implements Client {
         if (tools && tools.length) {
             config = {
                 tools: GeminiTools.from(tools),
-            }
+            };
         }
 
         const { text, functionCalls } = await this.client.models.generateContent({
@@ -45,11 +50,11 @@ export default class Gemini implements Client {
         let toolCalls: ToolCall[] = [];
 
         if (functionCalls) {
-            toolCalls = functionCalls.map(tc => ({
+            toolCalls = functionCalls.map((tc) => ({
                 function: {
                     name: tc.name as string,
                     arguments: tc.args || {},
-                }
+                },
             }));
         }
 
@@ -63,14 +68,9 @@ export default class Gemini implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        return (
-            await this.client.models.list()
-        )
-            .page
-            .filter(model => (
-                this.supportedModels.includes(model.name as string))
-            )
-            .map(model => {
+        return (await this.client.models.list()).page
+            .filter((model) => this.supportedModels.includes(model.name as string))
+            .map((model) => {
                 const metadata = model;
                 const name = metadata.name?.replace('models/', '') as string;
 
@@ -79,21 +79,19 @@ export default class Gemini implements Client {
                     name,
                     metadata,
                     supportsTools: true,
-                }
+                };
             });
     }
 
     async info(model: string): Promise<IModel> {
-        const { name, displayName, ...metadata } = (
-            await this.client.models.get({ model })
-        );
+        const { name, displayName, ...metadata } = await this.client.models.get({ model });
 
         return {
             id: `gemini:${name}`,
             name: displayName as string,
             metadata,
             supportsTools: true,
-        }
+        };
     }
 
     async connected(): Promise<boolean> {

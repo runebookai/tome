@@ -1,15 +1,19 @@
-import { invoke } from "@tauri-apps/api/core";
-import uuid4 from "uuid4";
+import { invoke } from '@tauri-apps/api/core';
+import uuid4 from 'uuid4';
 
-import type { Options } from "$lib/engines/types";
-import { error } from "$lib/logger";
-import App from "$lib/models/app";
-import Engine from "$lib/models/engine";
-import type { IMessage } from "$lib/models/message";
-import type { IModel } from "$lib/models/model";
-import Session, { type ISession } from "$lib/models/session";
+import type { Options } from '$lib/engines/types';
+import { error } from '$lib/logger';
+import App from '$lib/models/app';
+import Engine from '$lib/models/engine';
+import type { IMessage } from '$lib/models/message';
+import type { IModel } from '$lib/models/model';
+import Session, { type ISession } from '$lib/models/session';
 
-export async function dispatch(session: ISession, model: IModel, prompt?: string): Promise<IMessage> {
+export async function dispatch(
+    session: ISession,
+    model: IModel,
+    prompt?: string
+): Promise<IMessage> {
     const app = App.find(session.appId as number);
     const engine = Engine.fromModelId(model.id);
 
@@ -39,7 +43,7 @@ export async function dispatch(session: ISession, model: IModel, prompt?: string
         model,
         Session.messages(session),
         await Session.tools(session),
-        options,
+        options
     );
 
     if (message.toolCalls?.length) {

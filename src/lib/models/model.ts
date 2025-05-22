@@ -1,6 +1,6 @@
 import { BareModel } from '$lib/models/base.svelte';
-import Engine from '$lib/models/engine';
 import Config from '$lib/models/config';
+import Engine from '$lib/models/engine';
 
 export interface IModel {
     id: string;
@@ -8,7 +8,7 @@ export interface IModel {
     supportsTools: boolean;
     metadata: {
         [key: string]: any; // eslint-disable-line
-    }
+    };
 }
 
 export default class Model extends BareModel<IModel>() {

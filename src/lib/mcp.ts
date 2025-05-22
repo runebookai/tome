@@ -1,8 +1,8 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from '@tauri-apps/api/core';
 
-import type { Tool } from "$lib/engines/types";
-import type { McpTool } from "$lib/mcp.d";
-import type { ISession } from "$lib/models/session";
+import type { Tool } from '$lib/engines/types';
+import type { McpTool } from '$lib/mcp.d';
+import type { ISession } from '$lib/models/session';
 
 export * from '$lib/mcp.d';
 
@@ -10,9 +10,7 @@ export * from '$lib/mcp.d';
 // can send to the LLM.
 //
 export async function getMCPTools(session: ISession): Promise<Tool[]> {
-    return (
-        await invoke<McpTool[]>('get_mcp_tools', { sessionId: session.id })
-    ).map(tool => {
+    return (await invoke<McpTool[]>('get_mcp_tools', { sessionId: session.id })).map((tool) => {
         return {
             type: 'function',
             function: {
@@ -22,8 +20,8 @@ export async function getMCPTools(session: ISession): Promise<Tool[]> {
                     type: 'object',
                     required: tool.inputSchema.required,
                     properties: tool.inputSchema.properties,
-                }
-            }
+                },
+            },
         };
     });
 }

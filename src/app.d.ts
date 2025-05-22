@@ -38,8 +38,8 @@ declare global {
 
 declare module 'svelte/elements' {
     interface HTMLTextareaAttributes {
-        autocorrect: "on" | "off";
+        autocorrect: 'on' | 'off';
     }
 }
 
-export { };
+export {};

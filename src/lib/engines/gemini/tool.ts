@@ -1,4 +1,4 @@
-import { type FunctionDeclaration, type ToolListUnion, Type } from "@google/genai";
+import { type FunctionDeclaration, type ToolListUnion, Type } from '@google/genai';
 
 import type { Tool } from '$lib/engines/types';
 
@@ -13,7 +13,7 @@ import type { Tool } from '$lib/engines/types';
  * ```ts
  * import type { Tool } from '$lib/engines/types';
  * import GeminiTools from '$lib/engines/gemini/tool';
- * 
+ *
  * const tool = {...} as Tool;
  *
  * GeminiTools.from([tool]);
@@ -26,28 +26,23 @@ import type { Tool } from '$lib/engines/types';
 function from(tools: Tool | Tool[]): ToolListUnion {
     return [
         {
-            functionDeclarations: Array.isArray(tools)
-                ? fromMany(tools)
-                : [fromOne(tools)]
-        }
-    ]
+            functionDeclarations: Array.isArray(tools) ? fromMany(tools) : [fromOne(tools)],
+        },
+    ];
 }
 
 function fromMany(tools: Tool[]): FunctionDeclaration[] {
-    return tools.map(tool => fromOne(tool));
+    return tools.map((tool) => fromOne(tool));
 }
 
 function fromOne(tool: Tool): FunctionDeclaration {
-    const properties = Object.map(
-        tool.function.parameters.properties,
-        (name, prop) => ([
-            name,
-            {
-                ...prop,
-                type: toGeminiType(prop.type),
-            }
-        ])
-    );
+    const properties = Object.map(tool.function.parameters.properties, (name, prop) => [
+        name,
+        {
+            ...prop,
+            type: toGeminiType(prop.type),
+        },
+    ]);
 
     return {
         ...tool.function,
@@ -60,16 +55,18 @@ function fromOne(tool: Tool): FunctionDeclaration {
 }
 
 function toGeminiType(type: string): Type {
-    return {
-        'string': Type.STRING,
-        'number': Type.NUMBER,
-        'boolean': Type.BOOLEAN,
-        'integer': Type.INTEGER,
-        'array': Type.ARRAY,
-        'object': Type.OBJECT,
-    }[type] || Type.STRING;
+    return (
+        {
+            string: Type.STRING,
+            number: Type.NUMBER,
+            boolean: Type.BOOLEAN,
+            integer: Type.INTEGER,
+            array: Type.ARRAY,
+            object: Type.OBJECT,
+        }[type] || Type.STRING
+    );
 }
 
 export default {
     from,
-}
+};

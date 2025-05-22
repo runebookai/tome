@@ -1,5 +1,5 @@
 /* eslint-disable */
-import moment from "moment";
+import moment from 'moment';
 
 export enum Level {
     LOG = 'log',
@@ -31,36 +31,29 @@ const levelColors = {
 
 export function log(...args: any[]) {
     _log(args, Level.LOG);
-};
+}
 
 export function info(...args: any[]) {
     _log(args, Level.INFO);
-};
+}
 
 export function debug(...args: any[]) {
     _log(args, Level.DEBUG);
-};
+}
 
 export function warn(...args: any[]) {
     _log(args, Level.WARN);
-};
+}
 
 export function error(...args: any[]) {
     _log(args, Level.ERROR);
-};
+}
 
 function _log(args: any[], level: Level) {
     if (typeof args[0] !== 'string') {
-        console[level](
-            ...fmt(level, ""),
-            ...args,
-        )
+        console[level](...fmt(level, ''), ...args);
     } else {
-        console[level](
-            ...args.flatMap(arg => (
-                typeof arg === 'string' ? fmt(level, arg) : arg
-            ))
-        );
+        console[level](...args.flatMap((arg) => (typeof arg === 'string' ? fmt(level, arg) : arg)));
     }
 }
 
@@ -69,7 +62,9 @@ function fmt(level: Level, text: string): string[] {
     const date = now.format('YYYY-MM-DD');
     const time = now.format('hh:mm:ss');
     const lvl = levelColors[level];
-    return colorize(`[grey]${date}\t${time}\t\ttome\t[${lvl}]${level.toUpperCase()}\t\t[white]${text}`);
+    return colorize(
+        `[grey]${date}\t${time}\t\ttome\t[${lvl}]${level.toUpperCase()}\t\t[white]${text}`
+    );
 }
 
 function colorize(text: string): string[] {

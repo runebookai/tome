@@ -1,6 +1,6 @@
-import uuid4 from "uuid4";
+import uuid4 from 'uuid4';
 
-import Message from "$lib/models/message";
+import Message from '$lib/models/message';
 
 export async function migrate() {
     await Promise.all(

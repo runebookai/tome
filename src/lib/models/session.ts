@@ -1,13 +1,13 @@
-import moment from "moment";
+import moment from 'moment';
 
-import Engine from "./engine";
+import Engine from './engine';
 
-import type { Tool } from "$lib/engines/types";
+import type { Tool } from '$lib/engines/types';
 import { getMCPTools } from '$lib/mcp';
 import App, { type IApp } from '$lib/models/app';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
-import type { IMcpServer } from "$lib/models/mcp-server";
-import Message, { type IMessage } from "$lib/models/message";
+import type { IMcpServer } from '$lib/models/mcp-server';
+import Message, { type IMessage } from '$lib/models/message';
 import Model from '$lib/models/model';
 
 export const DEFAULT_SUMMARY = 'Untitled';
@@ -42,7 +42,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
             contextWindow: 4096,
             temperature: 0.8,
             enabledMcpServers: [],
-        }
+        },
     });
 
     static app(session: ISession): IApp | undefined {
@@ -67,7 +67,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
         return await Message.create({
             sessionId: session.id,
             model: session.config.model,
-            ...message
+            ...message,
         });
     }
 
@@ -85,10 +85,9 @@ export default class Session extends Base<ISession, Row>('sessions') {
     }
 
     static async removeMcpServer(session: ISession, server: IMcpServer): Promise<ISession> {
-        session.config.enabledMcpServers = session
-            .config
-            .enabledMcpServers
-            .filter(s => s !== server.name);
+        session.config.enabledMcpServers = session.config.enabledMcpServers.filter(
+            (s) => s !== server.name
+        );
         return await this.update(session);
     }
 
@@ -108,19 +107,17 @@ export default class Session extends Base<ISession, Row>('sessions') {
             return;
         }
 
-        const message: IMessage = await engine.client.chat(
-            model,
-            [
-                ...this.messages(session),
-                {
-                    role: 'user',
-                    content: 'Summarize all previous messages in a concise and comprehensive manner. The summary can be 3 words or less. Only respond with the summary and nothing else. Remember, the length of the summary can be 3 words or less.',
-                }
-            ]
-        );
+        const message: IMessage = await engine.client.chat(model, [
+            ...this.messages(session),
+            {
+                role: 'user',
+                content:
+                    'Summarize all previous messages in a concise and comprehensive manner. The summary can be 3 words or less. Only respond with the summary and nothing else. Remember, the length of the summary can be 3 words or less.',
+            },
+        ]);
 
         // Some smaller models add extra explanation after a ";"
-        session.summary = message.content.split(";")[0];
+        session.summary = message.content.split(';')[0];
 
         // They also sometimes put the extra crap before "Summary: "
         session.summary = session.summary.split(/[Ss]ummary: /).pop() as string;
@@ -136,7 +133,8 @@ export default class Session extends Base<ISession, Row>('sessions') {
         await Message.create({
             sessionId: session.id,
             role: 'system',
-            content: 'You are Tome, created by Runebook, which is an software company located in Oakland, CA. You are a helpful assistant.',
+            content:
+                'You are Tome, created by Runebook, which is an software company located in Oakland, CA. You are a helpful assistant.',
         });
 
         await Message.create({

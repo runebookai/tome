@@ -19,7 +19,7 @@ export function debounce(fn: (...args: any[]) => any, timeout = 250) {
         timer = setTimeout(() => {
             fn(...args);
         }, timeout) as unknown as number;
-    }
+    };
 }
 
 // Run a function when a specific key is pressed.
@@ -38,5 +38,5 @@ export function onkey(key: string, fn: (e: KeyboardEvent) => any) {
         if (e.key == key) {
             fn(e);
         }
-    }
+    };
 }

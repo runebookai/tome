@@ -30,14 +30,14 @@
 }
 
 @font-face {
-    font-family: "Plus Jakarta Sans";
-    src: url("/fonts/PlusJakartaSans-VariableFont_wght.ttf");
+    font-family: 'Plus Jakarta Sans';
+    src: url('/fonts/PlusJakartaSans-VariableFont_wght.ttf');
 }
 
 @font-face {
-    font-family: "Plus Jakarta Sans";
+    font-family: 'Plus Jakarta Sans';
     font-style: italic;
-    src: url("/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf");
+    src: url('/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf');
 }
 
 *::-webkit-scrollbar {
@@ -55,12 +55,12 @@
 html,
 body {
     background: #0b0b0b;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 14px;
     line-height: 28px;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 input::placeholder {
-    color: #FFFFFF33;
+    color: #ffffff33;
 }

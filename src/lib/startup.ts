@@ -1,4 +1,4 @@
-import { info } from "$lib/logger";
+import { info } from '$lib/logger';
 
 export enum StartupCheck {
     Ollama = 'ollama',
@@ -25,7 +25,7 @@ export default {
     //
     async addCheck(check: StartupCheck, condition: Condition, onSuccess?: OnSuccess) {
         // Immediately run the check to see if it's already satisfied.
-        if (!await condition()) {
+        if (!(await condition())) {
             info(`[red]ⅹ startup check failed:[default] ${check}`);
             checks.push([check, condition, onSuccess]);
         } else {
@@ -36,5 +36,5 @@ export default {
 
     get checks() {
         return checks;
-    }
-}
+    },
+};

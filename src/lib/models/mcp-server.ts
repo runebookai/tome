@@ -1,6 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from '@tauri-apps/api/core';
 
-import type { ISession } from "./session";
+import type { ISession } from './session';
 
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 
@@ -26,11 +26,11 @@ interface Metadata {
     protocolVersion: string;
     capabilities: {
         tools: Record<string, any>; // eslint-disable-line
-    }
+    };
     serverInfo: {
         name?: string;
         version: string;
-    }
+    };
 }
 
 export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
@@ -45,7 +45,7 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
             serverInfo: {
                 name: undefined,
                 version: '',
-            }
+            },
         },
         args: [],
         env: {},
@@ -54,7 +54,7 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
     static async forApp(appId: number): Promise<IMcpServer[]> {
         return await this.query(
             'SELECT * FROM mcp_servers WHERE id IN (SELECT mcp_server_id FROM apps_mcp_servers WHERE app_id = $1)',
-            [appId],
+            [appId]
         );
     }
 
@@ -83,9 +83,7 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
             })
         );
 
-        const name = metadata
-            .serverInfo
-            ?.name
+        const name = metadata.serverInfo?.name
             ?.replace('mcp-server/', '')
             ?.replace('/', '-') as string;
 
@@ -114,6 +112,6 @@ export default class McpServer extends Model<IMcpServer, Row>('mcp_servers') {
             metadata: JSON.stringify(server.metadata),
             args: JSON.stringify(server.args),
             env: JSON.stringify(server.env),
-        }
+        };
     }
 }

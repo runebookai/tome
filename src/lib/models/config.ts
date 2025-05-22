@@ -41,20 +41,18 @@ export default class Config extends Model<IConfig, Row>('config') {
         const filename = 'tome.conf.json';
         const opt = { baseDir: BaseDirectory.AppData };
 
-        if (!await exists(filename, opt)) {
+        if (!(await exists(filename, opt))) {
             return;
         }
 
         try {
-            Object
-                .entries(
-                    JSON.parse(await readTextFile(filename, opt))
-                )
-                .forEach(([key, value]) => {
+            Object.entries(JSON.parse(await readTextFile(filename, opt))).forEach(
+                ([key, value]) => {
                     if (!this.exists({ key })) {
                         this.create({ key, value });
                     }
-                });
+                }
+            );
         } catch {
             return;
         }
@@ -65,19 +63,19 @@ export default class Config extends Model<IConfig, Row>('config') {
             id: row.id,
             key: row.key,
             value: JSON.parse(row.value),
-        }
+        };
     }
 
     protected static async toSql(config: IConfig): Promise<ToSqlRow<Row>> {
         return {
             key: config.key,
             value: JSON.stringify(config.value),
-        }
+        };
     }
 }
 
 function getset(key: string) {
-    return function(target: object, property: string) {
+    return function (target: object, property: string) {
         function get() {
             return Config.get(key);
         }
@@ -90,6 +88,5 @@ function getset(key: string) {
             get,
             set,
         });
-    }
+    };
 }
-

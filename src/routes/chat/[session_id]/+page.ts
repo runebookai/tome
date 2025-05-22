@@ -10,7 +10,6 @@ export const load: PageLoad = async ({ params }): Promise<void> => {
     if (params.session_id == 'new') {
         const session = await Session.create({ appId: CHAT_APP_ID });
         await goto(`/chat/${session.id}`);
-
     } else if (params.session_id == 'latest') {
         let session = Session.find(Config.latestSessionId);
         session ||= Session.last();
@@ -21,7 +20,7 @@ export const load: PageLoad = async ({ params }): Promise<void> => {
     if (Session.exists({ id: Number(params.session_id) })) {
         Config.latestSessionId = Number(params.session_id);
     }
-}
+};
 
 export const prerender = true;
 export const ssr = false;
