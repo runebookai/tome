@@ -1,10 +1,10 @@
-import { OpenAI } from "openai";
+import { OpenAI } from 'openai';
 
-import type { IMessage } from "$lib/models/message";
+import type { IMessage } from '$lib/models/message';
 
 export default {
     from,
-}
+};
 
 export function from(message: IMessage): OpenAI.ChatCompletionMessageParam {
     if (message.role == 'assistant') {
@@ -22,7 +22,7 @@ export function fromUser(message: IMessage): OpenAI.ChatCompletionUserMessagePar
     return {
         role: 'user',
         content: message.content,
-    }
+    };
 }
 
 export function fromAssistant(message: IMessage): OpenAI.ChatCompletionAssistantMessageParam {
@@ -30,7 +30,7 @@ export function fromAssistant(message: IMessage): OpenAI.ChatCompletionAssistant
         role: 'assistant',
         content: message.content,
         tool_calls: toolCalls(message),
-    }
+    };
 }
 
 export function fromTool(message: IMessage): OpenAI.ChatCompletionToolMessageParam {
@@ -38,14 +38,14 @@ export function fromTool(message: IMessage): OpenAI.ChatCompletionToolMessagePar
         tool_call_id: message.toolCallId as string,
         role: 'tool',
         content: message.content,
-    }
+    };
 }
 
 export function fromSystem(message: IMessage): OpenAI.ChatCompletionSystemMessageParam {
     return {
         role: 'system',
         content: message.content,
-    }
+    };
 }
 
 function toolCalls(message: IMessage): OpenAI.ChatCompletionMessageToolCall[] | undefined {
@@ -53,12 +53,12 @@ function toolCalls(message: IMessage): OpenAI.ChatCompletionMessageToolCall[] | 
         return;
     }
 
-    return message.toolCalls.map(call => ({
+    return message.toolCalls.map((call) => ({
         id: call.id as string,
         type: 'function',
         function: {
             name: call.function.name,
             arguments: JSON.stringify(call.function.arguments),
-        }
+        },
     }));
 }

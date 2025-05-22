@@ -1,8 +1,8 @@
-import moment from "moment";
+import moment from 'moment';
 
-import type { Role, ToolCall } from "$lib/engines/types";
+import type { Role, ToolCall } from '$lib/engines/types';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
-import Session, { type ISession } from "$lib/models/session";
+import Session, { type ISession } from '$lib/models/session';
 
 export interface IMessage {
     id?: number;
@@ -85,6 +85,6 @@ export default class Message extends Model<IMessage, Row>('messages') {
             session_id: message.sessionId as number,
             response_id: message.responseId,
             tool_call_id: message.toolCallId,
-        }
+        };
     }
 }

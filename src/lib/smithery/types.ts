@@ -16,7 +16,7 @@ export interface CompactServer {
     description: string;
     homepage: string;
     useCount: string;
-    isDeployed: boolean
+    isDeployed: boolean;
     createdAt: string;
 }
 
@@ -33,7 +33,7 @@ export interface Server {
         name: string;
         description: string | null;
         inputSchema: {
-            type: "object";
+            type: 'object';
             properties?: object;
         };
     }>;
@@ -64,4 +64,3 @@ export interface Config {
     value: string;
     valid: boolean;
 }
-

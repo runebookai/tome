@@ -12,5 +12,5 @@ export const load: PageLoad = async (): Promise<Response> => {
 
     return {
         servers: await client.servers(),
-    }
-}
+    };
+};

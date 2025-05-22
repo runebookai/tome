@@ -1,166 +1,166 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+    import { onMount } from 'svelte';
 
-	import Scrollable from './Scrollable.svelte';
+    import Scrollable from './Scrollable.svelte';
 
-	import Flex from '$components/Flex.svelte';
-	import Message from '$components/Message.svelte';
-	import { dispatch } from '$lib/dispatch';
-	import type { IMessage } from '$lib/models/message';
-	import Model from '$lib/models/model';
-	import Session, { type ISession } from '$lib/models/session';
+    import Flex from '$components/Flex.svelte';
+    import Message from '$components/Message.svelte';
+    import { dispatch } from '$lib/dispatch';
+    import type { IMessage } from '$lib/models/message';
+    import Model from '$lib/models/model';
+    import Session, { type ISession } from '$lib/models/session';
 
-	interface Props {
-		session: ISession;
-		model: string;
-		onMessages?: (message: IMessage[]) => Promise<void>;
-	}
+    interface Props {
+        session: ISession;
+        model: string;
+        onMessages?: (message: IMessage[]) => Promise<void>;
+    }
 
-	const { session, model: modelId = $bindable() }: Props = $props();
+    const { session, model: modelId = $bindable() }: Props = $props();
 
-	const model = $derived(Model.find(modelId));
+    const model = $derived(Model.find(modelId));
 
-	// DOM elements used via `bind:this`
-	let input: HTMLTextAreaElement;
+    // DOM elements used via `bind:this`
+    let input: HTMLTextAreaElement;
 
-	// svelte-ignore non_reactive_update
-	let content: HTMLDivElement;
+    // svelte-ignore non_reactive_update
+    let content: HTMLDivElement;
 
-	// Full history of chat messages in this session
-	const messages: IMessage[] = $derived(Session.messages(session));
+    // Full history of chat messages in this session
+    const messages: IMessage[] = $derived(Session.messages(session));
 
-	// Is the LLM processing (when true, we show the ellipsis)
-	let loading = $state(false);
+    // Is the LLM processing (when true, we show the ellipsis)
+    let loading = $state(false);
 
-	// Scroll the chat history box to the bottom
-	//
-	function scrollToBottom(_: HTMLElement) {
-		if (content) {
-			// Scroll to the maximum integer JS can handle, to ensure we're at the
-			// bottom. `scrollHeight` doesn't work here for some mysterious reason.
-			// ¯\_(ツ)_/¯
-			content.scroll({ top: 9e15 });
-		}
-	}
+    // Scroll the chat history box to the bottom
+    //
+    function scrollToBottom(_: HTMLElement) {
+        if (content) {
+            // Scroll to the maximum integer JS can handle, to ensure we're at the
+            // bottom. `scrollHeight` doesn't work here for some mysterious reason.
+            // ¯\_(ツ)_/¯
+            content.scroll({ top: 9e15 });
+        }
+    }
 
-	function resize() {
-		const min = 56; // Default height of the input
-		const scrollHeight = input.scrollHeight;
-		const padding = scrollHeight > min ? 6 : 0;
-		const scroll = Math.max(56, input.scrollHeight) + padding;
-		const height = /^\s*$/.test(input.value) ? '56px' : `${scroll}px`;
-		input.style.height = '0px';
-		input.style.height = height;
-	}
+    function resize() {
+        const min = 56; // Default height of the input
+        const scrollHeight = input.scrollHeight;
+        const padding = scrollHeight > min ? 6 : 0;
+        const scroll = Math.max(56, input.scrollHeight) + padding;
+        const height = /^\s*$/.test(input.value) ? '56px' : `${scroll}px`;
+        input.style.height = '0px';
+        input.style.height = height;
+    }
 
-	// When the User submits a message
-	//
-	async function onChatInput(e: KeyboardEvent) {
-		if (e.key == 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-			await send();
-			return false;
-		}
-	}
+    // When the User submits a message
+    //
+    async function onChatInput(e: KeyboardEvent) {
+        if (e.key == 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            await send();
+            return false;
+        }
+    }
 
-	// Dispatch a message to the LLM.
-	//
-	async function send() {
-		const content = input.value;
+    // Dispatch a message to the LLM.
+    //
+    async function send() {
+        const content = input.value;
 
-		if (!model) {
-			return;
-		}
+        if (!model) {
+            return;
+        }
 
-		loading = true;
+        loading = true;
 
-		// Clear input
-		input.value = '';
-		resize();
+        // Clear input
+        input.value = '';
+        resize();
 
-		// Send to LLM
-		await dispatch(session, model, content);
+        // Send to LLM
+        await dispatch(session, model, content);
 
-		loading = false;
-	}
+        loading = false;
+    }
 
-	$effect(() => {
-		input.focus();
-	});
+    $effect(() => {
+        input.focus();
+    });
 
-	onMount(async () => {
-		resize();
-		scrollToBottom(content);
-	});
+    onMount(async () => {
+        resize();
+        scrollToBottom(content);
+    });
 </script>
 
 <Flex class="h-content w-full flex-col p-8 pr-2 pb-0">
-	<Scrollable bind:ref={content} class="mb-8">
-		<!-- Chat Log -->
-		<div class:opacity-25={!model} class="bg-medium relative w-full px-2">
-			{#each messages as message (message.id)}
-				<Flex id="messages" class="w-full flex-col items-start">
-					<!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
-					<div use:scrollToBottom class="hidden"></div>
-					<Message {message} />
-				</Flex>
-			{/each}
+    <Scrollable bind:ref={content} class="mb-8">
+        <!-- Chat Log -->
+        <div class:opacity-25={!model} class="bg-medium relative w-full px-2">
+            {#each messages as message (message.id)}
+                <Flex id="messages" class="w-full flex-col items-start">
+                    <!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
+                    <div use:scrollToBottom class="hidden"></div>
+                    <Message {message} />
+                </Flex>
+            {/each}
 
-			{#if loading}
-				<Flex class="border-light h-12 w-24 rounded-lg text-center">
-					<div id="loading" class="m-auto"></div>
-				</Flex>
-			{/if}
-		</div>
-	</Scrollable>
+            {#if loading}
+                <Flex class="border-light h-12 w-24 rounded-lg text-center">
+                    <div id="loading" class="m-auto"></div>
+                </Flex>
+            {/if}
+        </div>
+    </Scrollable>
 
-	<!-- Input Box -->
-	<textarea
-		rows="1"
-		autocomplete="off"
-		autocorrect="off"
-		bind:this={input}
-		oninput={resize}
-		onkeydown={onChatInput}
-		disabled={!model}
-		placeholder="Message..."
-		class="disabled:text-dark item bg-dark border-light focus:border-purple/15 mb-8
+    <!-- Input Box -->
+    <textarea
+        rows="1"
+        autocomplete="off"
+        autocorrect="off"
+        bind:this={input}
+        oninput={resize}
+        onkeydown={onChatInput}
+        disabled={!model}
+        placeholder="Message..."
+        class="disabled:text-dark item bg-dark border-light focus:border-purple/15 mb-8
         h-auto w-[calc(100%-calc(var(--spacing)*6))] grow self-start rounded-xl border
         p-3 pl-4 outline-0 transition duration-300"
-	></textarea>
+    ></textarea>
 </Flex>
 
 <style>
-	#loading {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background-color: #fff;
-		box-shadow:
-			16px 0 #fff,
-			-16px 0 #fff;
-		position: relative;
-		animation: flash 1s ease-out infinite alternate;
-	}
+    #loading {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow:
+            16px 0 #fff,
+            -16px 0 #fff;
+        position: relative;
+        animation: flash 1s ease-out infinite alternate;
+    }
 
-	@keyframes flash {
-		0% {
-			background-color: #fff2;
-			box-shadow:
-				16px 0 #fff2,
-				-16px 0 #fff;
-		}
-		50% {
-			background-color: #fff;
-			box-shadow:
-				16px 0 #fff2,
-				-16px 0 #fff2;
-		}
-		100% {
-			background-color: #fff2;
-			box-shadow:
-				16px 0 #fff,
-				-16px 0 #fff2;
-		}
-	}
+    @keyframes flash {
+        0% {
+            background-color: #fff2;
+            box-shadow:
+                16px 0 #fff2,
+                -16px 0 #fff;
+        }
+        50% {
+            background-color: #fff;
+            box-shadow:
+                16px 0 #fff2,
+                -16px 0 #fff2;
+        }
+        100% {
+            background-color: #fff2;
+            box-shadow:
+                16px 0 #fff,
+                -16px 0 #fff2;
+        }
+    }
 </style>

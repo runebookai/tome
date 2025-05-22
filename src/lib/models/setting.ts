@@ -61,7 +61,7 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             key: row.key,
             value: row.value ? JSON.parse(row.value) : null,
             type: row.type,
-        }
+        };
     }
 
     protected static async toSql(setting: ISetting): Promise<ToSqlRow<Row>> {
@@ -70,6 +70,6 @@ export default class Setting extends Model<ISetting, Row>('settings') {
             key: setting.key,
             value: JSON.stringify(setting.value),
             type: setting.type,
-        }
+        };
     }
 }

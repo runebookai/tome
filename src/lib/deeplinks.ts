@@ -1,5 +1,5 @@
-import { listen } from "@tauri-apps/api/event";
-import { goto } from "$app/navigation";
+import { listen } from '@tauri-apps/api/event';
+import { goto } from '$app/navigation';
 
 export interface VSCodeMcpInstallConfig {
     name: string;

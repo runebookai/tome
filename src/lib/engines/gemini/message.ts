@@ -1,10 +1,10 @@
-import type { Content } from "@google/genai";
+import type { Content } from '@google/genai';
 
-import { type IMessage, Session } from "$lib/models";
+import { type IMessage, Session } from '$lib/models';
 
 export default {
     from,
-}
+};
 
 export function from(message: IMessage): Content | undefined {
     if (message.role == 'user') {
@@ -28,9 +28,9 @@ function fromUser(message: IMessage): Content {
         parts: [
             {
                 text: message.content,
-            }
-        ]
-    }
+            },
+        ],
+    };
 }
 
 function fromAssistant(message: IMessage): Content {
@@ -39,9 +39,9 @@ function fromAssistant(message: IMessage): Content {
         parts: [
             {
                 text: message.content,
-            }
-        ]
-    }
+            },
+        ],
+    };
 }
 
 function fromToolCall(message: IMessage): Content | undefined {
@@ -57,19 +57,17 @@ function fromToolCall(message: IMessage): Content | undefined {
                     id: message.toolCalls[0].id,
                     name: message.toolCalls[0].function.name,
                     args: message.toolCalls[0].function.arguments,
-                }
-            }
-        ]
-    }
+                },
+            },
+        ],
+    };
 }
 
 function fromToolResponse(message: IMessage): Content {
     // Find the `toolCall` message for this response
     const session = Session.find(message.sessionId as number);
     const messages = Session.messages(session);
-    const call = messages
-        .flatMap(m => m.toolCalls)
-        .find(tc => tc.id == message.toolCallId);
+    const call = messages.flatMap((m) => m.toolCalls).find((tc) => tc.id == message.toolCallId);
 
     return {
         role: 'user',
@@ -79,11 +77,11 @@ function fromToolResponse(message: IMessage): Content {
                     name: call?.function.name,
                     response: {
                         result: message.content,
-                    }
+                    },
                 },
-            }
-        ]
-    }
+            },
+        ],
+    };
 }
 
 function fromAny(message: IMessage): Content {
@@ -92,7 +90,7 @@ function fromAny(message: IMessage): Content {
         parts: [
             {
                 text: message.content,
-            }
-        ]
-    }
+            },
+        ],
+    };
 }

@@ -1,7 +1,7 @@
-import { invoke } from "@tauri-apps/api/core";
-import type { RequestInit } from "openai/_shims/web-types.mjs";
+import { invoke } from '@tauri-apps/api/core';
+import type { RequestInit } from 'openai/_shims/web-types.mjs';
 
-import { info } from "$lib/logger";
+import { info } from '$lib/logger';
 
 type Response<T> = globalThis.Response | T | undefined;
 
@@ -64,7 +64,7 @@ export abstract class HttpClient {
 
     async parse<T>(response: globalThis.Response, raise: boolean = true): Promise<T | undefined> {
         try {
-            return await response.json() as T;
+            return (await response.json()) as T;
         } catch (error) {
             if (raise) {
                 throw error;
@@ -86,7 +86,7 @@ export abstract class HttpClient {
                 return this.response(500);
             } else if (err instanceof Error) {
                 if (err.name == 'TimeoutError') {
-                    info(`${opt.method} ${url}${uri}: 408 Timeout`)
+                    info(`${opt.method} ${url}${uri}: 408 Timeout`);
                     return this.response(408);
                 } else {
                     info(`${opt.method} ${url}${uri}: ${err.name}: ${err.message}`, err.stack);

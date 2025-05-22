@@ -2,13 +2,13 @@
 
 /**
  * Javascript stdlib extensions
- * 
+ *
  * This file should only include functions added to standard Javascript
- * objects. Each function needs a cooresponding type definition in 
+ * objects. Each function needs a cooresponding type definition in
  * `src/app.d.ts`.
  */
 
-/** 
+/**
  * Return the Object without k/v pairs where the value is explicitly undefined.
  *
  * Typically you'll use this after mapping a bunch of values where some may be
@@ -21,10 +21,8 @@
  * ```
  */
 Object.compact = function <T>(o: Obj): T {
-    return Object.fromEntries(
-        Object.entries(o).filter(([_, v]) => v !== undefined),
-    ) as T;
-}
+    return Object.fromEntries(Object.entries(o).filter(([_, v]) => v !== undefined)) as T;
+};
 
 /**
  * Return the Object without specific k/v pairs, specified by key.
@@ -36,10 +34,8 @@ Object.compact = function <T>(o: Obj): T {
  * ```
  */
 Object.without = function <T>(o: Obj, keys: string[]): T {
-    return Object.fromEntries(
-        Object.entries(o).filter(([k, _]) => !keys.includes(k)),
-    ) as T;
-}
+    return Object.fromEntries(Object.entries(o).filter(([k, _]) => !keys.includes(k))) as T;
+};
 
 /**
  * Remove, and return, a value by key
@@ -56,14 +52,14 @@ Object.remove = function <T>(o: Obj, key: string): T | undefined {
         delete o[key];
         return value;
     }
-}
+};
 
 /**
  * Map over the entries of an object
  */
 Object.map = function <T extends Obj>(o: T, fn: (key: string, value: any) => any): T {
     return Object.fromEntries(Object.entries(o).map(([k, v]) => fn(k, v))) as T;
-}
+};
 
 /**
  * Sort an array of objects by a specific key.
@@ -81,7 +77,7 @@ Array.prototype.sortBy = function <T extends Obj>(this: T[], key: string): T[] {
         if (a[key] > b[key]) return 1;
         return 0;
     });
-}
+};
 
 /**
  * Find by a specific key, in an array of objects.
@@ -92,9 +88,13 @@ Array.prototype.sortBy = function <T extends Obj>(this: T[], key: string): T[] {
  * assertEq(items.findBy('n', 2), {n: 2});
  * ```
  */
-Array.prototype.findBy = function <T extends Obj>(this: T[], key: string, value: any): T | undefined {
-    return this.find(item => item[key] == value);
-}
+Array.prototype.findBy = function <T extends Obj>(
+    this: T[],
+    key: string,
+    value: any
+): T | undefined {
+    return this.find((item) => item[key] == value);
+};
 
 /**
  * Remove undefined's from an array
@@ -106,5 +106,5 @@ Array.prototype.findBy = function <T extends Obj>(this: T[], key: string, value:
  * ```
  */
 Array.prototype.compact = function <T>(this: T[]): Exclude<T, undefined>[] {
-    return this.filter(i => i !== undefined) as Exclude<T, undefined>[];
-}
+    return this.filter((i) => i !== undefined) as Exclude<T, undefined>[];
+};

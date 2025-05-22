@@ -1,7 +1,7 @@
-import Database from "@tauri-apps/plugin-sql";
+import Database from '@tauri-apps/plugin-sql';
 
-import { DATABASE_URL } from "$lib/const";
-import { info } from "$lib/logger";
+import { DATABASE_URL } from '$lib/const';
+import { info } from '$lib/logger';
 
 /**
  * Database connection
@@ -34,13 +34,13 @@ export const ReservedColumns = ['id', 'created', 'modified'];
  * less – we can't pass around instances of models. Instead, functions that
  * require an "instance" of a model needs to accept a object as an argument.
  *
- * NOTE: I'm a bit unsure of a ststic class interface is the right choice for 
+ * NOTE: I'm a bit unsure of a ststic class interface is the right choice for
  * models. An alternative would be to build plain JS objects. This would remove
  * the need for all the `static` non-sense. :shrug:
  *
  * ## `Instance` Interface
  *
- * The `Instance` interface represent the object you pass around the app. They 
+ * The `Instance` interface represent the object you pass around the app. They
  * are simple JS objects.
  *
  * `Instance` properties shouild reflect the interface you want to use in the
@@ -66,7 +66,7 @@ export const ReservedColumns = ['id', 'created', 'modified'];
  * ### `fromSql`
  *
  * Converts a database row (`Row`) into an instance (`Instance`). This is where
- * you should convert fields like dates from a `string` to a `DateTime`, JSON 
+ * you should convert fields like dates from a `string` to a `DateTime`, JSON
  * columns from a `string` to a "real" object, etc.
  *
  * This is called when objects are retrieved from the database.
@@ -92,7 +92,7 @@ export const ReservedColumns = ['id', 'created', 'modified'];
  * records reside within.
  *
  * @example
- * 
+ *
  * ```ts
  * export interface IMessage {
  *     userId: string;
@@ -130,19 +130,18 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
     return class Model {
         static defaults = {};
 
-        /** 
+        /**
          * Reload records from the database and populate the Repository.
          */
         static async sync(): Promise<void> {
             repo = [];
 
-            (await this.query(`SELECT * FROM ${table}`))
-                .forEach(record => this.syncOne(record));
+            (await this.query(`SELECT * FROM ${table}`)).forEach((record) => this.syncOne(record));
 
             info(`[green]✔ synced ${table}`);
         }
 
-        /** 
+        /**
          * Create an empty, default, object.
          *
          * Use this instead of the `new Whatever()` syntax, as we need to
@@ -150,9 +149,10 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * reactivity to work properly.
          */
         static default(defaults: Partial<Interface> = {}): Interface {
-            defaults = typeof this.defaults == 'function'
-                ? { ...this.defaults(), ...defaults }
-                : { ...this.defaults, ...defaults };
+            defaults =
+                typeof this.defaults == 'function'
+                    ? { ...this.defaults(), ...defaults }
+                    : { ...this.defaults, ...defaults };
 
             return defaults as Interface;
         }
@@ -175,37 +175,33 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Find an individual record by`id`.
          */
         static find(id: number | string): Interface {
-            return this.all().find(m => m.id == Number(id)) as Interface;
+            return this.all().find((m) => m.id == Number(id)) as Interface;
         }
 
-        /** 
+        /**
          * Find the first occurence by a subset of the model's properties.
          */
         static findBy(params: Partial<Interface>): Interface | undefined {
             return this.where(params)[0];
         }
 
-        /** 
+        /**
          * Find a collection of records by a set of the model's properties.
          */
         static where(params: Partial<Interface>): Interface[] {
-            return repo.filter(m => {
-                return Object
-                    .entries(params)
-                    .every(([key, value]) => (
-                        m[key] == value
-                    ))
+            return repo.filter((m) => {
+                return Object.entries(params).every(([key, value]) => m[key] == value);
             });
         }
 
-        /** 
+        /**
          * Find the first record
          */
         static first(): Interface {
             return repo[0];
         }
 
-        /** 
+        /**
          * Find the last record
          */
         static last(): Interface {
@@ -241,7 +237,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
                         ...this.default(),
                         ..._params,
                     },
-                    ReservedColumns,
+                    ReservedColumns
                 )
             );
 
@@ -252,10 +248,12 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             const binds = this.binds(row).join(', ');
             const values = Object.values(row);
 
-            let instance = (await this.query(
-                `INSERT INTO ${table} (${columns}) VALUES(${binds}) RETURNING * `,
-                values,
-            ))[0];
+            let instance = (
+                await this.query(
+                    `INSERT INTO ${table} (${columns}) VALUES(${binds}) RETURNING * `,
+                    values
+                )
+            )[0];
 
             this.syncOne(instance);
             this.removeEphemeralInstances();
@@ -266,15 +264,13 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             return instance;
         }
 
-        /** 
+        /**
          * Update a record.
          *
          * Only pass the columns you intend to change.
          */
         static async update(_params: Interface): Promise<Interface> {
-            let row = await this.toSql(
-                this.exclude(_params, ReservedColumns)
-            );
+            let row = await this.toSql(this.exclude(_params, ReservedColumns));
 
             row = await this.beforeSave(row);
             row = await this.beforeUpdate(row);
@@ -283,10 +279,12 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             const values = [...Object.values(row), _params.id];
             const idBind = `$${values.length} `;
 
-            let instance = (await this.query(
-                `UPDATE ${table} SET ${setters} WHERE id = ${idBind} RETURNING * `,
-                values,
-            ))[0];
+            let instance = (
+                await this.query(
+                    `UPDATE ${table} SET ${setters} WHERE id = ${idBind} RETURNING * `,
+                    values
+                )
+            )[0];
 
             this.syncOne(instance);
             this.removeEphemeralInstances();
@@ -301,12 +299,9 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Delete a record, by`id`.
          */
         static async delete(id: number): Promise<boolean> {
-            const result = (
-                await (await this.db()).execute(
-                    `DELETE FROM ${table} WHERE id = $1`,
-                    [id],
-                )
-            ).rowsAffected == 1;
+            const result =
+                (await (await this.db()).execute(`DELETE FROM ${table} WHERE id = $1`, [id]))
+                    .rowsAffected == 1;
 
             const i = this.find(id);
             this.syncRemove(i);
@@ -323,18 +318,18 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
 
             const instances = await this.query(
                 `SELECT * FROM ${table} WHERE ${conditions} `,
-                values,
+                values
             );
 
-            const success = (
-                await (await this.db()).execute(
-                    `DELETE FROM ${table} WHERE ${conditions} `,
-                    values,
-                )
-            ).rowsAffected >= 1;
+            const success =
+                (
+                    await (
+                        await this.db()
+                    ).execute(`DELETE FROM ${table} WHERE ${conditions} `, values)
+                ).rowsAffected >= 1;
 
             if (success) {
-                instances.forEach(instance => {
+                instances.forEach((instance) => {
                     this.syncRemove(instance);
                 });
             }
@@ -342,19 +337,13 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             return success;
         }
 
-        /** 
+        /**
          * Run a query in the database, returning an object implementing`Instance`.
          */
         protected static async query(sql: string, values: unknown[] = []): Promise<Interface[]> {
-            const result: Row[] = (
-                await (await this.db()).select<Row[]>(sql, values)
-            );
+            const result: Row[] = await (await this.db()).select<Row[]>(sql, values);
 
-            return await Promise.all(
-                result.map(
-                    async (row) => await this.fromSql(row),
-                ),
-            );
+            return await Promise.all(result.map(async (row) => await this.fromSql(row)));
         }
 
         /**
@@ -367,7 +356,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             return db;
         }
 
-        /** 
+        /**
          * Update, or Add, a single record
          */
         private static syncOne(record: Interface) {
@@ -381,16 +370,14 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             }
         }
 
-        /** 
+        /**
          * Remove an instance from the repo
          */
         private static syncRemove(instance: Interface) {
-            repo = repo.filter(
-                i => i.id !== instance.id
-            );
+            repo = repo.filter((i) => i.id !== instance.id);
         }
 
-        /** 
+        /**
          * Remove ephemeral instances from the repo.
          *
          * Pages will often push an "empty" instance into a list of models, to
@@ -402,23 +389,19 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * This leaves only persisted records(ones with an`id`).
          */
         private static removeEphemeralInstances() {
-            repo = repo.filter(
-                record => record.id !== undefined
-            );
+            repo = repo.filter((record) => record.id !== undefined);
         }
 
-        /** 
+        /**
          * Exclude k / v pairs in an object, by a list of keys.
          */
         private static exclude<T extends Obj>(params: T, exclude: string[]): T {
             return Object.fromEntries(
-                Object
-                    .entries(params)
-                    .filter(([k, _]) => !exclude.includes(k)),
+                Object.entries(params).filter(([k, _]) => !exclude.includes(k))
             ) as T;
         }
 
-        /** 
+        /**
          * Retrieve the list of columns from`params`.
          *
          * Mostly just a more descriptive name for the operation.
@@ -427,7 +410,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             return Object.keys(params);
         }
 
-        /** 
+        /**
          * Generate a list of `$k = $#` statements from`params`.
          *
          * `$k` is the name of the column and `$#` is the bind parameter.
@@ -436,36 +419,36 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
             return Object.keys(params).map((k, i) => `${k} = $${i + 1} `);
         }
 
-        /** 
+        /**
          * Individual numeric bind statements, like`['$1', '$2']`.
          */
         private static binds<P extends Obj>(params: P): string[] {
             return Object.values(params).map((_, i) => `$${i + 1} `);
         }
 
-        /** 
+        /**
          * Transform a raw database row into an `Interface` object.
          */
         protected static async fromSql(_: Row): Promise<Interface> {
-            throw "NotImplementedError";
+            throw 'NotImplementedError';
         }
 
-        /** 
+        /**
          * Transform an `Interface` object into a `Row` of database compatiable
          * values.
          */
         protected static async toSql(_: ToSqlRow<Interface>): Promise<ToSqlRow<Row>> {
-            throw "NotImplementedError";
+            throw 'NotImplementedError';
         }
 
-        /** 
+        /**
          * Transform the `Row` object before it's used to generate a query.
          */
         protected static async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
             return row;
         }
 
-        /** 
+        /**
          * Transform the `Instance` object after it's created/updated/retrieved
          * from the database.
          */
@@ -488,7 +471,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
         protected static async afterUpdate(instance: Interface): Promise<Interface> {
             return instance;
         }
-    }
+    };
 }
 
 /**
@@ -507,7 +490,7 @@ export function BareModel<T extends Obj>() {
         }
 
         static delete(instance: T) {
-            repo = repo.filter(i => i !== instance);
+            repo = repo.filter((i) => i !== instance);
         }
 
         static all(): T[] {
@@ -525,5 +508,5 @@ export function BareModel<T extends Obj>() {
         static last(): T {
             return repo[repo.length - 1];
         }
-    }
+    };
 }

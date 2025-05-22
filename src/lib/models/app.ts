@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
@@ -35,16 +35,15 @@ export interface Node {
 }
 
 export enum NodeType {
-    Context = "Context",
+    Context = 'Context',
 }
 
 export enum Interface {
-    Voice = "Voice",
-    Chat = "Chat",
-    Dashboard = "Dashboard",
-    Daemon = "Daemon",
+    Voice = 'Voice',
+    Chat = 'Chat',
+    Dashboard = 'Dashboard',
+    Daemon = 'Daemon',
 }
-
 
 export default class App extends Model<IApp, Row>('apps') {
     static defaults = {
@@ -58,13 +57,13 @@ export default class App extends Model<IApp, Row>('apps') {
     };
 
     static hasContext(app: IApp): boolean {
-        return app.nodes?.find(n => n.type == NodeType.Context) !== undefined;
+        return app.nodes?.find((n) => n.type == NodeType.Context) !== undefined;
     }
 
     static context(app: IApp): string {
         return app.nodes
-            .filter(n => n.type == NodeType.Context)
-            .map(n => n.config.value)
+            .filter((n) => n.type == NodeType.Context)
+            .map((n) => n.config.value)
             .join('\n\n');
     }
 
@@ -74,42 +73,41 @@ export default class App extends Model<IApp, Row>('apps') {
     }
 
     static removeNode(app: IApp, node: Node): IApp {
-        app.nodes = app.nodes.filter(n => n.uuid !== node.uuid);
+        app.nodes = app.nodes.filter((n) => n.uuid !== node.uuid);
         return app;
     }
 
     static async addMcpServer(app: IApp, mcpServer: IMcpServer): Promise<IMcpServer[]> {
-        const result = (
-            await (await this.db()).execute(
-                `INSERT INTO apps_mcp_servers (app_id, mcp_server_id) VALUES ($1, $2)`,
-                [app.id, mcpServer.id],
-            )
-        );
+        const result = await (
+            await this.db()
+        ).execute(`INSERT INTO apps_mcp_servers (app_id, mcp_server_id) VALUES ($1, $2)`, [
+            app.id,
+            mcpServer.id,
+        ]);
 
         if (result.rowsAffected == 1) {
             app.mcpServers.push(mcpServer);
             return app.mcpServers;
         }
 
-        throw "AddMcpServerError";
+        throw 'AddMcpServerError';
     }
 
     static async removeMcpServer(app: IApp, mcpServer: IMcpServer): Promise<IMcpServer[]> {
-        const result = (
-            await (await this.db()).execute(
-                'DELETE FROM apps_mcp_servers WHERE app_id = $1 AND mcp_server_id = $2',
-                [app.id, mcpServer.id],
-            )
-        );
+        const result = await (
+            await this.db()
+        ).execute('DELETE FROM apps_mcp_servers WHERE app_id = $1 AND mcp_server_id = $2', [
+            app.id,
+            mcpServer.id,
+        ]);
 
         if (result.rowsAffected == 1) {
-            app.mcpServers = app.mcpServers.filter(m => m.id == mcpServer.id);
+            app.mcpServers = app.mcpServers.filter((m) => m.id == mcpServer.id);
             return app.mcpServers;
         }
 
-        throw "RemoveMcpServerError";
+        throw 'RemoveMcpServerError';
     }
-
 
     protected static async fromSql(row: Row): Promise<IApp> {
         return {
@@ -119,7 +117,7 @@ export default class App extends Model<IApp, Row>('apps') {
             mcpServers: await McpServer.forApp(row.id),
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
-        }
+        };
     }
 
     protected static async toSql(app: IApp): Promise<ToSqlRow<Row>> {
@@ -130,6 +128,6 @@ export default class App extends Model<IApp, Row>('apps') {
             image: app.image,
             interface: app.interface,
             nodes: JSON.stringify(app.nodes),
-        }
+        };
     }
 }

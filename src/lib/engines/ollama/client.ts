@@ -4,8 +4,8 @@ import OllamaMessage from '$lib/engines/ollama/message';
 import type { Client, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
 import type { IModel } from '$lib/models';
-import Message, { type IMessage } from "$lib/models/message";
-import Setting from "$lib/models/setting";
+import Message, { type IMessage } from '$lib/models/message';
+import Setting from '$lib/models/setting';
 
 export default class Ollama implements Client {
     client: OllamaClient;
@@ -18,8 +18,13 @@ export default class Ollama implements Client {
         this.client = new OllamaClient({ host, fetch });
     }
 
-    async chat(model: IModel, history: IMessage[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
-        const messages = history.map(m => this.message.from(m));
+    async chat(
+        model: IModel,
+        history: IMessage[],
+        tools: Tool[] = [],
+        options: Options = {}
+    ): Promise<IMessage> {
+        const messages = history.map((m) => this.message.from(m));
         const response = await this.client.chat({
             model: model.name,
             messages,
@@ -29,9 +34,7 @@ export default class Ollama implements Client {
         });
 
         let thought: string | undefined;
-        let content: string = response
-            .message
-            .content
+        let content: string = response.message.content
             .replace(/\.$/, '')
             .replace(/^"/, '')
             .replace(/"$/, '');
@@ -52,15 +55,9 @@ export default class Ollama implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        const models = (
-            await this.client.list()
-        ).models;
+        const models = (await this.client.list()).models;
 
-        return Promise.all(
-            models.map(async (model) => (
-                await this.info(model.name)
-            ))
-        );
+        return Promise.all(models.map(async (model) => await this.info(model.name)));
     }
 
     async info(name: string): Promise<IModel> {
@@ -83,8 +80,6 @@ export default class Ollama implements Client {
             return false;
         }
 
-        return (
-            await fetch(Setting.OllamaUrl)
-        ).status == 200;
+        return (await fetch(Setting.OllamaUrl)).status == 200;
     }
 }

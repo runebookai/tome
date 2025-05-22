@@ -10,8 +10,8 @@
         "prepare": "svelte-kit sync || echo ''",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "format": "prettier --write .",
-        "lint": "prettier --check . && eslint ."
+        "format": "prettier --write src",
+        "lint": "prettier --check src && eslint src"
     },
     "devDependencies": {
         "@eslint/compat": "^1.2.5",

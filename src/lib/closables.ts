@@ -10,7 +10,7 @@ let closables: Array<[Node, Closable]> = [];
 // element.
 //
 // Triggered by `routes/+layout.svelte`
-// 
+//
 export default {
     register(ele: Node, fn: Closable) {
         closables.push([ele, fn]);
@@ -32,5 +32,5 @@ export default {
                 fn();
             }
         });
-    }
+    },
 };
