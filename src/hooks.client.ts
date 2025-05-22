@@ -38,9 +38,15 @@ export const init: ClientInit = async () => {
     await Config.migrate();
     info('[green]✔ config migrated');
 
-    await startup.addCheck(StartupCheck.Agreement, async () => Config.agreedToWelcome);
+    await startup.addCheck(
+        StartupCheck.Agreement,
+        async () => Config.agreedToWelcome,
+    );
 
-    await startup.addCheck(StartupCheck.UpdateAvailable, async () => await isUpToDate());
+    await startup.addCheck(
+        StartupCheck.UpdateAvailable,
+        async () => await isUpToDate(),
+    );
 };
 
 export const handleError: HandleClientError = async () => {
