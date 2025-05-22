@@ -18,13 +18,13 @@ declare global {
         compact<T>(o: Obj): T;
         without<T>(o: Obj, keys: string[]): T;
         remove<T>(o: Obj, key: string): T | undefined;
-        map<T>(o: Obj, fn: (key: string, value: any) => any): T;
+        map<T extends Obj>(o: T, fn: (key: string, value: any) => any): T;
     }
 
     interface Array<T> {
         sortBy<T extends Obj>(key: string): Array<T>;
         findBy<T extends Obj>(key: string, value: any): T | undefined;
-        compact(): Array<T>;
+        compact(): Array<Exclude<T, undefined>>;
     }
 
     interface CheckboxEvent extends Event {

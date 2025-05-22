@@ -1,21 +1,25 @@
 import { Ollama as OllamaClient } from 'ollama/browser';
 
-import type { Client, Options, Tool } from '$lib/engines/types';
+import OllamaMessage from '$lib/engines/ollama/message';
+import type { Client, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
 import type { IModel } from '$lib/models';
 import Message, { type IMessage } from "$lib/models/message";
-import OllamaMessage from '$lib/models/message/ollama';
 import Setting from "$lib/models/setting";
 
 export default class Ollama implements Client {
     client: OllamaClient;
+
+    message = OllamaMessage;
+    modelRole = 'assistant' as Role;
+    toolRole = 'tool' as Role;
 
     constructor(host: string) {
         this.client = new OllamaClient({ host, fetch });
     }
 
     async chat(model: IModel, history: IMessage[], tools: Tool[] = [], options: Options = {}): Promise<IMessage> {
-        const messages = history.map(m => OllamaMessage.from(m));
+        const messages = history.map(m => this.message.from(m));
         const response = await this.client.chat({
             model: model.name,
             messages,
@@ -40,7 +44,7 @@ export default class Ollama implements Client {
 
         return Message.default({
             model: model.name,
-            role: 'assistant',
+            role: this.modelRole,
             content,
             thought,
             toolCalls: response.message.tool_calls || [],

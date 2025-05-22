@@ -169,5 +169,13 @@ CREATE TABLE IF NOT EXISTS config (
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 12,
+            description: "add_gemini_api_key_setting",
+            sql: r#"
+INSERT INTO settings ("display", "key", "type") VALUES ("Gemini API Key", "gemini-api-key", "password");
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }
