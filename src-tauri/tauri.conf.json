@@ -38,8 +38,11 @@
             "signingIdentity": null
         },
         "resources": {
+            "python": "python",
             "uvx": "uvx",
+            "node": "node",
             "npx": "npx",
+            "bunx": "bunx",
             "build/platform/windows/bin/*": ""
         },
         "shortDescription": "",
