@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.5.0 - 2025/05/22
+
+![developers developers developers](.github/images/bill.png)
+
+### 🎉 Big Changes 🎉
+
+- Windows Support
+- OpenAI Models support
+- Gemini Models support
+
+### New Features
+
+- Default model setting (star the model you want as your default on the Models page)
+- `node`, `python`, and `bunx` MCP servers now supported.
+
+### Minor Changes
+
+- Page transitions added
+- Model selection dropdown organizes models by engine
+- Model page organizes models by engine
+- All requests made from the frontend are proxied through a Rust function to mitigate CORS issues.
+- Release workflow now builds for MacOS and Windows.
+
+### Misc. Changed / Refactoring
+
+- Moved all types from `.d.ts` files into explicit `types.ts` in their corresponding place.
+- Refactored `Config` to be database-backed, instead of file-backed, to be consistent with the rest of the app.
+- Refactored LLM engines code into a more modular setup to support multiple engines more cleanly.
+- Switched from tabs to spaces and ran prettier. Tabs were unintentional 🙃
+
 ## 0.4.0 - 2025-05-16
 
 Adds in-app update notifications and update process. We no longer have to download new
