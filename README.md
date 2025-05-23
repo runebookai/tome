@@ -16,13 +16,14 @@
 
 # Tome
 
-Tome is the simplest way to get started with local LLMs and MCP. Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama, find an MCP server via our [Smithery](https://smithery.ai) marketplace integration (or paste your own uvx/npx command), and chat with an MCP-powered model in seconds.
+Tome is the simplest way to get started with local LLMs and MCP. Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama (or OpenAI/Gemini), find an MCP server via our [Smithery](https://smithery.ai) marketplace integration (or paste your own uvx/npx command), and chat with an MCP-powered model in seconds.
 
 This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
 
 ## Features
 
-- Instant connection to Ollama (local or remote) for model management
+- Instant connection to Ollama (local or remote) for local model management
+- Integration with cloud AI providers like OpenAI and Google Gemini
 - Chat with MCP-powered models, customize context window and temperature
 - Install MCP servers by pasting in a command (e.g., `uvx mcp-server-fetch`) or through the built-in Smithery marketplace which offers thousands of servers via a single click
 
@@ -30,13 +31,13 @@ This is a Technical Preview so bear in mind things will be rough around the edge
 
 ## Requirements
 
-- MacOS (Sequoia 15.0 or higher recommended. Windows and Linux support coming soon!)
-- [Ollama](https://ollama.com/) (Either local or remote, you can configure any Ollama URL in settings)
-- [Download the latest release of Tome](https://github.com/runebookai/tome/releases/download/0.4.0/Tome_0.4.0_aarch64.dmg)
+- MacOS or Windows (Linux coming soon!)
+- [Ollama](https://ollama.com/) or an OpenAI or Gemini API key
+- [Download the latest release of Tome](https://github.com/runebookai/tome/releases)
 
 ## Quickstart
 
-1. Install [Tome](https://github.com/runebookai/tome/releases/download/0.4.0/Tome_0.4.0_aarch64.dmg) and [Ollama](https://ollama.com)
+1. Install [Tome](https://github.com/runebookai/tome/releases) and [Ollama](https://ollama.com) (or add an OpenAI or Gemini API key)
 2. Install a [Tool supported model](https://ollama.com/search?c=tools) (we're partial to [Qwen3](https://ollama.com/library/qwen3), either 14B or 8B depending on your RAM)
 3. Open the MCP tab in Tome and install your first [MCP server](https://github.com/modelcontextprotocol/servers) (Fetch is an easy one to get started with, just paste `uvx mcp-server-fetch` into the server field).
 4. Chat with your MCP-powered model! Ask it to fetch the top story on Hacker News.
