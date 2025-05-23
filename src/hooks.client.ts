@@ -4,6 +4,7 @@ import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 import { goto } from '$app/navigation';
 
 import { setupDeeplinks } from '$lib/deeplinks';
+import { error } from '$lib/logger';
 import { info } from '$lib/logger';
 import App from '$lib/models/app';
 import Config from '$lib/models/config';
@@ -47,8 +48,14 @@ export const init: ClientInit = async () => {
         StartupCheck.UpdateAvailable,
         async () => await isUpToDate(),
     );
+
+    await startup.addCheck(
+        StartupCheck.NoModels,
+        async () => Engine.all().flatMap(e => e.models).length > 0,
+    );
 };
 
-export const handleError: HandleClientError = async () => {
+export const handleError: HandleClientError = async ({ error: err }) => {
+    error(err);
     goto('/error');
 };

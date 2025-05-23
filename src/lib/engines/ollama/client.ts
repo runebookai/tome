@@ -57,7 +57,9 @@ export default class Ollama implements Client {
     async models(): Promise<IModel[]> {
         const models = (await this.client.list()).models;
 
-        return Promise.all(models.map(async (model) => await this.info(model.name)));
+        return Promise.all(
+            models.map(async (model) => await this.info(model.name))
+        );
     }
 
     async info(name: string): Promise<IModel> {
