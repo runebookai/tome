@@ -20,11 +20,14 @@
     import Session, { type ISession } from '$lib/models/session';
 
     const session: ISession = $derived(Session.find(page.params.session_id));
-    const model: IModel | undefined = $derived(Model.find(session.config.model));
+    const model: IModel | undefined = $derived(
+        Model.find(session.config.model)
+    );
 
     const sessions: ISession[] = $derived(Session.all());
     const mcpServers: IMcpServer[] = $derived(McpServer.all());
     const engines: IEngine[] = $derived(Engine.all());
+    const hasModels = $derived(engines.flatMap((e) => e.models).length > 0);
 
     let advancedIsOpen = $state(false);
 
@@ -99,7 +102,9 @@
 </script>
 
 {#snippet titlebar()}
-    <Flex class="border-r-light z-10 h-full w-[300px] items-center border-r px-8 pr-4">
+    <Flex
+        class="border-r-light z-10 h-full w-[300px] items-center border-r px-8 pr-4"
+    >
         <h1 class="grow font-[500]">Chat</h1>
         <button
             onclick={() => addSession()}
@@ -113,14 +118,18 @@
 
 <Layout {titlebar}>
     <Flex class="h-full items-start">
-        <Flex class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r">
+        <Flex
+            class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r"
+        >
             {#each sessions as sess (sess.id)}
                 <Flex
                     class={`text-medium border-b-light w-full justify-between border-b 
                     border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
                 >
                     <Menu items={menuItems(sess)}>
-                        <Deleteable ondelete={async () => await deleteSession(sess)}>
+                        <Deleteable
+                            ondelete={async () => await deleteSession(sess)}
+                        >
                             <Link
                                 href={`/chat/${sess.id}`}
                                 class="w-full py-3 pl-8 text-left"
@@ -136,13 +145,17 @@
         </Flex>
 
         {#if session}
-            <Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
+            <Flex
+                class="bg-medium h-full w-[calc(100%-600px)] grow items-start"
+            >
                 {#key session.id}
                     <Chat {session} bind:model={session.config.model} />
                 {/key}
             </Flex>
 
-            <Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
+            <Flex
+                class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4"
+            >
                 {#key session.config.model}
                     <ModelMenu
                         {engines}
@@ -151,7 +164,14 @@
                     />
                 {/key}
 
-                {#if !model}
+                {#if !hasModels}
+                    <Flex class="text-red mb-8 w-full justify-center gap-2">
+                        <Svg class="h-6 w-6" name="Warning" />
+                        No engines connected
+                    </Flex>
+                {/if}
+
+                {#if hasModels && !model}
                     <Flex class="text-red mb-8 w-full justify-center gap-2">
                         <Svg class="h-6 w-6" name="Warning" />
                         Model no longer exists
@@ -170,8 +190,10 @@
                         <Flex class="text-light z-0 mb-4 ml-2">
                             <Toggle
                                 label={server.name}
-                                value={Session.hasMcpServer(session, server.name) &&
-                                model?.supportsTools
+                                value={Session.hasMcpServer(
+                                    session,
+                                    server.name
+                                ) && model?.supportsTools
                                     ? 'on'
                                     : 'off'}
                                 disabled={!model?.supportsTools}
@@ -187,12 +209,19 @@
                         class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
                         onclick={() => toggleAdvanced()}
                     >
-                        Advanced <span class="ml-4">{advancedIsOpen ? '⏷' : '⏵'}</span>
+                        Advanced <span class="ml-4"
+                            >{advancedIsOpen ? '⏷' : '⏵'}</span
+                        >
                     </button>
 
                     {#if advancedIsOpen}
-                        <Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
-                            <label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
+                        <Flex
+                            class="m-auto w-full flex-col items-start px-4 pt-4 pl-0"
+                        >
+                            <label
+                                for="ctx_num"
+                                class="text-medium mb-1 ml-2 text-sm"
+                            >
                                 Context Window Size
                             </label>
                             <input
@@ -205,7 +234,10 @@
                                 bind:value={session.config.contextWindow}
                             />
 
-                            <label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
+                            <label
+                                for="temperature"
+                                class="text-medium mt-4 mb-1 ml-2 text-sm"
+                            >
                                 Temperature
                             </label>
 

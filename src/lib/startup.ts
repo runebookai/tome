@@ -1,9 +1,8 @@
 import { info } from '$lib/logger';
 
 export enum StartupCheck {
-    Ollama = 'ollama',
     Agreement = 'agreement',
-    MissingModels = 'missing-models',
+    NoModels = 'no-models',
     UpdateAvailable = 'update-available',
 }
 
