@@ -39,7 +39,9 @@ export class OllamaClient extends HttpClient {
             stream: false,
         });
 
-        const response = (await this.post('/api/chat', { body })) as OllamaResponse;
+        const response = (await this.post('/api/chat', {
+            body,
+        })) as OllamaResponse;
 
         let thought: string | undefined;
         let content: string = response.message.content
@@ -75,7 +77,12 @@ export class OllamaClient extends HttpClient {
 
     async connected(): Promise<boolean> {
         return (
-            ((await this.get('', { raw: true, timeout: 500 })) as globalThis.Response).status == 200
+            (
+                (await this.get('', {
+                    raw: true,
+                    timeout: 500,
+                })) as globalThis.Response
+            ).status == 200
         );
     }
 

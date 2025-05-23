@@ -13,7 +13,10 @@ export interface HttpOptions extends RequestInit {
 }
 
 export async function fetch(url: string | URL | Request, options?: RequestInit) {
-    const response: globalThis.Response = await invoke('fetch', { url, options });
+    const response: globalThis.Response = await invoke('fetch', {
+        url,
+        options,
+    });
     const { body, ...init } = response;
     return new globalThis.Response(body, init);
 }
@@ -37,7 +40,10 @@ export abstract class HttpClient {
     async post<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
-        const response = await this.request(uri, { ...options, method: 'POST' });
+        const response = await this.request(uri, {
+            ...options,
+            method: 'POST',
+        });
         return raw ? response : await this.parse(response, raise);
     }
 
@@ -51,14 +57,20 @@ export abstract class HttpClient {
     async delete<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
-        const response = await this.request(uri, { ...options, method: 'DELETE' });
+        const response = await this.request(uri, {
+            ...options,
+            method: 'DELETE',
+        });
         return raw ? response : await this.parse(response, raise);
     }
 
     async head<T>(uri: string, options: HttpOptions = {}): Promise<Response<T>> {
         const raw = Object.remove(options, 'raw');
         const raise: boolean | undefined = Object.remove(options, 'raise');
-        const response = await this.request(uri, { ...options, method: 'HEAD' });
+        const response = await this.request(uri, {
+            ...options,
+            method: 'HEAD',
+        });
         return raw ? response : await this.parse(response, raise);
     }
 

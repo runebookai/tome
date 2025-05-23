@@ -75,6 +75,6 @@ export default class Engine extends BareModel<IEngine>() {
             });
         }
 
-        Model.reset(this.all().flatMap((engine) => engine.models));
+        Model.reset(this.all().flatMap(engine => engine.models));
     }
 }

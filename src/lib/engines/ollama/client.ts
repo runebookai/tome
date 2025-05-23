@@ -24,7 +24,7 @@ export default class Ollama implements Client {
         tools: Tool[] = [],
         options: Options = {}
     ): Promise<IMessage> {
-        const messages = history.map((m) => this.message.from(m));
+        const messages = history.map(m => this.message.from(m));
         const response = await this.client.chat({
             model: model.name,
             messages,
@@ -57,9 +57,7 @@ export default class Ollama implements Client {
     async models(): Promise<IModel[]> {
         const models = (await this.client.list()).models;
 
-        return Promise.all(
-            models.map(async (model) => await this.info(model.name))
-        );
+        return Promise.all(models.map(async model => await this.info(model.name)));
     }
 
     async info(name: string): Promise<IModel> {

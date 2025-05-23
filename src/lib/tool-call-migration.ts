@@ -4,13 +4,13 @@ import Message from '$lib/models/message';
 
 export async function migrate() {
     await Promise.all(
-        Message.all().map(async (message) => {
+        Message.all().map(async message => {
             if (message.toolCalls.length == 0) {
                 return;
             }
 
             await Promise.all(
-                message.toolCalls.map(async (tc) => {
+                message.toolCalls.map(async tc => {
                     // Ollama tool calls didn't always have an `id`. Add one
                     // now if that's the case.
                     if (!tc.id) {

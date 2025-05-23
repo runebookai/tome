@@ -86,7 +86,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
 
     static async removeMcpServer(session: ISession, server: IMcpServer): Promise<ISession> {
         session.config.enabledMcpServers = session.config.enabledMcpServers.filter(
-            (s) => s !== server.name
+            s => s !== server.name
         );
         return await this.update(session);
     }

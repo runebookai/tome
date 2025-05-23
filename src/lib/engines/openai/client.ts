@@ -33,7 +33,7 @@ export default class OpenAI implements Client {
         tools: Tool[] = [],
         options: Options = {}
     ): Promise<IMessage> {
-        const messages = history.map((m) => OpenAiMessage.from(m));
+        const messages = history.map(m => OpenAiMessage.from(m));
         const response = await this.client.chat.completions.create({
             model: model.name,
             messages,
@@ -45,7 +45,7 @@ export default class OpenAI implements Client {
         let toolCalls: ToolCall[] = [];
 
         if (tool_calls) {
-            toolCalls = tool_calls.map((tc) => ({
+            toolCalls = tool_calls.map(tc => ({
                 function: {
                     name: tc.function.name,
                     arguments: JSON.parse(tc.function.arguments),
@@ -66,10 +66,10 @@ export default class OpenAI implements Client {
         let allModels = (await this.client.models.list()).data;
 
         if (this.supportedModels !== 'all') {
-            allModels = allModels.filter((model) => this.supportedModels.includes(model.id));
+            allModels = allModels.filter(model => this.supportedModels.includes(model.id));
         }
 
-        return allModels.map((model) => {
+        return allModels.map(model => {
             const { id, ...metadata } = model;
             const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
 

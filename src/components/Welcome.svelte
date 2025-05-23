@@ -21,8 +21,8 @@
         <h1 class="text-purple text-3xl">Welcome to Tome</h1>
         <p>
             Thanks for being an early adopter! We appreciate you kicking the tires of our
-            <strong>Technical Preview</strong> as we explore making local LLMs, MCP, and AI app composition
-            a better experience.
+            <strong>Technical Preview</strong>
+            as we explore making local LLMs, MCP, and AI app composition a better experience.
         </p>
         <p>
             This is an extremely early build. There will be problems – edges are rough – features

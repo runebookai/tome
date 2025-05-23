@@ -10,7 +10,7 @@ export * from '$lib/mcp.d';
 // can send to the LLM.
 //
 export async function getMCPTools(session: ISession): Promise<Tool[]> {
-    return (await invoke<McpTool[]>('get_mcp_tools', { sessionId: session.id })).map((tool) => {
+    return (await invoke<McpTool[]>('get_mcp_tools', { sessionId: session.id })).map(tool => {
         return {
             type: 'function',
             function: {

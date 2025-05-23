@@ -4,7 +4,8 @@
     "tabWidth": 4,
     "semi": true,
     "trailingComma": "es5",
-    "printWidth": 80,
+    "printWidth": 100,
+    "arrowParens": "avoid",
     "plugins": [
         "prettier-plugin-svelte",
         "prettier-plugin-tailwindcss"
@@ -14,7 +15,7 @@
             "files": "*.svelte",
             "options": {
                 "parser": "svelte",
-                "printWidth": 100
+                "htmlWhitespaceSensitivity": "ignore"
             }
         }
     ]

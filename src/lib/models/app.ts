@@ -57,13 +57,13 @@ export default class App extends Model<IApp, Row>('apps') {
     };
 
     static hasContext(app: IApp): boolean {
-        return app.nodes?.find((n) => n.type == NodeType.Context) !== undefined;
+        return app.nodes?.find(n => n.type == NodeType.Context) !== undefined;
     }
 
     static context(app: IApp): string {
         return app.nodes
-            .filter((n) => n.type == NodeType.Context)
-            .map((n) => n.config.value)
+            .filter(n => n.type == NodeType.Context)
+            .map(n => n.config.value)
             .join('\n\n');
     }
 
@@ -73,7 +73,7 @@ export default class App extends Model<IApp, Row>('apps') {
     }
 
     static removeNode(app: IApp, node: Node): IApp {
-        app.nodes = app.nodes.filter((n) => n.uuid !== node.uuid);
+        app.nodes = app.nodes.filter(n => n.uuid !== node.uuid);
         return app;
     }
 
@@ -102,7 +102,7 @@ export default class App extends Model<IApp, Row>('apps') {
         ]);
 
         if (result.rowsAffected == 1) {
-            app.mcpServers = app.mcpServers.filter((m) => m.id == mcpServer.id);
+            app.mcpServers = app.mcpServers.filter(m => m.id == mcpServer.id);
             return app.mcpServers;
         }
 

@@ -19,7 +19,7 @@
     async function install() {
         update = await availableUpdate();
 
-        await update?.downloadAndInstall((event) => {
+        await update?.downloadAndInstall(event => {
             switch (event.event) {
                 case 'Started':
                     totalDownload = (event.data.contentLength as number) / 1000.0;

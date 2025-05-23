@@ -136,7 +136,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
         static async sync(): Promise<void> {
             repo = [];
 
-            (await this.query(`SELECT * FROM ${table}`)).forEach((record) => this.syncOne(record));
+            (await this.query(`SELECT * FROM ${table}`)).forEach(record => this.syncOne(record));
 
             info(`[green]✔ synced ${table}`);
         }
@@ -175,7 +175,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Find an individual record by`id`.
          */
         static find(id: number | string): Interface {
-            return this.all().find((m) => m.id == Number(id)) as Interface;
+            return this.all().find(m => m.id == Number(id)) as Interface;
         }
 
         /**
@@ -189,7 +189,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Find a collection of records by a set of the model's properties.
          */
         static where(params: Partial<Interface>): Interface[] {
-            return repo.filter((m) => {
+            return repo.filter(m => {
                 return Object.entries(params).every(([key, value]) => m[key] == value);
             });
         }
@@ -329,7 +329,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
                 ).rowsAffected >= 1;
 
             if (success) {
-                instances.forEach((instance) => {
+                instances.forEach(instance => {
                     this.syncRemove(instance);
                 });
             }
@@ -343,7 +343,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
         protected static async query(sql: string, values: unknown[] = []): Promise<Interface[]> {
             const result: Row[] = await (await this.db()).select<Row[]>(sql, values);
 
-            return await Promise.all(result.map(async (row) => await this.fromSql(row)));
+            return await Promise.all(result.map(async row => await this.fromSql(row)));
         }
 
         /**
@@ -374,7 +374,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Remove an instance from the repo
          */
         private static syncRemove(instance: Interface) {
-            repo = repo.filter((i) => i.id !== instance.id);
+            repo = repo.filter(i => i.id !== instance.id);
         }
 
         /**
@@ -389,7 +389,7 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * This leaves only persisted records(ones with an`id`).
          */
         private static removeEphemeralInstances() {
-            repo = repo.filter((record) => record.id !== undefined);
+            repo = repo.filter(record => record.id !== undefined);
         }
 
         /**
@@ -490,7 +490,7 @@ export function BareModel<T extends Obj>() {
         }
 
         static delete(instance: T) {
-            repo = repo.filter((i) => i !== instance);
+            repo = repo.filter(i => i !== instance);
         }
 
         static all(): T[] {

@@ -40,7 +40,7 @@
 
 <Flex bind:this={ref} class="bg-medium relative h-16 w-full hover:cursor-pointer">
     <Flex
-        onclick={(e) => toggle(e)}
+        onclick={e => toggle(e)}
         class="border-light absolute top-0 left-0 w-full justify-between
         rounded-md border p-2 px-4"
     >
