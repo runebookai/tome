@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.5.0 - 2025/05/22
+## 0.5.0 - 2025-05-22
 
-![developers developers developers](.github/images/bill.png)
+![developers developers developers](https://github.com/runebookai/tome/blob/9dcb808e2fadceb9710e9c77843dcb06640c90b1/.github/images/bill.png)
 
 ### 🎉 Big Changes 🎉
 
