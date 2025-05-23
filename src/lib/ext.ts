@@ -93,7 +93,7 @@ Array.prototype.findBy = function <T extends Obj>(
     key: string,
     value: any
 ): T | undefined {
-    return this.find((item) => item[key] == value);
+    return this.find(item => item[key] == value);
 };
 
 /**
@@ -106,5 +106,5 @@ Array.prototype.findBy = function <T extends Obj>(
  * ```
  */
 Array.prototype.compact = function <T>(this: T[]): Exclude<T, undefined>[] {
-    return this.filter((i) => i !== undefined) as Exclude<T, undefined>[];
+    return this.filter(i => i !== undefined) as Exclude<T, undefined>[];
 };

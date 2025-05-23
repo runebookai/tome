@@ -53,7 +53,7 @@ function toolCalls(message: IMessage): OpenAI.ChatCompletionMessageToolCall[] | 
         return;
     }
 
-    return message.toolCalls.map((call) => ({
+    return message.toolCalls.map(call => ({
         id: call.id as string,
         type: 'function',
         function: {

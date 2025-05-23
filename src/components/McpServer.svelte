@@ -41,7 +41,7 @@
     }
 
     async function remove(key: string) {
-        env = env.filter((e) => e[0] !== key);
+        env = env.filter(e => e[0] !== key);
         await save();
     }
 </script>

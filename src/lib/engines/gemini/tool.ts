@@ -32,7 +32,7 @@ function from(tools: Tool | Tool[]): ToolListUnion {
 }
 
 function fromMany(tools: Tool[]): FunctionDeclaration[] {
-    return tools.map((tool) => fromOne(tool));
+    return tools.map(tool => fromOne(tool));
 }
 
 function fromOne(tool: Tool): FunctionDeclaration {

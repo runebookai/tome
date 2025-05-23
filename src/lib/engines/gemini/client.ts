@@ -29,7 +29,7 @@ export default class Gemini implements Client {
         tools?: Tool[],
         options?: Options
     ): Promise<IMessage> {
-        const messages = history.map((m) => GeminiMessage.from(m)).compact();
+        const messages = history.map(m => GeminiMessage.from(m)).compact();
 
         let config: GenerateContentConfig = {
             temperature: options?.temperature,
@@ -50,7 +50,7 @@ export default class Gemini implements Client {
         let toolCalls: ToolCall[] = [];
 
         if (functionCalls) {
-            toolCalls = functionCalls.map((tc) => ({
+            toolCalls = functionCalls.map(tc => ({
                 function: {
                     name: tc.name as string,
                     arguments: tc.args || {},
@@ -69,8 +69,8 @@ export default class Gemini implements Client {
 
     async models(): Promise<IModel[]> {
         return (await this.client.models.list()).page
-            .filter((model) => this.supportedModels.includes(model.name as string))
-            .map((model) => {
+            .filter(model => this.supportedModels.includes(model.name as string))
+            .map(model => {
                 const metadata = model;
                 const name = metadata.name?.replace('models/', '') as string;
 

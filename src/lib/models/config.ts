@@ -14,11 +14,7 @@ interface Row {
     value: string;
 }
 
-type ConfigKey =
-    | 'latest-session-id'
-    | 'welcome-agreed'
-    | 'skipped-version'
-    | 'default-model';
+type ConfigKey = 'latest-session-id' | 'welcome-agreed' | 'skipped-version' | 'default-model';
 
 export default class Config extends Model<IConfig, Row>('config') {
     @getset('latest-session-id')
@@ -81,7 +77,7 @@ export default class Config extends Model<IConfig, Row>('config') {
 }
 
 function getset(key: ConfigKey) {
-    return function(target: object, property: string) {
+    return function (target: object, property: string) {
         function get() {
             return Config.get(key);
         }

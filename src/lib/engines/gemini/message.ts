@@ -67,7 +67,7 @@ function fromToolResponse(message: IMessage): Content {
     // Find the `toolCall` message for this response
     const session = Session.find(message.sessionId as number);
     const messages = Session.messages(session);
-    const call = messages.flatMap((m) => m.toolCalls).find((tc) => tc.id == message.toolCallId);
+    const call = messages.flatMap(m => m.toolCalls).find(tc => tc.id == message.toolCallId);
 
     return {
         role: 'user',

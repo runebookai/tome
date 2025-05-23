@@ -13,7 +13,7 @@ export enum DeepLinks {
 }
 
 export function setupDeeplinks() {
-    listen<string>(DeepLinks.InstallMcpServer, async (event) => {
+    listen<string>(DeepLinks.InstallMcpServer, async event => {
         goto(`/mcp-servers/install?config=${event.payload}`);
     });
 }

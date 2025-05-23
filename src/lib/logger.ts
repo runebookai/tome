@@ -53,7 +53,7 @@ function _log(args: any[], level: Level) {
     if (typeof args[0] !== 'string') {
         console[level](...fmt(level, ''), ...args);
     } else {
-        console[level](...args.flatMap((arg) => (typeof arg === 'string' ? fmt(level, arg) : arg)));
+        console[level](...args.flatMap(arg => (typeof arg === 'string' ? fmt(level, arg) : arg)));
     }
 }
 
@@ -70,7 +70,7 @@ function fmt(level: Level, text: string): string[] {
 function colorize(text: string): string[] {
     let args: string[] = [];
 
-    text = text.replace(/\[\w+\]/g, (block) => {
+    text = text.replace(/\[\w+\]/g, block => {
         const code = block.replace('[', '').replace(']', '');
         const color = (colors as Obj)[code];
         args.push(`color: ${color};`);
