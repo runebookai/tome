@@ -71,10 +71,12 @@ jobs:
 
       - id: version
         name: version
+        shell: bash
         run: echo "version=$(cat src-tauri/tauri.conf.json | jq -r '.version')" >> $GITHUB_OUTPUT
 
       - id: changelog
         name: changelog
+        shell: bash
         run: |
           {
             echo 'changelog<<EOF'
