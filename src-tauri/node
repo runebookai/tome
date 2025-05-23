@@ -1,0 +1,67 @@
+#!/bin/bash
+# This product includes software developed at Square, Inc.
+# 
+# The Initial Developer of some parts of the framework, which are copied 
+# from, derived from, or inspired by Hermit, is Square, Inc. (https://squareup.com).
+# Copyright 2021 Square, Inc. All Rights Reserved.
+# 
+# The Initial Developer of Hermit is Square, Inc. (http://www.squareup.com).
+# Copyright 2021 Square, Inc. All Rights Reserved.
+
+set -euo pipefail
+LOGFILE="$HOME/Library/Logs/co.runebook/Tome.log"
+echo >> $LOGFILE
+
+log() {
+    local LINE="$1"
+    local DATE="$(date +'%Y-%m-%d')"
+    local TIME="$(date +'%H:%M:%S')"
+    echo "[$DATE][$TIME][hermit][DEBUG] $LINE" >> $LOGFILE
+}
+trap 'log "ERROR: Exiting w/ status: $?."' ERR
+
+log "Starting..."
+
+log "mkdir -p ~/.config/runebook/hermit/bin ?"
+mkdir -p ~/.config/runebook/hermit/bin
+
+log "cd ~/.config/runebook/hermit"
+cd ~/.config/runebook/hermit
+
+if [ ! -f ~/.config/runebook/hermit/bin/hermit ]; then
+    log "Downloading hermit..."
+    curl -fsSL "https://github.com/cashapp/hermit/releases/download/stable/hermit-$(uname -s \
+        | tr '[:upper:]' '[:lower:]')-$(uname -m \
+        | sed 's/x86_64/amd64/' \
+        | sed 's/aarch64/arm64/').gz" \
+        | gzip -dc > ~/.config/runebook/hermit/bin/hermit
+    log "Downloaded hermit..."
+
+    log "chmod +x ~/.config/runebook/hermit/bin/hermit"
+    chmod +x ~/.config/runebook/hermit/bin/hermit
+else
+    log "Found existing hermit..."
+fi
+
+log "mkdir -p ~/.config/runebook/hermit/cache"
+mkdir -p ~/.config/runebook/hermit/cache
+
+log "export HERMIT_STATE_DIR=~/.config/runebook/hermit/cache"
+export HERMIT_STATE_DIR=~/.config/runebook/hermit/cache
+
+log "export PATH=~/.config/runebook/hermit/bin:$PATH"
+export PATH=~/.config/runebook/hermit/bin:$PATH
+
+log "hermit init"
+hermit init >> "$LOGFILE"
+
+log "chmod +x hermit"
+chmod +x ~/.config/runebook/hermit/bin/hermit
+
+log "hermit install node >> "$LOGFILE""
+hermit install node@lts >> "$LOGFILE"
+
+log "node $*"
+node "$@" || log "Error running node $*"
+
+log "End."
