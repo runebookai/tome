@@ -11,6 +11,7 @@ import Config from '$lib/models/config';
 import Engine from '$lib/models/engine';
 import McpServer from '$lib/models/mcp-server';
 import Message from '$lib/models/message';
+import Model from '$lib/models/model';
 import Session from '$lib/models/session';
 import Setting from '$lib/models/setting';
 import startup, { StartupCheck } from '$lib/startup';
@@ -31,6 +32,7 @@ export const init: ClientInit = async () => {
     await Setting.sync();
     await Config.sync();
     await Engine.sync();
+    await Model.sync();
     info('[green]✔ database synced');
 
     await toolCallMigration.migrate();

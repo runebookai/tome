@@ -177,5 +177,36 @@ INSERT INTO settings ("display", "key", "type") VALUES ("Gemini API Key", "gemin
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 13,
+            description: "add_engines",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS engines (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    type        TEXT NOT NULL,
+    options     JSON NOT NULL DEFAULT "{}",
+    UNIQUE(type)
+);
+
+INSERT INTO engines ("name", "type", "options") VALUES
+(
+    "Ollama",
+    "ollama",
+    json_object('url', (SELECT json_extract(value, '$') FROM settings WHERE key = 'ollama-url'))
+),
+(
+    "OpenAI",
+    "openai",
+    json_object('apiKey', (SELECT json_extract(value, '$') FROM settings WHERE key = 'openai-api-key'))
+),
+(
+    "Gemini",
+    "gemini",
+    json_object('apiKey', (SELECT json_extract(value, '$') FROM settings WHERE key = 'gemini-api-key'))
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

@@ -22,7 +22,7 @@ declare global {
     }
 
     interface Array<T> {
-        sortBy<T extends Obj>(key: string): Array<T>;
+        sortBy<T extends Obj>(key: string): T[];
         findBy<T extends Obj>(key: string, value: any): T | undefined;
         compact(): Array<Exclude<T, undefined>>;
     }

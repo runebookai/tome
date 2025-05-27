@@ -12,6 +12,10 @@ export interface IModel {
 }
 
 export default class Model extends BareModel<IModel>() {
+    static async sync() {
+        this.reset(Engine.all().flatMap(e => e.models));
+    }
+
     static default(): IModel {
         return this.find(Config.defaultModel) || Engine.first().models[0];
     }

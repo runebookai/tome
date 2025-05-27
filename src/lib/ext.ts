@@ -76,7 +76,7 @@ Array.prototype.sortBy = function <T extends Obj>(this: T[], key: string): T[] {
         if (a[key] < b[key]) return -1;
         if (a[key] > b[key]) return 1;
         return 0;
-    });
+    }) as T[];
 };
 
 /**
