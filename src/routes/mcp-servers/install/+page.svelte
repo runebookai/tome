@@ -28,7 +28,10 @@
         {#if config.type !== 'stdio'}
             <Flex class="text-red w-full">
                 <Svg name="Warning" class="mr-8 h-6 w-6" />
-                <p>Tome only supports <code>stdio</code> MCP servers</p>
+                <p>
+                    Tome only supports <code>stdio</code>
+                    MCP servers
+                </p>
             </Flex>
         {:else}
             <Flex class="w-full flex-col items-start">

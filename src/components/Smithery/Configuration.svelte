@@ -60,13 +60,13 @@
     }
 
     function isValid() {
-        return config.every((prop) => prop.valid);
+        return config.every(prop => prop.valid);
     }
 
     function validateAll() {
         config
-            .filter((c) => c.required)
-            .forEach((prop) => {
+            .filter(c => c.required)
+            .forEach(prop => {
                 prop.valid = validate(prop.value);
             });
     }
@@ -115,8 +115,13 @@
 <svelte:window onmessage={onMessage} />
 
 {#if srcdoc}
-    <iframe title="stdioFunction" class="hidden h-0 w-0" sandbox="allow-scripts" allow="" {srcdoc}>
-    </iframe>
+    <iframe
+        title="stdioFunction"
+        class="hidden h-0 w-0"
+        sandbox="allow-scripts"
+        allow=""
+        {srcdoc}
+    ></iframe>
 {/if}
 
 {#if server && config}
@@ -126,7 +131,7 @@
 
             {#if config.length > 0}
                 <div class="w-full px-8">
-                    {#each config.filter((p) => p.required) as prop (prop.name)}
+                    {#each config.filter(p => p.required) as prop (prop.name)}
                         <Input
                             label={prop.name}
                             name={prop.name}
@@ -137,7 +142,7 @@
                     {/each}
                 </div>
 
-                {#if config.some((p) => !p.required)}
+                {#if config.some(p => !p.required)}
                     <Flex class="mt-8 w-full flex-col items-start">
                         <button
                             onclick={() => toggleOptional()}
@@ -148,7 +153,7 @@
 
                         {#if optionalIsOpen}
                             <div class="w-full px-8">
-                                {#each config.filter((p) => !p.required) as prop (prop.name)}
+                                {#each config.filter(p => !p.required) as prop (prop.name)}
                                     <Input
                                         label={prop.name}
                                         name={prop.name}

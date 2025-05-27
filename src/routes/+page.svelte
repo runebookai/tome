@@ -7,11 +7,7 @@
     import Svg from '$components/Svg.svelte';
     import Updater from '$components/Updater.svelte';
     import Welcome from '$components/Welcome.svelte';
-    import startup, {
-        type Condition,
-        type OnSuccess,
-        StartupCheck,
-    } from '$lib/startup';
+    import startup, { type Condition, type OnSuccess, StartupCheck } from '$lib/startup';
 
     const messages = {
         [StartupCheck.NoModels]: 'No Engines Connected',
@@ -73,9 +69,6 @@
             {/if}
         </Modal>
     {:else}
-        <Svg
-            name="Logo"
-            class="text-dark fixed top-[50%] left-[50%] h-32 w-32 -translate-[50%]"
-        />
+        <Svg name="Logo" class="text-dark fixed top-[50%] left-[50%] h-32 w-32 -translate-[50%]" />
     {/if}
 </Layout>
