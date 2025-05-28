@@ -21,6 +21,6 @@
     });
 </script>
 
-<Flex class={`bg-light self-end ${rounded} mb-8 px-8 py-3 whitespace-pre`}>
+<Flex class={`bg-light self-end ${rounded} mb-8 px-8 py-3 whitespace-pre-wrap`}>
     <div bind:this={ref}>{message.content}</div>
 </Flex>
