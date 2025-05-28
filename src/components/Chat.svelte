@@ -93,9 +93,9 @@
 </script>
 
 <Flex class="h-content w-full flex-col p-8 pr-2 pb-0">
-    <Scrollable bind:ref={content} class="mb-8">
+    <Scrollable bind:ref={content} class="mb-8 pr-6">
         <!-- Chat Log -->
-        <div class:opacity-25={!model} class="bg-medium relative w-full px-2">
+        <div class:opacity-25={!model} class="bg-medium relative w-full">
             {#each messages as message (message.id)}
                 <Flex id="messages" class="w-full flex-col items-start">
                     <!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->

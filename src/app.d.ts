@@ -30,6 +30,10 @@ declare global {
         compact(): Array<Exclude<T, undefined>>;
     }
 
+    interface String {
+        ellipsize(length?: number): string;
+    }
+
     interface CheckboxEvent extends Event {
         currentTarget: EventTarget & HTMLInputElement;
     }
