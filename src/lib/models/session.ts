@@ -17,6 +17,7 @@ export interface ISession {
     summary: string;
     config: {
         model: string;
+        engineId: number;
         contextWindow: number;
         temperature: number;
         enabledMcpServers: string[];
@@ -103,7 +104,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
         const engine = Engine.fromModelId(modelId);
         const model = Model.find(modelId);
 
-        if (!engine || !model) {
+        if (!engine || !model || !engine.client) {
             return;
         }
 
@@ -113,7 +114,7 @@ export default class Session extends Base<ISession, Row>('sessions') {
                 role: 'user',
                 content:
                     'Summarize all previous messages in a concise and comprehensive manner. The summary can be 3 words or less. Only respond with the summary and nothing else. Remember, the length of the summary can be 3 words or less.',
-            },
+            } as IMessage,
         ]);
 
         // Some smaller models add extra explanation after a ";"

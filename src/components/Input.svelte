@@ -27,7 +27,7 @@
 
 <Flex class="w-full flex-col items-start">
     {#if label}
-        <label class="text-medium mt-2 mb-1 ml-2" for={name}>
+        <label class="text-medium mt-2 mb-1 ml-2 text-sm" for={name}>
             {label}
             {#if required}
                 <span class="text-red">*</span>

@@ -20,7 +20,12 @@
     import Session, { type ISession } from '$lib/models/session';
 
     const session: ISession = $derived(Session.find(page.params.session_id));
-    const model: IModel | undefined = $derived(Model.find(session.config.model));
+    const model: IModel | undefined = $derived(
+        Model.findBy({
+            id: session.config.model,
+            engineId: session.config.engineId,
+        })
+    );
 
     const sessions: ISession[] = $derived(Session.all());
     const mcpServers: IMcpServer[] = $derived(McpServer.all());
@@ -31,6 +36,7 @@
 
     async function modelDidUpdate(model: IModel) {
         session.config.model = model.id;
+        session.config.engineId = model.engineId;
         await Session.update(session);
     }
 
@@ -139,17 +145,13 @@
         {#if session}
             <Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
                 {#key session.id}
-                    <Chat {session} bind:model={session.config.model} />
+                    <Chat {session} {model} />
                 {/key}
             </Flex>
 
             <Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
                 {#key session.config.model}
-                    <ModelMenu
-                        {engines}
-                        bind:value={session.config.model}
-                        onselect={modelDidUpdate}
-                    />
+                    <ModelMenu {engines} selected={model} onselect={modelDidUpdate} />
                 {/key}
 
                 {#if !hasModels}

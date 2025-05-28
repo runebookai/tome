@@ -9,6 +9,7 @@ export interface IModel {
     metadata: {
         [key: string]: any; // eslint-disable-line
     };
+    engineId: number;
 }
 
 export default class Model extends BareModel<IModel>() {
@@ -20,7 +21,7 @@ export default class Model extends BareModel<IModel>() {
         return this.find(Config.defaultModel) || Engine.first().models[0];
     }
 
-    static findOrDefault(id: string): IModel {
-        return this.find(id) || this.default();
+    static findByOrDefault(params: Partial<IModel>): IModel {
+        return this.findBy(params) || this.default();
     }
 }

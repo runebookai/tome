@@ -503,6 +503,10 @@ export function BareModel<T extends Obj>() {
             return repo.findBy('id', id);
         }
 
+        static findBy(params: Partial<T>): T | undefined {
+            return repo.find(r => Object.entries(params).every(([key, value]) => r[key] == value));
+        }
+
         static first(): T {
             return repo[0];
         }

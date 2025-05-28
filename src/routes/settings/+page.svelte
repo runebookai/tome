@@ -1,19 +1,24 @@
 <script lang="ts">
-    import Box from '$components/Box.svelte';
+    import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
+    import Scrollable from '$components/Scrollable.svelte';
+    import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
-    import Setting, { type ISetting } from '$lib/models/setting';
+    import Engine, { type IEngine } from '$lib/models/engine';
 
-    const settings: ISetting[] = $derived(Setting.all());
+    const engines: IEngine[] = $derived(Engine.all());
 
+    let adding = $state(false);
     let saving = $state(false);
 
-    async function save(setting: ISetting) {
-        saving = true;
-        await Setting.save(setting);
-        setTimeout(() => (saving = false), 1000);
+    async function ondelete(engine: IEngine) {
+        await Engine.delete(engine.id);
+    }
+
+    function onsave(_: IEngine) {
+        adding = false;
     }
 </script>
 
@@ -29,22 +34,35 @@
 {/snippet}
 
 <Layout {titlebar}>
-    <Flex class="w-full flex-col gap-4 p-8">
-        {#each settings as setting (setting.id)}
-            <Box class="mt-4 w-full flex-col items-start">
-                <label for={setting.key} class="text-light/80 -mt-8 ml-3">
-                    {setting.display}
-                </label>
+    <Scrollable class="!h-content">
+        <Flex class="w-full flex-col gap-4 overflow-y-auto p-8">
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Engines</h2>
+                    <p class="text-medium font-light">
+                        Backends that provide access to LLMs. Any OpenAI API compatible engine is
+                        supported.
+                    </p>
+                    <Button onclick={() => (adding = true)} class="border-purple text-purple mt-4">
+                        Add Engine
+                    </Button>
+                </section>
 
-                <input
-                    type={setting.type}
-                    class="border-light bg-medium text-light mt-2 w-full
-                    rounded-md border p-2 px-4 outline-none"
-                    name={setting.key}
-                    bind:value={setting.value}
-                    onchange={() => save(setting)}
-                />
-            </Box>
-        {/each}
-    </Flex>
+                <Flex class="w-full flex-col items-start gap-2">
+                    {#if adding}
+                        <EngineView
+                            ondelete={() => (adding = false)}
+                            {onsave}
+                            bind:saving
+                            explicitSave
+                        />
+                    {/if}
+
+                    {#each engines as engine, i (engine.id)}
+                        <EngineView bind:saving bind:engine={engines[i]} {ondelete} />
+                    {/each}
+                </Flex>
+            </Flex>
+        </Flex>
+    </Scrollable>
 </Layout>

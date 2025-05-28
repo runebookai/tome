@@ -21,9 +21,12 @@ declare global {
         map<T extends Obj>(o: T, fn: (key: string, value: any) => any): T;
     }
 
+    interface Array<T extends Obj> {
+        sortBy(key: string): T[];
+        findBy(key: string, value: any): T | undefined;
+    }
+
     interface Array<T> {
-        sortBy<T extends Obj>(key: string): T[];
-        findBy<T extends Obj>(key: string, value: any): T | undefined;
         compact(): Array<Exclude<T, undefined>>;
     }
 

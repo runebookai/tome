@@ -37,8 +37,17 @@ interface Row {
 }
 
 export default class Engine extends Base<IEngine, Row>('engines') {
+    static defaults = {
+        name: '',
+        type: 'openai-compat',
+        options: {
+            url: '',
+            apiKey: '',
+        },
+    };
+
     static fromModelId(id: string): IEngine | undefined {
-        return this.findBy({ name: id.split(':')[0] });
+        return this.findBy({ type: id.split(':')[0] as IEngine['type'] });
     }
 
     protected static async fromSql(row: Row): Promise<IEngine> {
@@ -57,14 +66,26 @@ export default class Engine extends Base<IEngine, Row>('engines') {
             'openai-compat': OpenAI,
         }[engine.type];
 
-        const client = new Client(engine.options);
-        const models: IModel[] = (await client.models())
-            .filter(
-                m =>
-                    AVAILABLE_MODELS[engine.type] == 'all' ||
-                    AVAILABLE_MODELS[engine.type].includes(m.name)
-            )
-            .sortBy('name');
+        let client: Client | undefined;
+        let models: IModel[] = [];
+
+        try {
+            client = new Client(engine.options);
+            models = (await client.models())
+                .filter(
+                    m =>
+                        AVAILABLE_MODELS[engine.type] == 'all' ||
+                        AVAILABLE_MODELS[engine.type].includes(m.name)
+                )
+                .map(m => ({
+                    ...m,
+                    id: m.name,
+                    engineId: engine.id,
+                }))
+                .sortBy('name');
+        } catch {
+            // noop
+        }
 
         return {
             ...engine,
