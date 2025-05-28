@@ -17,6 +17,13 @@ use tokio::process::Command;
 //
 pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command> {
     let os_specific_command = match command {
+        "python" => {
+            if cfg!(windows) {
+                return Err(anyhow!("Python not supported on Windows yet"));
+            } else {
+                "python"
+            }
+        }
         "uvx" => {
             if cfg!(windows) {
                 "uvx.exe"
@@ -24,11 +31,25 @@ pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command
                 "uvx"
             }
         }
+        "node" => {
+            if cfg!(windows) {
+                "node.cmd"
+            } else {
+                "node"
+            }
+        }
         "npx" => {
             if cfg!(windows) {
                 "npx.cmd"
             } else {
                 "npx"
+            }
+        }
+        "bunx" => {
+            if cfg!(windows) {
+                "bunx.cmd"
+            } else {
+                "bunx"
             }
         }
         _ => return Err(anyhow!("{} servers not supported.", command)),
