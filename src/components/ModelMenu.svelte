@@ -4,23 +4,20 @@
     import Flex from '$components/Flex.svelte';
     import closables from '$lib/closables';
     import type { IEngine } from '$lib/models/engine';
-    import Model, { type IModel } from '$lib/models/model';
+    import type { IModel } from '$lib/models/model';
 
     interface Props {
         engines: IEngine[];
-        value: string;
+        selected?: IModel;
         onselect?: (model: IModel) => Promise<void>;
     }
 
-    let { engines, onselect, value = $bindable() }: Props = $props();
+    let { engines, onselect, selected }: Props = $props();
     let isOpen = $state(false);
     let ref: ReturnType<typeof Flex>;
 
-    const model = $derived(Model.find(value));
-
     async function select(m: IModel) {
         close();
-        value = m.name;
         await onselect?.(m);
     }
 
@@ -44,7 +41,7 @@
         class="border-light absolute top-0 left-0 w-full justify-between
         rounded-md border p-2 px-4"
     >
-        <p>{model?.name}</p>
+        <p>{selected?.name}</p>
         <p>⏷</p>
     </Flex>
 
@@ -55,21 +52,23 @@
             rounded-t-none border"
         >
             {#each engines as engine (engine.id)}
-                <p class="text-medium px-4 pt-2 pb-2 text-sm font-[500] uppercase">
-                    {engine.name}
-                </p>
+                {#if engine.models.length}
+                    <p class="text-medium px-4 pt-2 pb-2 text-sm font-[500] uppercase">
+                        {engine.name}
+                    </p>
 
-                <div>
-                    {#each engine.models as model (model.id)}
-                        <button
-                            onclick={async () => await select(model)}
-                            class="border-light w-full border-b p-2 px-4 pl-8 text-left
+                    <div>
+                        {#each engine.models as model (model.id)}
+                            <button
+                                onclick={async () => await select(model)}
+                                class="border-light w-full border-b p-2 px-4 pl-8 text-left
                             first:border-t last:border-b-0 hover:cursor-pointer"
-                        >
-                            {model.name}
-                        </button>
-                    {/each}
-                </div>
+                            >
+                                {model.name}
+                            </button>
+                        {/each}
+                    </div>
+                {/if}
             {/each}
         </Flex>
     {/if}

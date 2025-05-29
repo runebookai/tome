@@ -1,8 +1,8 @@
-import { type GenerateContentConfig, GoogleGenAI, type GoogleGenAIOptions } from '@google/genai';
+import { type GenerateContentConfig, GoogleGenAI } from '@google/genai';
 
 import GeminiMessage from '$lib/engines/gemini/message';
 import GeminiTools from '$lib/engines/gemini/tool';
-import type { Client, Options, Tool, ToolCall } from '$lib/engines/types';
+import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engines/types';
 import type { IMessage, IModel } from '$lib/models';
 
 export default class Gemini implements Client {
@@ -10,17 +10,10 @@ export default class Gemini implements Client {
 
     id = 'gemini';
 
-    supportedModels = [
-        'models/gemini-2.5-pro-exp-03-25',
-        'models/gemini-2.0-flash',
-        'models/gemini-2.0-flash-lite',
-        'models/gemini-2.5-flash-preview-05-20',
-        'models/gemini-2.5-pro-preview-05-06',
-        'models/gemini-1.5-pro',
-    ];
-
-    constructor(options: GoogleGenAIOptions) {
-        this.client = new GoogleGenAI(options);
+    constructor(options: ClientOptions) {
+        this.client = new GoogleGenAI({
+            apiKey: options.apiKey,
+        });
     }
 
     async chat(
@@ -68,19 +61,17 @@ export default class Gemini implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        return (await this.client.models.list()).page
-            .filter(model => this.supportedModels.includes(model.name as string))
-            .map(model => {
-                const metadata = model;
-                const name = metadata.name?.replace('models/', '') as string;
+        return (await this.client.models.list()).page.map(model => {
+            const metadata = model;
+            const name = metadata.name?.replace('models/', '') as string;
 
-                return {
-                    id: `gemini:${name}`,
-                    name,
-                    metadata,
-                    supportsTools: true,
-                };
-            });
+            return {
+                id: `gemini:${name}`,
+                name,
+                metadata,
+                supportsTools: true,
+            };
+        });
     }
 
     async info(model: string): Promise<IModel> {

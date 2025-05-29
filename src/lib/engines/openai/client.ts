@@ -1,7 +1,7 @@
-import { type ClientOptions, OpenAI as OpenAIClient } from 'openai';
+import { OpenAI as OpenAIClient } from 'openai';
 
 import OpenAiMessage from '$lib/engines/openai/message';
-import type { Client, Options, Tool, ToolCall } from '$lib/engines/types';
+import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engines/types';
 import { fetch } from '$lib/http';
 import type { IMessage } from '$lib/models/message';
 import type { IModel } from '$lib/models/model';
@@ -11,17 +11,10 @@ export default class OpenAI implements Client {
 
     id = 'openai';
 
-    supportedModels: string[] | 'all' = [
-        'gpt-4o',
-        'o4-mini',
-        'gpt-4.5-preview',
-        'gpt-4.1',
-        'gpt-4.1-mini',
-    ];
-
     constructor(options: ClientOptions) {
         this.client = new OpenAIClient({
-            ...options,
+            apiKey: options.apiKey,
+            baseURL: options.url,
             fetch,
             dangerouslyAllowBrowser: true,
         });
@@ -63,13 +56,7 @@ export default class OpenAI implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        let allModels = (await this.client.models.list()).data;
-
-        if (this.supportedModels !== 'all') {
-            allModels = allModels.filter(model => this.supportedModels.includes(model.id));
-        }
-
-        return allModels.map(model => {
+        return (await this.client.models.list()).data.map(model => {
             const { id, ...metadata } = model;
             const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
 

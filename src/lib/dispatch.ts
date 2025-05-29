@@ -15,9 +15,9 @@ export async function dispatch(
     prompt?: string
 ): Promise<IMessage> {
     const app = App.find(session.appId as number);
-    const engine = Engine.fromModelId(model.id);
+    const engine = Engine.find(model.engineId);
 
-    if (!engine) {
+    if (!engine || !engine.client) {
         error(`MissingEngineError`, model.id);
         throw `MissingEngineError: ${model.id}`;
     }

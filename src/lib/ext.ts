@@ -72,11 +72,11 @@ Object.map = function <T extends Obj>(o: T, fn: (key: string, value: any) => any
  * ```
  */
 Array.prototype.sortBy = function <T extends Obj>(this: T[], key: string): T[] {
-    return this.sort((a, b) => {
+    return [...this].sort((a, b) => {
         if (a[key] < b[key]) return -1;
         if (a[key] > b[key]) return 1;
         return 0;
-    });
+    }) as T[];
 };
 
 /**

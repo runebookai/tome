@@ -7,6 +7,11 @@ export interface Client {
     connected(): Promise<boolean>;
 }
 
+export interface ClientOptions {
+    apiKey: string;
+    url: string;
+}
+
 export interface Options {
     num_ctx?: number;
     temperature?: number;

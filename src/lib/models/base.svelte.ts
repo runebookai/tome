@@ -429,7 +429,8 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
         /**
          * Transform a raw database row into an `Interface` object.
          */
-        protected static async fromSql(_: Row): Promise<Interface> {
+        // eslint-disable-next-line
+        protected static async fromSql(row: Row): Promise<Interface> {
             throw 'NotImplementedError';
         }
 
@@ -437,7 +438,8 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * Transform an `Interface` object into a `Row` of database compatiable
          * values.
          */
-        protected static async toSql(_: ToSqlRow<Interface>): Promise<ToSqlRow<Row>> {
+        // eslint-disable-next-line
+        protected static async toSql(instance: ToSqlRow<Interface>): Promise<ToSqlRow<Row>> {
             throw 'NotImplementedError';
         }
 
@@ -499,6 +501,10 @@ export function BareModel<T extends Obj>() {
 
         static find(id: string): T | undefined {
             return repo.findBy('id', id);
+        }
+
+        static findBy(params: Partial<T>): T | undefined {
+            return repo.find(r => Object.entries(params).every(([key, value]) => r[key] == value));
         }
 
         static first(): T {
