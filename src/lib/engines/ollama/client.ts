@@ -3,18 +3,19 @@ import { Ollama as OllamaClient } from 'ollama/browser';
 import OllamaMessage from '$lib/engines/ollama/message';
 import type { Client, ClientOptions, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import type { IModel } from '$lib/models';
 import Message, { type IMessage } from '$lib/models/message';
-import Setting from '$lib/models/setting';
+import type { IModel } from '$lib/models/model';
 
 export default class Ollama implements Client {
-    client: OllamaClient;
+    private options: ClientOptions;
+    private client: OllamaClient;
 
     message = OllamaMessage;
     modelRole = 'assistant' as Role;
     toolRole = 'tool' as Role;
 
     constructor(options: ClientOptions) {
+        this.options = options;
         this.client = new OllamaClient({
             host: options.url,
             fetch,
@@ -58,9 +59,9 @@ export default class Ollama implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        const models = (await this.client.list()).models;
-
-        return Promise.all(models.map(async model => await this.info(model.name)));
+        return await Promise.all(
+            (await this.client.list()).models.map(async model => await this.info(model.name))
+        );
     }
 
     async info(name: string): Promise<IModel> {
@@ -71,18 +72,15 @@ export default class Ollama implements Client {
         const capabilities = metadata.capabilities as string[];
 
         return {
-            id: `ollama:${name}`,
+            id: name,
             name,
             metadata,
+            engineId: this.options.engine.id,
             supportsTools: capabilities.includes('tools'),
         };
     }
 
     async connected(): Promise<boolean> {
-        if (!Setting.OllamaUrl) {
-            return false;
-        }
-
-        return (await fetch(Setting.OllamaUrl)).status == 200;
+        return (await fetch(new URL(this.options.url).origin, { timeout: 200 })).status == 200;
     }
 }

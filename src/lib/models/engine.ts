@@ -50,6 +50,19 @@ export default class Engine extends Base<IEngine, Row>('engines') {
         return this.findBy({ type: id.split(':')[0] as IEngine['type'] });
     }
 
+    static client(engine: IEngine): Client | undefined {
+        const Client = {
+            ollama: Ollama,
+            openai: OpenAI,
+            gemini: Gemini,
+            'openai-compat': OpenAI,
+        }[engine.type];
+
+        if (Client) {
+            return new Client({ ...engine.options, engine });
+        }
+    }
+
     protected static async fromSql(row: Row): Promise<IEngine> {
         const engine: IEngine = {
             id: row.id,
@@ -59,18 +72,11 @@ export default class Engine extends Base<IEngine, Row>('engines') {
             models: [],
         };
 
-        const Client = {
-            ollama: Ollama,
-            openai: OpenAI,
-            gemini: Gemini,
-            'openai-compat': OpenAI,
-        }[engine.type];
-
         let client: Client | undefined;
         let models: IModel[] = [];
 
         try {
-            client = new Client(engine.options);
+            client = this.client(engine) as Client;
             models = (await client.models())
                 .filter(
                     m =>
