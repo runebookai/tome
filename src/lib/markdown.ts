@@ -10,11 +10,9 @@ export default {
                 },
 
                 code({ text, lang = 'plaintext' }) {
-                    try {
-                        return `<pre><code>${hljs.highlight(text, { language: lang }).value}</code></pre>`;
-                    } catch {
-                        return `<pre><code>${text}</code></pre>`;
-                    }
+                    lang = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    const code = hljs.highlight(text, { language: lang }).value;
+                    return `<pre><code>${code}</code></pre>`;
                 },
             },
         });
