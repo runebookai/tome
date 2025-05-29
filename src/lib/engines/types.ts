@@ -1,4 +1,4 @@
-import type { IMessage, IModel } from '$lib/models';
+import type { IEngine, IMessage, IModel } from '$lib/models';
 
 export interface Client {
     chat(model: IModel, history: IMessage[], tools?: Tool[], options?: Options): Promise<IMessage>;
@@ -8,6 +8,7 @@ export interface Client {
 }
 
 export interface ClientOptions {
+    engine: IEngine;
     apiKey: string;
     url: string;
 }

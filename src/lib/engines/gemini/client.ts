@@ -6,11 +6,13 @@ import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engine
 import type { IMessage, IModel } from '$lib/models';
 
 export default class Gemini implements Client {
+    private options: ClientOptions;
     private client: GoogleGenAI;
 
     id = 'gemini';
 
     constructor(options: ClientOptions) {
+        this.options = options;
         this.client = new GoogleGenAI({
             apiKey: options.apiKey,
         });
@@ -69,6 +71,7 @@ export default class Gemini implements Client {
                 id: `gemini:${name}`,
                 name,
                 metadata,
+                engineId: this.options.engine.id,
                 supportsTools: true,
             };
         });
@@ -81,11 +84,12 @@ export default class Gemini implements Client {
             id: `gemini:${name}`,
             name: displayName as string,
             metadata,
+            engineId: this.options.engine.id,
             supportsTools: true,
         };
     }
 
     async connected(): Promise<boolean> {
-        return true;
+        return true; // Assume Gemini is up
     }
 }

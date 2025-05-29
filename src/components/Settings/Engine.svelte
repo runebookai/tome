@@ -29,35 +29,67 @@
     }: Props = $props();
 
     let connectionError = $state(false);
-    let boxCss = $state('');
     let nameCss = $state('');
     let urlCss = $state('');
 
-    async function validate() {
-        let ret = true;
+    async function validateDefaultEngine() {
+        let valid = true;
+
+        if (engine.type == 'ollama' && engine.options.url !== '') {
+            valid = await validateConnected();
+        }
+
+        if (engine.type !== 'ollama' && engine.options.apiKey !== '') {
+            console.log(engine.options.apiKey);
+            valid = await validateConnected();
+        }
+
+        return valid;
+    }
+
+    async function validateNonDefaultEngine() {
+        let valid = true;
 
         if (engine.name == '') {
             nameCss = '!placeholder-red';
-            ret = false;
+            valid = false;
         }
 
         if (engine.options.url == '') {
             urlCss = 'border-red/25';
-            ret = false;
+            valid = false;
         }
+
+        if (!(await validateConnected())) {
+            connectionError = true;
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    async function validateConnected() {
+        let valid = true;
 
         try {
-            const client = new Client(engine.options);
-            await client.models();
-            boxCss = '';
+            const client = Engine.client(engine) as Client;
+            const connected = await client.connected();
+            if (!connected) throw 'ConnectionError';
             connectionError = false;
         } catch {
-            boxCss = '!border-red';
             connectionError = true;
-            ret = false;
+            valid = false;
         }
 
-        return ret;
+        return valid;
+    }
+
+    async function validate() {
+        if (NON_DELETEABLE_ENGINES.includes(engine.type)) {
+            return await validateDefaultEngine();
+        } else {
+            return await validateNonDefaultEngine();
+        }
     }
 
     async function autosave() {
@@ -80,7 +112,9 @@
     }
 </script>
 
-<Box class={`bg-medium group w-full flex-col items-start gap-2 ${boxCss}`}>
+<Box
+    class={`bg-medium group w-full flex-col items-start gap-2 ${connectionError ? '!border-red' : ''}`}
+>
     <Flex class="w-full justify-between">
         <Flex class="mb-2 items-center">
             {#if NON_DELETEABLE_ENGINES.includes(engine.type)}

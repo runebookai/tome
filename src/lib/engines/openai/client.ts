@@ -7,11 +7,13 @@ import type { IMessage } from '$lib/models/message';
 import type { IModel } from '$lib/models/model';
 
 export default class OpenAI implements Client {
+    private options: ClientOptions;
     private client: OpenAIClient;
 
     id = 'openai';
 
     constructor(options: ClientOptions) {
+        this.options = options;
         this.client = new OpenAIClient({
             apiKey: options.apiKey,
             baseURL: options.url,
@@ -64,6 +66,7 @@ export default class OpenAI implements Client {
                 id: `${this.id}:${name}`,
                 name,
                 metadata,
+                engineId: this.options.engine.id,
                 supportsTools: true,
             };
         });
@@ -73,14 +76,15 @@ export default class OpenAI implements Client {
         const { id, ...metadata } = await this.client.models.retrieve(model);
 
         return {
-            id: `openai:${id}`,
+            id,
             name: id,
             metadata,
+            engineId: this.options.engine.id,
             supportsTools: true,
         };
     }
 
     async connected(): Promise<boolean> {
-        return (await fetch('https://api.openai.com')).status == 200;
+        return (await fetch(new URL(this.options.url).origin, { timeout: 200 })).status == 200;
     }
 }

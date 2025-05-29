@@ -12,7 +12,7 @@ export interface HttpOptions extends RequestInit {
     timeout?: number;
 }
 
-export async function fetch(url: string | URL | Request, options?: RequestInit) {
+export async function fetch(url: string | URL | Request, options: HttpOptions = {}) {
     const response: globalThis.Response = await invoke('fetch', {
         url,
         options,
