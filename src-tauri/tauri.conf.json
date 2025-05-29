@@ -105,7 +105,8 @@
                         "fs:allow-resource-read",
                         "sql:default",
                         "sql:allow-execute",
-                        "updater:default"
+                        "updater:default",
+                        "window-state:default"
                     ]
                 },
                 {
