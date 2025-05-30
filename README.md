@@ -3,7 +3,7 @@
 <img src="static/images/repo-header.png" alt="Tome" />
 
 <p align="center">
-    <code>A Magical AI App that's the easiest way to play with MCP-powered LLMs</code>
+    <code>a magical desktop app that puts the power of LLMs and MCP in the hands of everyone</code>
 </p>
 
 <p align="center">
@@ -12,28 +12,35 @@
     <a href="https://github.com/runebookai/tome/releases" target="_blank"><img src="https://img.shields.io/github/v/release/runebookai/tome" alt="GitHub Release" /></a>
 </p>
 
-<img src="static/images/screenshot.png" alt="Tome Screenshot" />
-
 <p align="center">
-    <a href="https://discord.gg/9CH6us29YA">
-        <img src=".github/images/discord.png" width="150">
-    </a>
+    🔮 Download the Tome Desktop App: <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_x64-setup.exe">Windows</a> | <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_aarch64.dmg">MacOS</a>
 </p>
-
----
 
 # Tome
 
-Tome is the simplest way to get started with LLMs and MCP. Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama or OpenAI/Gemini, find an MCP server via our [Smithery](https://smithery.ai) marketplace integration (or paste your own uvx/npx command), and chat with an MCP-powered model in seconds.
+Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Download Tome, connect any local or remote LLM and hook it up to thousands of MCP servers to create your own magical AI-powered spellbook.
 
-This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
+🫥 Want it to be 100% local, 100% private? Use Ollama and Qwen3 with only local MCP servers to cast spells in your own pocket universe. ⚡ Want state of the art cloud models with the latest remote MCP servers? You can have that too. It's all up to you!
 
-## Features
+🏗️ This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
 
-- Instant connection to Ollama (local or remote) for local model management
-- Integration with cloud AI providers like OpenAI and Google Gemini
-- Chat with MCP-powered models, customize context window and temperature
-- Install MCP servers by pasting in a command (e.g., `uvx mcp-server-fetch`) or through the built-in Smithery marketplace which offers thousands of servers via a single click
+## 🪄 Features
+
+- 🧙 **Streamlined Beginner Friendly Experience**
+  - Simply download and install Tome and hook up the LLM of your choice
+  - No fiddling with JSON, docker, python or node
+- 🤖 **AI Model Support**
+  - **Remote**: Google Gemini, OpenAI, any OpenAI API-compatible endpoint
+  - **Local**: Ollama, LM Studio, Cortex, any OpenAI API-compatible endpoint
+- 🔮 **Enhanced MCP support**
+  - Install, remove, turn on/off MCP servers within the UI
+  - npm, uvx, node, python MCP servers all supported out of box
+- 🏪 **Integration into Smithery.ai registry**
+  - Thousands of MCP servers available via one-click installation
+- ✏️ **Customization of context windows and temperature**
+- 🧰 **Native support for tool calls and reasoning models**
+  - UI enhancements that clearly delineate tool calls and thinking messages
+
 
 # Getting Started
 
