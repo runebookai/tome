@@ -1,18 +1,15 @@
-# Tome - Your Magical AI Spellbook
+# Tome - Magical AI Spellbook
 
 <img src="static/images/repo-header.png" alt="Tome" />
 
 <p align="center">
-    <code>A magical tool for using LLMs with MCP servers</code>
+    <code>A Magical AI App that's the easiest way to play with MCP-powered LLMs</code>
 </p>
 
 <p align="center">
-    <a href="[https://discord.gg/1365100902561742868](https://discord.gg/9CH6us29YA)" target="_blank">
-      <img src="https://img.shields.io/discord/1365100902561742868?logo=discord&logoColor=fff&label=Join%20Us!&color=9D7CD8" alt="Join Us! on Discord" />
-    </a>
-    <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">
-      <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0" />
-    </a>
+    <a href="[https://discord.gg/1365100902561742868](https://discord.gg/9CH6us29YA)" target="_blank"><img src="https://img.shields.io/discord/1365100902561742868?logo=discord&logoColor=fff&label=Join%20Us!&color=9D7CD8" alt="Join Us on Discord" /></a>
+    <a href="https://opensource.org/licenses/Apache-2.0" target="_blank"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0" /></a>
+    <a href="https://github.com/runebookai/tome/releases" target="_blank"><img src="https://img.shields.io/github/v/release/runebookai/tome" alt="GitHub Release" /></a>
 </p>
 
 <img src="static/images/screenshot.png" alt="Tome Screenshot" />
