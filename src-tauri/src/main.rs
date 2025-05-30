@@ -16,6 +16,7 @@ use std::sync::OnceLock;
 use process::Process;
 use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
+use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
 use crate::migrations::migrations;
 use crate::state::State;
@@ -28,6 +29,7 @@ static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
 
 fn main() {
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
@@ -65,6 +67,8 @@ fn main() {
             #[cfg(target_os = "macos")]
             configure_macos_window(&window);
 
+            let _ = window.restore_state(StateFlags::all());
+
             app.deep_link().on_open_url(|event| {
                 deeplink::handle(event.urls());
             });
@@ -90,11 +94,19 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error running Tome");
 
-    app.run(|_, event| {
-        if let RunEvent::Exit = event {
-            // Ensure we kill every child (and child of child, of child, etc.)
-            // MCP server process
-            Process::current().kill().unwrap();
+    app.run(|app, event| {
+        match event {
+            RunEvent::ExitRequested { .. } => {
+                let _ = app.save_window_state(StateFlags::all());
+            }
+
+            RunEvent::Exit => {
+                // Ensure we kill every child (and child of child, of child, etc.)
+                // MCP server process
+                Process::current().kill().unwrap();
+            }
+
+            _ => {}
         }
     });
 }
