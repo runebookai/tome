@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.6.0 - 2025-05-30
+
+### New Features
+
+- Engines reworked to support any OpenAI API-compatible engine – eg. vLLM or
+  Cortex.cpp
+- Supports MCP servers using `node`, `python`, and `bunx` now.
+
+### Improvements
+
+- Improved Tool Call UI
+    - Arguments are truncated in the single line preview to prevent a multi-line
+      preview
+    - Expanded Tool Call UI now explicitly shows the Arguments passed to the MCP
+      server as well as the result
+- Syntax highlighting added to Chat
+- Window position and size preserved through restarts
+- Redesigned Settings tab to support Engines more explicitly
+
+### Refactors
+
+- Rewrote most of the Engine code to support arbitrary OpenAI API-compatible
+  engines.
+- Prettier-ified codebase
+
+### Fixes
+
+- Fixed issue with user messages overflowing chat area
+
 ## 0.5.0 - 2025-05-22
 
 ![developers developers developers](https://github.com/runebookai/tome/blob/9dcb808e2fadceb9710e9c77843dcb06640c90b1/.github/images/bill.png)
