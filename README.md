@@ -28,14 +28,14 @@ Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Do
 
 - 🧙 **Streamlined Beginner Friendly Experience**
   - Simply download and install Tome and hook up the LLM of your choice
-  - No fiddling with JSON, docker, python or node
+  - No fiddling with JSON, Docker, python or node
 - 🤖 **AI Model Support**
   - **Remote**: Google Gemini, OpenAI, any OpenAI API-compatible endpoint
   - **Local**: Ollama, LM Studio, Cortex, any OpenAI API-compatible endpoint
 - 🔮 **Enhanced MCP support**
-  - Install, remove, turn on/off MCP servers within the UI
+  - UI to install, remove, turn on/off MCP servers
   - npm, uvx, node, python MCP servers all supported out of box
-- 🏪 **Integration into Smithery.ai registry**
+- 🏪 **Integration into [Smithery.ai](https://smithery.ai) registry**
   - Thousands of MCP servers available via one-click installation
 - ✏️ **Customization of context windows and temperature**
 - 🧰 **Native support for tool calls and reasoning models**
@@ -72,8 +72,10 @@ of whether you're an engineer, tinkerer, hobbyist, or anyone in between.
 
 ## What's Next
 
-- Model support: Currently Tome uses Ollama for model management but we'd like to expand support for other LLM engines and possibly even cloud models, let us know if you have any requests.
-- Operating system support: We're planning on adding support for Windows, followed by Linux.
+We've gotten a lot of amazing feedback in the last few weeks since releasing Tome but we've got big plans for the future. We want to break LLMs out of their chatbox, and we've got a lot of features coming to help y'all do that.
+
+- Scheduled tasks: LLMs should be doing helpful things even when you're not in front of the computer.
+- Native integrations: MCP servers are a great way to access tools and information, but we want to add more powerful integrations to interact with LLMs in unique. ways
 - App builder: we believe long term that the best experiences will not be in a chat interface. We have plans to add additional tools that will enable you to create powerful applications and workflows.
 - ??? Let us know what you'd like to see! Join our community via the links below, we'd love to hear from you.
 
