@@ -4,9 +4,12 @@ import type { PageLoad } from './$types';
 
 import { CHAT_APP_ID } from '$lib/const';
 import Config from '$lib/models/config';
+import Model from '$lib/models/model';
 import Session from '$lib/models/session';
 
 export const load: PageLoad = async ({ params }): Promise<void> => {
+    await Model.sync();
+
     if (params.session_id == 'new') {
         const session = await Session.create({ appId: CHAT_APP_ID });
         await goto(`/chat/${session.id}`);
