@@ -5,6 +5,7 @@ import Ollama from '$lib/engines/ollama/client';
 import OpenAI from '$lib/engines/openai/client';
 import type { Client, ClientOptions } from '$lib/engines/types';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import Model from '$lib/models/model';
 
 const AVAILABLE_MODELS: Record<IEngine['type'], 'all' | string[]> = {
     'openai-compat': 'all',
@@ -61,6 +62,11 @@ export default class Engine extends Base<IEngine, Row>('engines') {
         if (Client) {
             return new Client({ ...engine.options, engine });
         }
+    }
+
+    protected static async afterUpdate(engine: IEngine): Promise<IEngine> {
+        await Model.sync();
+        return engine;
     }
 
     protected static async fromSql(row: Row): Promise<IEngine> {

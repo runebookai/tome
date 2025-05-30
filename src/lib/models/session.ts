@@ -36,15 +36,19 @@ interface Row {
 }
 
 export default class Session extends Base<ISession, Row>('sessions') {
-    static defaults = () => ({
-        summary: DEFAULT_SUMMARY,
-        config: {
-            model: Model.default().id,
-            contextWindow: 4096,
-            temperature: 0.8,
-            enabledMcpServers: [],
-        },
-    });
+    static defaults = () => {
+        const model = Model.default();
+        return {
+            summary: DEFAULT_SUMMARY,
+            config: {
+                model: model.id,
+                engineId: model.engineId,
+                contextWindow: 4096,
+                temperature: 0.8,
+                enabledMcpServers: [],
+            },
+        };
+    };
 
     static app(session: ISession): IApp | undefined {
         if (!session.appId) return;
