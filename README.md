@@ -1,44 +1,62 @@
+# Tome - Magical AI Spellbook
+
 <img src="static/images/repo-header.png" alt="Tome" />
 
 <p align="center">
-    <code>A magical tool for using LLMs with MCP servers</code>
+    <code>a magical desktop app that puts the power of LLMs and MCP in the hands of everyone</code>
 </p>
-
-<img src="static/images/screenshot.png" alt="Tome Screenshot" />
 
 <p align="center">
-    <a href="https://discord.gg/9CH6us29YA">
-        <img src=".github/images/discord.png" width="150">
-    </a>
+    <a href="[https://discord.gg/1365100902561742868](https://discord.gg/9CH6us29YA)" target="_blank"><img src="https://img.shields.io/discord/1365100902561742868?logo=discord&logoColor=fff&label=Join%20Us!&color=9D7CD8" alt="Join Us on Discord" /></a>
+    <a href="https://opensource.org/licenses/Apache-2.0" target="_blank"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0" /></a>
+    <a href="https://github.com/runebookai/tome/releases" target="_blank"><img src="https://img.shields.io/github/v/release/runebookai/tome" alt="GitHub Release" /></a>
 </p>
 
----
+<p align="center">
+    🔮 Download the Tome Desktop App: <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_x64-setup.exe">Windows</a> | <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_aarch64.dmg">MacOS</a>
+</p>
 
 # Tome
 
-Tome is the simplest way to get started with LLMs and MCP. Tome manages your MCP servers so there's no fiddling with uv/npm or json files - connect it to Ollama or OpenAI/Gemini, find an MCP server via our [Smithery](https://smithery.ai) marketplace integration (or paste your own uvx/npx command), and chat with an MCP-powered model in seconds.
+Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Download Tome, connect any local or remote LLM and hook it up to thousands of MCP servers to create your own magical AI-powered spellbook.
 
-This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
+🫥 Want it to be 100% local, 100% private? Use Ollama and Qwen3 with only local MCP servers to cast spells in your own pocket universe. ⚡ Want state of the art cloud models with the latest remote MCP servers? You can have that too. It's all up to you!
 
-## Features
+🏗️ This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
 
-- Instant connection to Ollama (local or remote) for local model management
-- Integration with cloud AI providers like OpenAI and Google Gemini
-- Chat with MCP-powered models, customize context window and temperature
-- Install MCP servers by pasting in a command (e.g., `uvx mcp-server-fetch`) or through the built-in Smithery marketplace which offers thousands of servers via a single click
+## 🪄 Features
+
+- 🧙 **Streamlined Beginner Friendly Experience**
+  - Simply download and install Tome and hook up the LLM of your choice
+  - No fiddling with JSON, Docker, python or node
+- 🤖 **AI Model Support**
+  - **Remote**: Google Gemini, OpenAI, any OpenAI API-compatible endpoint
+  - **Local**: Ollama, LM Studio, Cortex, any OpenAI API-compatible endpoint
+- 🔮 **Enhanced MCP support**
+  - UI to install, remove, turn on/off MCP servers
+  - npm, uvx, node, python MCP servers all supported out of box
+- 🏪 **Integration into [Smithery.ai](https://smithery.ai) registry**
+  - Thousands of MCP servers available via one-click installation
+- ✏️ **Customization of context windows and temperature**
+- 🧰 **Native support for tool calls and reasoning models**
+  - UI enhancements that clearly delineate tool calls and thinking messages
+
+## Demo
+
+https://github.com/user-attachments/assets/0775d100-3eba-4219-9e2f-360a01f28cce
 
 # Getting Started
 
 ## Requirements
 
 - MacOS or Windows (Linux coming soon!)
-- [Ollama](https://ollama.com/) or an OpenAI or Gemini API key
+- LLM Provider of your choice: [Ollama](https://ollama.com/) or [Gemini API key](https://aistudio.google.com/app/apikey) are easy/free
 - [Download the latest release of Tome](https://github.com/runebookai/tome/releases)
 
 ## Quickstart
 
-1. Install [Tome](https://github.com/runebookai/tome/releases) and [Ollama](https://ollama.com) (or add an OpenAI or Gemini API key)
-2. Install a [Tool supported model](https://ollama.com/search?c=tools) (we're partial to [Qwen3](https://ollama.com/library/qwen3), either 14B or 8B depending on your RAM)
+1. Install [Tome](https://github.com/runebookai/tome/releases)
+2. Connect your preferred LLM provider
 3. Open the MCP tab in Tome and install your first [MCP server](https://github.com/modelcontextprotocol/servers) (Fetch is an easy one to get started with, just paste `uvx mcp-server-fetch` into the server field).
 4. Chat with your MCP-powered model! Ask it to fetch the top story on Hacker News.
 
@@ -54,8 +72,10 @@ of whether you're an engineer, tinkerer, hobbyist, or anyone in between.
 
 ## What's Next
 
-- Model support: Currently Tome uses Ollama for model management but we'd like to expand support for other LLM engines and possibly even cloud models, let us know if you have any requests.
-- Operating system support: We're planning on adding support for Windows, followed by Linux.
+We've gotten a lot of amazing feedback in the last few weeks since releasing Tome but we've got big plans for the future. We want to break LLMs out of their chatbox, and we've got a lot of features coming to help y'all do that.
+
+- Scheduled tasks: LLMs should be doing helpful things even when you're not in front of the computer.
+- Native integrations: MCP servers are a great way to access tools and information, but we want to add more powerful integrations to interact with LLMs in unique. ways
 - App builder: we believe long term that the best experiences will not be in a chat interface. We have plans to add additional tools that will enable you to create powerful applications and workflows.
 - ??? Let us know what you'd like to see! Join our community via the links below, we'd love to hear from you.
 
