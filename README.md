@@ -41,19 +41,22 @@ Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Do
 - 🧰 **Native support for tool calls and reasoning models**
   - UI enhancements that clearly delineate tool calls and thinking messages
 
+## Demo
+
+https://github.com/user-attachments/assets/0775d100-3eba-4219-9e2f-360a01f28cce
 
 # Getting Started
 
 ## Requirements
 
 - MacOS or Windows (Linux coming soon!)
-- [Ollama](https://ollama.com/) or an OpenAI or Gemini API key
+- LLM Provider of your choice: [Ollama](https://ollama.com/) or [Gemini API key](https://aistudio.google.com/app/apikey) are easy/free
 - [Download the latest release of Tome](https://github.com/runebookai/tome/releases)
 
 ## Quickstart
 
-1. Install [Tome](https://github.com/runebookai/tome/releases) and [Ollama](https://ollama.com) (or add an OpenAI or Gemini API key)
-2. Install a [Tool supported model](https://ollama.com/search?c=tools) (we're partial to [Qwen3](https://ollama.com/library/qwen3), either 14B or 8B depending on your RAM)
+1. Install [Tome](https://github.com/runebookai/tome/releases)
+2. Connect your preferred LLM provider
 3. Open the MCP tab in Tome and install your first [MCP server](https://github.com/modelcontextprotocol/servers) (Fetch is an easy one to get started with, just paste `uvx mcp-server-fetch` into the server field).
 4. Chat with your MCP-powered model! Ask it to fetch the top story on Hacker News.
 
