@@ -26,7 +26,7 @@ export default class OpenAI implements Client {
         model: IModel,
         history: IMessage[],
         tools: Tool[] = [],
-        options: Options = {}
+        _options: Options = {}
     ): Promise<IMessage> {
         const messages = history.map(m => OpenAiMessage.from(m));
         const response = await this.client.chat.completions.create({
