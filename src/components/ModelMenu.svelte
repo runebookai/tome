@@ -3,11 +3,10 @@
 
     import Flex from '$components/Flex.svelte';
     import closables from '$lib/closables';
-    import type { IEngine } from '$lib/models/engine';
-    import type { IModel } from '$lib/models/model';
+    import { Engine, type IModel } from '$lib/models';
 
     interface Props {
-        engines: IEngine[];
+        engines: Engine[];
         selected?: IModel;
         onselect?: (model: IModel) => Promise<void>;
     }

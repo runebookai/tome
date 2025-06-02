@@ -1,19 +1,16 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 
-    import Scrollable from './Scrollable.svelte';
-
     import Flex from '$components/Flex.svelte';
-    import Message from '$components/Message.svelte';
+    import MessageView from '$components/Message.svelte';
+    import Scrollable from '$components/Scrollable.svelte';
     import { dispatch } from '$lib/dispatch';
-    import type { IMessage } from '$lib/models/message';
-    import type { IModel } from '$lib/models/model';
-    import Session, { type ISession } from '$lib/models/session';
+    import { type IModel, Message, Session } from '$lib/models';
 
     interface Props {
-        session: ISession;
+        session: Session;
         model?: IModel;
-        onMessages?: (message: IMessage[]) => Promise<void>;
+        onMessages?: (message: Message[]) => Promise<void>;
     }
 
     const { session, model }: Props = $props();
@@ -25,7 +22,7 @@
     let content: HTMLDivElement;
 
     // Full history of chat messages in this session
-    const messages: IMessage[] = $derived(Session.messages(session));
+    const messages: Message[] = $derived(session.messages);
 
     // Is the LLM processing (when true, we show the ellipsis)
     let loading = $state(false);
@@ -100,7 +97,7 @@
                 <Flex id="messages" class="w-full flex-col items-start">
                     <!-- Svelte hack: ensure chat is always scrolled to the bottom when a new message is added -->
                     <div use:scrollToBottom class="hidden"></div>
-                    <Message {message} />
+                    <MessageView {message} />
                 </Flex>
             {/each}
 

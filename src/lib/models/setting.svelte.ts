@@ -1,5 +1,5 @@
-import Model, { type ToSqlRow } from '$lib/models/base.svelte';
-import Engine from '$lib/models/engine';
+import { Engine } from '$lib/models';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 // OpenAI API Key
 const OPENAI_API_KEY = 'openai-api-key';
@@ -10,14 +10,6 @@ const GEMINI_API_KEY = 'gemini-api-key';
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
 
-export interface ISetting {
-    id?: number;
-    display: string;
-    key: string;
-    value: unknown;
-    type: string;
-}
-
 interface Row {
     id: number;
     display: string;
@@ -26,7 +18,13 @@ interface Row {
     type: string;
 }
 
-export default class Setting extends Model<ISetting, Row>('settings') {
+export default class Setting extends Base<Row>('settings') {
+    id?: number = $state();
+    display: string = $state('');
+    key: string = $state('');
+    value: unknown = $state('');
+    type: string = $state('');
+
     static get OllamaUrl(): string | undefined {
         return this.findBy({ key: OLLAMA_URL_CONFIG_KEY })?.value as string | undefined;
     }
@@ -39,28 +37,27 @@ export default class Setting extends Model<ISetting, Row>('settings') {
         return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
     }
 
-    protected static async afterUpdate(setting: ISetting): Promise<ISetting> {
+    protected async afterUpdate() {
         // Resync models in case a Provider key/url was updated.
         await Engine.sync();
-        return setting;
     }
 
-    protected static async fromSql(row: Row): Promise<ISetting> {
-        return {
+    protected static async fromSql(row: Row): Promise<Setting> {
+        return Setting.new({
             id: row.id,
             display: row.display,
             key: row.key,
             value: row.value ? JSON.parse(row.value) : null,
             type: row.type,
-        };
+        });
     }
 
-    protected static async toSql(setting: ISetting): Promise<ToSqlRow<Row>> {
+    protected async toSql(): Promise<ToSqlRow<Row>> {
         return {
-            display: setting.display,
-            key: setting.key,
-            value: JSON.stringify(setting.value),
-            type: setting.type,
+            display: this.display,
+            key: this.key,
+            value: JSON.stringify(this.value),
+            type: this.type,
         };
     }
 }

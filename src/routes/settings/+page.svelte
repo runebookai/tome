@@ -6,18 +6,18 @@
     import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
-    import Engine, { type IEngine } from '$lib/models/engine';
+    import Engine from '$lib/models/engine.svelte';
 
-    const engines: IEngine[] = $derived(Engine.all());
+    const engines: Engine[] = $derived(Engine.all());
 
     let adding = $state(false);
     let saving = $state(false);
 
-    async function ondelete(engine: IEngine) {
-        await Engine.delete(engine.id);
+    async function ondelete(engine: Engine) {
+        await engine.delete();
     }
 
-    function onsave(_: IEngine) {
+    function onsave(_: Engine) {
         adding = false;
     }
 </script>

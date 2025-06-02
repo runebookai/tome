@@ -2,10 +2,10 @@
     import { onMount } from 'svelte';
 
     import Flex from '$components/Flex.svelte';
-    import type { IMessage } from '$lib/models/message';
+    import { Message } from '$lib/models';
 
     interface Props {
-        message: IMessage;
+        message: Message;
     }
 
     const MAX_HEIGHT_PER_LINE = 28;
