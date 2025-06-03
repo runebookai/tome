@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2 - 2025-06-03
+
+### Fixes
+
+- Fixes false negetive issue when validating Engines
+
 ## 0.6.1 - 2025-06-03
 
 ### Fixes
