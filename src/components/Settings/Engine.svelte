@@ -40,7 +40,6 @@
         }
 
         if (engine.type !== 'ollama' && engine.options.apiKey !== '') {
-            console.log(engine.options.apiKey);
             valid = await validateConnected();
         }
 
