@@ -85,6 +85,12 @@ export default class OpenAI implements Client {
     }
 
     async connected(): Promise<boolean> {
-        return (await fetch(new URL(this.options.url).origin, { timeout: 200 })).status == 200;
+        try {
+            const resp = await this.client.models.list().asResponse();
+            const body = await resp.json();
+            return !Object.hasOwn(body, 'error');
+        } catch {
+            return false;
+        }
     }
 }

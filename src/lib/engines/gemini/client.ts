@@ -90,6 +90,11 @@ export default class Gemini implements Client {
     }
 
     async connected(): Promise<boolean> {
-        return true; // Assume Gemini is up
+        try {
+            await this.client.models.list();
+            return true;
+        } catch {
+            return false;
+        }
     }
 }
