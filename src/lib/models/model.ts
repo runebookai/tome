@@ -18,7 +18,7 @@ export default class Model extends BareModel<IModel>() {
     }
 
     static default(): IModel {
-        return this.find(Config.defaultModel) || Engine.first().models[0];
+        return this.find(Config.defaultModel) || this.first();
     }
 
     static findByOrDefault(params: Partial<IModel>): IModel {
