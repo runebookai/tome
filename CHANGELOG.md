@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1 - 2025-06-03
+
+### Fixes
+
+- Fixed issue causing infinite errors when Ollama not configured
+
 ## 0.6.0 - 2025-05-30
 
 ### New Features
