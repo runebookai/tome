@@ -10,6 +10,9 @@ const GEMINI_API_KEY = 'gemini-api-key';
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
 
+// Custom System Prompt
+export const CUSTOM_SYSTEM_PROMPT = 'custom-system-prompt';
+
 export interface ISetting {
     id?: number;
     display: string;
@@ -37,6 +40,10 @@ export default class Setting extends Model<ISetting, Row>('settings') {
 
     static get GeminiApiKey(): string | undefined {
         return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
+    }
+
+    static get CustomSystemPrompt(): string | undefined {
+        return this.findBy({ key: CUSTOM_SYSTEM_PROMPT })?.value as string | undefined;
     }
 
     protected static async afterUpdate(setting: ISetting): Promise<ISetting> {

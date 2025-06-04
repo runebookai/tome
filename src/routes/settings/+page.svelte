@@ -3,6 +3,7 @@
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Scrollable from '$components/Scrollable.svelte';
+    import CustomPromptView from '$components/Settings/CustomPrompt.svelte';
     import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
@@ -35,7 +36,21 @@
 
 <Layout {titlebar}>
     <Scrollable class="!h-content">
-        <Flex class="w-full flex-col gap-4 overflow-y-auto p-8">
+        <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Custom Prompt</h2>
+                    <p class="text-medium font-light">
+                        Set a custom system prompt that will be used for all new conversations
+                        instead of the default prompt.
+                    </p>
+                </section>
+
+                <Flex class="w-full flex-col items-start">
+                    <CustomPromptView bind:saving />
+                </Flex>
+            </Flex>
+
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Engines</h2>
