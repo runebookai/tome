@@ -9,6 +9,7 @@ import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 import type { IMcpServer } from '$lib/models/mcp-server';
 import Message, { type IMessage } from '$lib/models/message';
 import Model from '$lib/models/model';
+import Setting from '$lib/models/setting';
 
 export const DEFAULT_SUMMARY = 'Untitled';
 export interface ISession {
@@ -135,11 +136,19 @@ export default class Session extends Base<ISession, Row>('sessions') {
     }
 
     protected static async afterCreate(session: ISession): Promise<ISession> {
+        // Use custom system prompt if available, otherwise use default
+        const customPrompt = Setting.CustomSystemPrompt;
+
+        // Use custom prompt only if it exists and is not empty
+        const systemPrompt =
+            customPrompt && customPrompt.trim() !== ''
+                ? customPrompt
+                : 'You are Tome, created by Runebook, which is an software company located in Oakland, CA. You are a helpful assistant.';
+
         await Message.create({
             sessionId: session.id,
             role: 'system',
-            content:
-                'You are Tome, created by Runebook, which is an software company located in Oakland, CA. You are a helpful assistant.',
+            content: systemPrompt,
         });
 
         await Message.create({
