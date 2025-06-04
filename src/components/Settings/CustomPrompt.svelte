@@ -15,7 +15,7 @@
     let saveTimeout: number | undefined;
     let isSaving = $state(false);
 
-    const MAX_PROMPT_LENGTH = 5000; // Reasonable limit for system prompts
+    const MAX_PROMPT_LENGTH = 5000;
     const isValid = $derived(customPrompt.length <= MAX_PROMPT_LENGTH);
 
     // Load existing custom prompt on component mount
@@ -26,7 +26,6 @@
         }
     });
 
-    // Cleanup timeout on component destroy
     onDestroy(() => {
         if (saveTimeout) {
             clearTimeout(saveTimeout);
@@ -57,28 +56,23 @@
             setTimeout(() => (saving = false), 2000);
         } catch (error) {
             console.error('Failed to save custom prompt:', error);
-            // Could add user notification here
         } finally {
             isSaving = false;
         }
     }
 
     function onBlur() {
-        // Clear any pending save timeout
         if (saveTimeout) {
             clearTimeout(saveTimeout);
             saveTimeout = undefined;
         }
-        // Save immediately when focus is lost
         save();
     }
 
     function onInput() {
-        // Clear any existing timeout
         if (saveTimeout) {
             clearTimeout(saveTimeout);
         }
-        // Set a debounced save for 2 seconds of inactivity
         saveTimeout = setTimeout(() => {
             saveTimeout = undefined;
             save();

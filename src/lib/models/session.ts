@@ -139,7 +139,6 @@ export default class Session extends Base<ISession, Row>('sessions') {
         // Use custom system prompt if available, otherwise use default
         const customPrompt = Setting.CustomSystemPrompt;
 
-        // Use custom prompt only if it exists and is not empty
         const systemPrompt =
             customPrompt && customPrompt.trim() !== ''
                 ? customPrompt
