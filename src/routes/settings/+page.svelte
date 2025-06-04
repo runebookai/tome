@@ -37,7 +37,6 @@
 <Layout {titlebar}>
     <Scrollable class="!h-content">
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
-            <!-- Custom Prompt Section -->
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Custom Prompt</h2>
@@ -52,7 +51,6 @@
                 </Flex>
             </Flex>
 
-            <!-- Engines Section -->
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Engines</h2>
