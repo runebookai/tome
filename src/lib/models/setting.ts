@@ -1,4 +1,3 @@
-import Ollama from '$lib/engines/ollama/client';
 import Model, { type ToSqlRow } from '$lib/models/base.svelte';
 import Engine from '$lib/models/engine';
 
@@ -38,14 +37,6 @@ export default class Setting extends Model<ISetting, Row>('settings') {
 
     static get GeminiApiKey(): string | undefined {
         return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
-    }
-
-    static async validate(setting: ISetting): Promise<boolean> {
-        if (setting.key == OLLAMA_URL_CONFIG_KEY) {
-            const client = new Ollama(setting.value as string);
-            return await client.connected();
-        }
-        return true;
     }
 
     protected static async afterUpdate(setting: ISetting): Promise<ISetting> {
