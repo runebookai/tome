@@ -24,16 +24,28 @@ export default class Gemini implements Client {
         tools?: Tool[],
         options?: Options
     ): Promise<Message> {
-        const messages = history.map(m => GeminiMessage.from(m)).compact();
+        // Extract system messages for system instructions
+        const systemMessages = history.filter(m => m.role === 'system');
+        const nonSystemMessages = history.filter(m => m.role !== 'system');
 
-        let config: GenerateContentConfig = {
+        // Convert non-system messages to Gemini format
+        const messages = nonSystemMessages.map(m => GeminiMessage.from(m)).compact();
+
+        const config: GenerateContentConfig = {
             temperature: options?.temperature,
         };
 
-        if (tools && tools.length) {
-            config = {
-                tools: GeminiTools.from(tools),
+        // Add system instruction if system messages exist
+        if (systemMessages.length > 0) {
+            // Combine all system messages into one instruction
+            const systemInstruction = systemMessages.map(m => m.content).join('\n\n');
+            config.systemInstruction = {
+                parts: [{ text: systemInstruction }],
             };
+        }
+
+        if (tools && tools.length) {
+            config.tools = GeminiTools.from(tools);
         }
 
         const { text, functionCalls } = await this.client.models.generateContent({

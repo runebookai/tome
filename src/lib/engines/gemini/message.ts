@@ -16,7 +16,7 @@ export function from(message: Message): Content | undefined {
     } else if (message.role == 'tool') {
         return fromToolResponse(message);
     } else if (message.role == 'system') {
-        return; // Gemini doesn't support System prompts
+        return;
     } else {
         return fromAny(message);
     }
