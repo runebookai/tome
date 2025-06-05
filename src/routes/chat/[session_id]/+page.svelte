@@ -13,13 +13,13 @@
     import ModelMenu from '$components/ModelMenu.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
-    import Engine, { type IEngine } from '$lib/models/engine';
-    import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
-    import Message from '$lib/models/message';
+    import Engine from '$lib/models/engine.svelte';
+    import McpServer from '$lib/models/mcp-server.svelte';
+    import Message from '$lib/models/message.svelte';
     import Model, { type IModel } from '$lib/models/model';
-    import Session, { type ISession } from '$lib/models/session';
+    import Session from '$lib/models/session.svelte';
 
-    const session: ISession = $derived(Session.find(page.params.session_id));
+    const session: Session = $derived(Session.find(Number(page.params.session_id)));
     const model: IModel | undefined = $derived(
         Model.findBy({
             id: session.config.model,
@@ -27,9 +27,9 @@
         })
     );
 
-    const sessions: ISession[] = $derived(Session.all());
-    const mcpServers: IMcpServer[] = $derived(McpServer.all());
-    const engines: IEngine[] = $derived(Engine.all());
+    const sessions: Session[] = $derived(Session.all());
+    const mcpServers: McpServer[] = $derived(McpServer.all());
+    const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);
 
     let advancedIsOpen = $state(false);
@@ -37,11 +37,11 @@
     async function modelDidUpdate(model: IModel) {
         session.config.model = model.id;
         session.config.engineId = model.engineId;
-        await Session.update(session);
+        await session.save();
     }
 
-    async function startMcpServers(session: ISession) {
-        session.config.enabledMcpServers.forEach(async name => {
+    async function startMcpServers(session: Session) {
+        session.config.enabledMcpServers?.forEach(async name => {
             const server = mcpServers.find(s => s.name == name);
 
             if (server) {
@@ -50,14 +50,14 @@
         });
     }
 
-    async function startMcpServer(server: IMcpServer) {
-        await McpServer.start(server, session);
-        await Session.addMcpServer(session, server);
+    async function startMcpServer(server: McpServer) {
+        await server.start(session);
+        await session.addMcpServer(server);
     }
 
-    async function stopMcpServer(server: IMcpServer) {
-        await McpServer.stop(server, session);
-        await Session.removeMcpServer(session, server);
+    async function stopMcpServer(server: McpServer) {
+        await server.stop(session);
+        await session.removeMcpServer(server);
     }
 
     async function addSession() {
@@ -65,24 +65,24 @@
         await goto(`/chat/${session.id}`);
     }
 
-    async function deleteSession(sess: ISession) {
+    async function deleteSession(sess: Session) {
         if (!sess.id) return;
 
         await invoke('stop_session', { sessionId: sess.id });
-        await Message.deleteBy({ session_id: sess.id });
-        await Session.delete(sess.id as number);
+        await Message.deleteBy({ sessionId: sess.id });
+        await sess.delete();
         await goto(`/chat/${sessions[sessions.length - 1].id}`);
     }
 
     async function saveSession() {
-        await Session.save(session);
+        await session.save();
     }
 
     function toggleAdvanced() {
         advancedIsOpen = advancedIsOpen ? false : true;
     }
 
-    function menuItems(session: ISession): MenuItem[] {
+    function menuItems(session: Session): MenuItem[] {
         return [
             {
                 label: 'Delete',
@@ -180,8 +180,7 @@
                         <Flex class="text-light z-0 mb-4 ml-2">
                             <Toggle
                                 label={server.name}
-                                value={Session.hasMcpServer(session, server.name) &&
-                                model?.supportsTools
+                                value={session.hasMcpServer(server.name) && model?.supportsTools
                                     ? 'on'
                                     : 'off'}
                                 disabled={!model?.supportsTools}

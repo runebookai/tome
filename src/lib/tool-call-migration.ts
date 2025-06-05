@@ -1,6 +1,6 @@
 import uuid4 from 'uuid4';
 
-import Message from '$lib/models/message';
+import { Message } from '$lib/models';
 
 export async function migrate() {
     await Promise.all(
@@ -15,13 +15,13 @@ export async function migrate() {
                     // now if that's the case.
                     if (!tc.id) {
                         tc.id = uuid4();
-                        await Message.save(message);
+                        await message.save();
                     }
 
                     // Tool responses are always the following message
                     const response = Message.find(Number(message.id) + 1);
                     response.toolCallId = tc.id;
-                    await Message.save(response);
+                    await response.save();
                 })
             );
         })

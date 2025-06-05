@@ -6,7 +6,7 @@
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Svg from '$components/Svg.svelte';
-    import Config from '$lib/models/config';
+    import Config from '$lib/models/config.svelte';
     import { availableUpdate } from '$lib/updates';
 
     let update: Update | null = $state(null);

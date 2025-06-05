@@ -2,16 +2,16 @@ import { type GenerateContentConfig, GoogleGenAI } from '@google/genai';
 
 import GeminiMessage from '$lib/engines/gemini/message';
 import GeminiTools from '$lib/engines/gemini/tool';
-import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engines/types';
-import type { IMessage, IModel } from '$lib/models';
+import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
+import { type IModel, Message } from '$lib/models';
 
 export default class Gemini implements Client {
-    private options: ClientOptions;
+    private options: ClientProps;
     private client: GoogleGenAI;
 
     id = 'gemini';
 
-    constructor(options: ClientOptions) {
+    constructor(options: ClientProps) {
         this.options = options;
         this.client = new GoogleGenAI({
             apiKey: options.apiKey,
@@ -20,10 +20,10 @@ export default class Gemini implements Client {
 
     async chat(
         model: IModel,
-        history: IMessage[],
+        history: Message[],
         tools?: Tool[],
         options?: Options
-    ): Promise<IMessage> {
+    ): Promise<Message> {
         const messages = history.map(m => GeminiMessage.from(m)).compact();
 
         let config: GenerateContentConfig = {
@@ -53,13 +53,13 @@ export default class Gemini implements Client {
             }));
         }
 
-        return {
+        return Message.new({
             model: model.name,
             name: '',
             role: 'assistant',
             content: text || '',
             toolCalls,
-        };
+        });
     }
 
     async models(): Promise<IModel[]> {
@@ -71,7 +71,7 @@ export default class Gemini implements Client {
                 id: `gemini:${name}`,
                 name,
                 metadata,
-                engineId: this.options.engine.id,
+                engineId: this.options.engineId,
                 supportsTools: true,
             };
         });
@@ -84,7 +84,7 @@ export default class Gemini implements Client {
             id: `gemini:${name}`,
             name: displayName as string,
             metadata,
-            engineId: this.options.engine.id,
+            engineId: this.options.engineId,
             supportsTools: true,
         };
     }

@@ -6,23 +6,22 @@
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
     import Svg from '$components/Svg.svelte';
-    import Client from '$lib/engines/openai/client';
-    import Engine, { type IEngine } from '$lib/models/engine';
+    import { Engine } from '$lib/models';
 
     const NON_DELETEABLE_ENGINES = ['ollama', 'openai', 'gemini'];
     const IMMUTABLE_URLS = ['openai', 'gemini'];
 
     interface Props {
         explicitSave?: boolean;
-        engine?: IEngine;
-        ondelete?: (engine: IEngine) => Promise<unknown> | unknown;
-        onsave?: (engine: IEngine) => Promise<unknown> | unknown;
+        engine?: Engine;
+        ondelete?: (engine: Engine) => Promise<unknown> | unknown;
+        onsave?: (engine: Engine) => Promise<unknown> | unknown;
         saving?: boolean;
     }
 
     let {
         explicitSave = false,
-        engine = $bindable(Engine.default()),
+        engine = $bindable(Engine.new()),
         saving = $bindable(false),
         ondelete = () => {},
         onsave = () => {},
@@ -71,8 +70,7 @@
         let valid = true;
 
         try {
-            const client = Engine.client(engine) as Client;
-            const connected = await client.connected();
+            const connected = await engine.client?.connected();
             if (!connected) throw 'ConnectionError';
             connectionError = false;
         } catch {
@@ -104,7 +102,7 @@
             return;
         }
 
-        await Engine.save(engine);
+        await engine.save();
         await onsave(engine);
         saving = true;
         setTimeout(() => (saving = false), 2000);
