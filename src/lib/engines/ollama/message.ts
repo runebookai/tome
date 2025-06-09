@@ -1,12 +1,12 @@
-import type { Message } from 'ollama';
+import type { Message as OllamaMessage } from 'ollama';
 
-import type { IMessage } from '$lib/models/message';
+import { Message } from '$lib/models';
 
 export default {
     from,
 };
 
-export function from(message: IMessage): Message {
+export function from(message: Message): OllamaMessage {
     return {
         role: message.role,
         content: message.content,

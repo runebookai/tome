@@ -10,7 +10,7 @@
     import Menu from '$components/Menu.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
-    import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
+    import { McpServer } from '$lib/models';
 
     interface Registry {
         name: string;
@@ -19,7 +19,7 @@
 
     const { children } = $props();
 
-    let mcpServers: IMcpServer[] = $derived(McpServer.all());
+    let mcpServers: McpServer[] = $derived(McpServer.all());
     let registries: Registry[] = [
         {
             name: 'Smithery',
@@ -27,7 +27,7 @@
         },
     ];
 
-    function items(server: IMcpServer): MenuItem[] {
+    function items(server: McpServer): MenuItem[] {
         return [
             {
                 label: 'Delete',
@@ -37,8 +37,8 @@
         ];
     }
 
-    async function destroy(server: IMcpServer) {
-        await McpServer.delete(server.id as number);
+    async function destroy(server: McpServer) {
+        await server.delete();
         goto(`/mcp-servers`);
     }
 </script>
@@ -59,7 +59,7 @@
     </Titlebar>
 {/snippet}
 
-{#snippet McpServerView(server: IMcpServer)}
+{#snippet McpServerView(server: McpServer)}
     <Menu items={items(server)}>
         <Deleteable ondelete={() => destroy(server)}>
             <Link

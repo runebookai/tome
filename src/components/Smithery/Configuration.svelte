@@ -5,7 +5,7 @@
     import Modal from '$components/Modal.svelte';
     import { info } from '$lib/logger';
     import type { McpConfig } from '$lib/mcp';
-    import type { Config, ConfigSchema, Server } from '$lib/smithery';
+    import type { Config, ConfigSchema, Server } from '$lib/smithery/types';
 
     interface Props {
         server: Server;

@@ -4,10 +4,10 @@
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
     import Svg from '$components/Svg.svelte';
-    import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
+    import { McpServer } from '$lib/models';
 
     interface Props {
-        server: IMcpServer;
+        server: McpServer;
     }
 
     let { server }: Props = $props();
@@ -30,7 +30,7 @@
         server.command = cmd[0];
         server.args = cmd.slice(1);
         server.env = Object.fromEntries(env.map(([k, v]) => [constantCase(k), v]));
-        server = await McpServer.save(server);
+        server = await server.save();
     }
 
     async function addEnv() {

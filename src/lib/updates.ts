@@ -1,6 +1,6 @@
 import { check, type Update } from '@tauri-apps/plugin-updater';
 
-import Config from '$lib/models/config';
+import { Config } from '$lib/models';
 
 export async function availableUpdate(): Promise<Update | null> {
     return await check();

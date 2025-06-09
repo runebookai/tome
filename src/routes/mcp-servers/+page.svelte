@@ -1,9 +1,9 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    import McpServer, { type IMcpServer } from '$lib/models/mcp-server';
+    import { McpServer } from '$lib/models';
 
-    const server: IMcpServer = McpServer.last();
+    const server: McpServer = McpServer.last();
 
     if (server) {
         goto(`/mcp-servers/${server.name}`);

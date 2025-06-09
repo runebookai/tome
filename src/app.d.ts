@@ -33,14 +33,6 @@ declare global {
     interface String {
         ellipsize(length?: number): string;
     }
-
-    interface CheckboxEvent extends Event {
-        currentTarget: EventTarget & HTMLInputElement;
-    }
-
-    interface SpeechRecognitionEvent {
-        results: SpeechRecognitionResult[];
-    }
 }
 
 declare module 'svelte/elements' {

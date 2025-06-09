@@ -4,14 +4,14 @@
     import Flex from '$components/Flex.svelte';
     import Svg from '$components/Svg.svelte';
     import markdown from '$lib/markdown';
-    import Message, { type IMessage } from '$lib/models/message';
+    import { Message } from '$lib/models';
 
     interface Props {
-        message: IMessage;
+        message: Message;
     }
 
     const { message }: Props = $props();
-    const response = $derived(Message.response(message) as IMessage);
+    const response = $derived(message.response) as Message;
 
     let isOpen = $state(false);
     let css = $derived.by(() => (isOpen ? 'rounded-xl w-full' : 'rounded-full'));
@@ -20,7 +20,7 @@
         isOpen = isOpen ? false : true;
     }
 
-    function format(response: IMessage) {
+    function format(response: Message) {
         try {
             // Re-format JSON to be more readable
             const json = JSON.parse(response.content);
