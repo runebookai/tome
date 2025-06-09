@@ -3,9 +3,9 @@ import { goto } from '$app/navigation';
 import type { PageLoad } from './$types';
 
 import { CHAT_APP_ID } from '$lib/const';
-import Config from '$lib/models/config';
+import Config from '$lib/models/config.svelte';
 import Model from '$lib/models/model';
-import Session from '$lib/models/session';
+import Session from '$lib/models/session.svelte';
 
 export const load: PageLoad = async ({ params }): Promise<void> => {
     await Model.sync();
@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params }): Promise<void> => {
         const session = await Session.create({ appId: CHAT_APP_ID });
         await goto(`/chat/${session.id}`);
     } else if (params.session_id == 'latest') {
-        let session = Session.find(Config.latestSessionId);
+        let session = Session.find(Number(Config.latestSessionId));
         session ||= Session.last();
         session ||= await Session.create({ appId: CHAT_APP_ID });
         await goto(`/chat/${session.id}`);

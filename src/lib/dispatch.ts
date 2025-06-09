@@ -3,17 +3,9 @@ import uuid4 from 'uuid4';
 
 import type { Options } from '$lib/engines/types';
 import { error } from '$lib/logger';
-import App from '$lib/models/app';
-import Engine from '$lib/models/engine';
-import type { IMessage } from '$lib/models/message';
-import type { IModel } from '$lib/models/model';
-import Session, { type ISession } from '$lib/models/session';
+import { App, Engine, type IModel, Message, Session } from '$lib/models';
 
-export async function dispatch(
-    session: ISession,
-    model: IModel,
-    prompt?: string
-): Promise<IMessage> {
+export async function dispatch(session: Session, model: IModel, prompt?: string): Promise<Message> {
     const app = App.find(session.appId as number);
     const engine = Engine.find(model.engineId);
 
@@ -28,7 +20,7 @@ export async function dispatch(
     }
 
     if (prompt) {
-        await Session.addMessage(session, {
+        await session.addMessage({
             role: 'user',
             content: prompt,
         });
@@ -41,8 +33,8 @@ export async function dispatch(
 
     const message = await engine.client.chat(
         model,
-        Session.messages(session),
-        await Session.tools(session),
+        session.messages,
+        await session.tools(),
         options
     );
 
@@ -60,13 +52,13 @@ export async function dispatch(
                 arguments: call.function.arguments,
             });
 
-            await Session.addMessage(session, {
+            await session.addMessage({
                 role: 'assistant',
                 content: '',
                 toolCalls: [call],
             });
 
-            await Session.addMessage(session, {
+            await session.addMessage({
                 role: 'tool',
                 content,
                 toolCallId: call.id,
@@ -76,10 +68,9 @@ export async function dispatch(
         }
     }
 
-    await Session.addMessage(session, {
-        ...message,
-        model: model.id,
-    });
+    message.model = model.id;
+    message.sessionId = session.id;
+    await message.save();
 
     return message;
 }

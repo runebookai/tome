@@ -6,13 +6,16 @@
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Svg from '$components/Svg.svelte';
-    import Config from '$lib/models/config';
+    import Config from '$lib/models/config.svelte';
     import { availableUpdate } from '$lib/updates';
 
     let update: Update | null = $state(null);
     let totalDownload: number = $state(0);
     let downloaded: number = $state(0);
+    let completed = $state(0);
     let finished = $state(false);
+    let message = $state(`Downloading... (0%)`);
+
     // svelte-ignore non_reactive_update
     let ref: HTMLDivElement;
 
@@ -27,17 +30,19 @@
 
                 case 'Progress':
                     downloaded += event.data.chunkLength / 1000.0;
-                    ref.setAttribute(
-                        'style',
-                        `width:${Math.round((downloaded / totalDownload) * 100)}%`
-                    );
+                    completed = Math.round((downloaded / totalDownload) * 100);
+                    message = `Downloading... (${completed}%)`;
+                    ref.setAttribute('style', `width:${completed}%`);
                     break;
 
                 case 'Finished':
-                    finished = true;
+                    message = 'Installing...';
                     break;
             }
         });
+
+        message = 'Complete';
+        finished = true;
     }
 
     async function skip() {
@@ -61,10 +66,14 @@
         <Flex class="w-full flex-col items-start">
             <h2 class="font-semibold">Installing Tome {update.version}</h2>
             <div class="bg-light mt-4 h-2 w-full rounded-full">
-                <div bind:this={ref} style="width: 0%" class="bg-purple h-2 rounded-full"></div>
+                <div
+                    bind:this={ref}
+                    style={`width: ${completed}%`}
+                    class="bg-purple h-2 rounded-full"
+                ></div>
             </div>
             <p class="text-medium mt-2 text-xs">
-                {Math.round(downloaded)} kb / {Math.round(totalDownload)} kb
+                {message}
             </p>
 
             {#if finished}

@@ -1,16 +1,24 @@
-import type { IEngine, IMessage, IModel } from '$lib/models';
+import { type IModel, Message as TomeMessage } from '$lib/models';
 
 export interface Client {
-    chat(model: IModel, history: IMessage[], tools?: Tool[], options?: Options): Promise<IMessage>;
+    chat(
+        model: IModel,
+        history: TomeMessage[],
+        tools?: Tool[],
+        options?: Options
+    ): Promise<TomeMessage>;
     models(): Promise<IModel[]>;
     info(model: string): Promise<IModel>;
     connected(): Promise<boolean>;
 }
 
 export interface ClientOptions {
-    engine: IEngine;
     apiKey: string;
     url: string;
+}
+
+export interface ClientProps extends ClientOptions {
+    engineId: number;
 }
 
 export interface Options {

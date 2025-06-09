@@ -5,6 +5,8 @@
         "checkJs": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "inlineSourceMap": true,

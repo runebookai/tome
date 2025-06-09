@@ -6,10 +6,9 @@
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Svg from '$components/Svg.svelte';
-    import { Engine, type IEngine, type IModel } from '$lib/models';
-    import Config from '$lib/models/config';
+    import { Config, Engine, type IModel } from '$lib/models';
 
-    const engines: IEngine[] = Engine.all();
+    const engines: Engine[] = Engine.all();
 
     function isDefault(model: IModel) {
         return Config.defaultModel == model.id;

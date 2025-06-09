@@ -2,10 +2,10 @@
     import Flex from '$components/Flex.svelte';
     import Thought from '$components/Messages/Thought.svelte';
     import markdown from '$lib/markdown';
-    import type { IMessage } from '$lib/models/message';
+    import { Message } from '$lib/models';
 
     interface Props {
-        message: IMessage;
+        message: Message;
     }
 
     const { message }: Props = $props();

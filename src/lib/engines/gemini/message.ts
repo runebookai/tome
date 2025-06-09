@@ -1,12 +1,12 @@
 import type { Content } from '@google/genai';
 
-import { type IMessage, Session } from '$lib/models';
+import { Message, Session } from '$lib/models';
 
 export default {
     from,
 };
 
-export function from(message: IMessage): Content | undefined {
+export function from(message: Message): Content | undefined {
     if (message.role == 'user') {
         return fromUser(message);
     } else if (message.role == 'assistant' && !message.content) {
@@ -16,13 +16,13 @@ export function from(message: IMessage): Content | undefined {
     } else if (message.role == 'tool') {
         return fromToolResponse(message);
     } else if (message.role == 'system') {
-        return; // Gemini doesn't support System prompts
+        return;
     } else {
         return fromAny(message);
     }
 }
 
-function fromUser(message: IMessage): Content {
+function fromUser(message: Message): Content {
     return {
         role: 'user',
         parts: [
@@ -33,7 +33,7 @@ function fromUser(message: IMessage): Content {
     };
 }
 
-function fromAssistant(message: IMessage): Content {
+function fromAssistant(message: Message): Content {
     return {
         role: 'model',
         parts: [
@@ -44,7 +44,7 @@ function fromAssistant(message: IMessage): Content {
     };
 }
 
-function fromToolCall(message: IMessage): Content | undefined {
+function fromToolCall(message: Message): Content | undefined {
     if (message.toolCalls.length == 0) {
         return;
     }
@@ -63,11 +63,10 @@ function fromToolCall(message: IMessage): Content | undefined {
     };
 }
 
-function fromToolResponse(message: IMessage): Content {
+function fromToolResponse(message: Message): Content {
     // Find the `toolCall` message for this response
     const session = Session.find(message.sessionId as number);
-    const messages = Session.messages(session);
-    const call = messages.flatMap(m => m.toolCalls).find(tc => tc.id == message.toolCallId);
+    const call = session.messages.flatMap(m => m.toolCalls).find(tc => tc.id == message.toolCallId);
 
     return {
         role: 'user',
@@ -84,7 +83,7 @@ function fromToolResponse(message: IMessage): Content {
     };
 }
 
-function fromAny(message: IMessage): Content {
+function fromAny(message: Message): Content {
     return {
         role: message.role,
         parts: [

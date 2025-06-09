@@ -11,7 +11,7 @@
         "category": "DeveloperTool",
         "copyright": "",
         "createUpdaterArtifacts": true,
-        "targets": "all",
+        "targets": ["dmg", "app", "nsis"],
         "externalBin": [],
         "icon": [
             "icons/32x32.png",
@@ -54,7 +54,7 @@
     },
     "productName": "Tome",
     "mainBinaryName": "tome",
-    "version": "0.6.0",
+    "version": "0.8.0",
     "identifier": "co.runebook",
     "plugins": {
         "sql": {

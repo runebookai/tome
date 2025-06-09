@@ -2,10 +2,10 @@
     import Assistant from '$components/Messages/Assistant.svelte';
     import Tool from '$components/Messages/Tool.svelte';
     import User from '$components/Messages/User.svelte';
-    import type { IMessage } from '$lib/models/message';
+    import { Message } from '$lib/models';
 
     interface Props {
-        message: IMessage;
+        message: Message;
     }
 
     const { message }: Props = $props();

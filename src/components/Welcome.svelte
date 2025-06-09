@@ -3,10 +3,12 @@
     import { platform } from '@tauri-apps/plugin-os';
 
     import Flex from '$components/Flex.svelte';
-    import Config from '$lib/models/config';
+    import Config from '$lib/models/config.svelte';
 
     async function accept() {
-        await Config.set('welcome-agreed', true);
+        const config = Config.findByOrNew({ key: 'welcome-agreed' });
+        config.value = true;
+        await config.save();
 
         if (platform() == 'windows') {
             await invoke('restart');
