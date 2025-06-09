@@ -25,7 +25,7 @@
     });
 </script>
 
-<div class="fixed top-0 left-0 z-40 h-screen w-screen bg-black/90"></div>
+<div class="fixed top-0 left-0 z-40 h-screen w-screen bg-dark/80"></div>
 
 <div
     bind:this={ref}

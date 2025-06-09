@@ -1,20 +1,19 @@
 import { Ollama as OllamaClient } from 'ollama/browser';
 
 import OllamaMessage from '$lib/engines/ollama/message';
-import type { Client, ClientOptions, Options, Role, Tool } from '$lib/engines/types';
+import type { Client, ClientProps, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import Message, { type IMessage } from '$lib/models/message';
-import type { IModel } from '$lib/models/model';
+import { type IModel, Message } from '$lib/models';
 
 export default class Ollama implements Client {
-    private options: ClientOptions;
+    private options: ClientProps;
     private client: OllamaClient;
 
     message = OllamaMessage;
     modelRole = 'assistant' as Role;
     toolRole = 'tool' as Role;
 
-    constructor(options: ClientOptions) {
+    constructor(options: ClientProps) {
         this.options = options;
         this.client = new OllamaClient({
             host: options.url,
@@ -24,10 +23,10 @@ export default class Ollama implements Client {
 
     async chat(
         model: IModel,
-        history: IMessage[],
+        history: Message[],
         tools: Tool[] = [],
         options: Options = {}
-    ): Promise<IMessage> {
+    ): Promise<Message> {
         const messages = history.map(m => this.message.from(m));
         const response = await this.client.chat({
             model: model.name,
@@ -49,7 +48,7 @@ export default class Ollama implements Client {
             content = content.trim();
         }
 
-        return Message.default({
+        return Message.new({
             model: model.name,
             role: this.modelRole,
             content,
@@ -75,12 +74,16 @@ export default class Ollama implements Client {
             id: name,
             name,
             metadata,
-            engineId: this.options.engine.id,
+            engineId: Number(this.options.engineId),
             supportsTools: capabilities.includes('tools'),
         };
     }
 
     async connected(): Promise<boolean> {
-        return (await fetch(new URL(this.options.url).origin, { timeout: 200 })).status == 200;
+        try {
+            return (await this.models()) && true;
+        } catch {
+            return false;
+        }
     }
 }

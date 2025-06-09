@@ -1,18 +1,18 @@
 import { OpenAI as OpenAIClient } from 'openai';
+import type { ChatCompletionCreateParamsNonStreaming } from 'openai/resources/index.mjs';
 
 import OpenAiMessage from '$lib/engines/openai/message';
-import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engines/types';
+import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import type { IMessage } from '$lib/models/message';
-import type { IModel } from '$lib/models/model';
+import { type IModel, Message } from '$lib/models';
 
 export default class OpenAI implements Client {
-    private options: ClientOptions;
+    private options: ClientProps;
     private client: OpenAIClient;
 
     id = 'openai';
 
-    constructor(options: ClientOptions) {
+    constructor(options: ClientProps) {
         this.options = options;
         this.client = new OpenAIClient({
             apiKey: options.apiKey,
@@ -24,17 +24,21 @@ export default class OpenAI implements Client {
 
     async chat(
         model: IModel,
-        history: IMessage[],
+        history: Message[],
         tools: Tool[] = [],
-        options: Options = {}
-    ): Promise<IMessage> {
+        _options: Options = {}
+    ): Promise<Message> {
         const messages = history.map(m => OpenAiMessage.from(m));
-        const response = await this.client.chat.completions.create({
+        const completion: ChatCompletionCreateParamsNonStreaming = {
             model: model.name,
             messages,
-            tools,
-        });
+        };
 
+        if (tools.length > 0) {
+            completion.tools = tools;
+        }
+
+        const response = await this.client.chat.completions.create(completion);
         const { role, content, tool_calls } = response.choices[0].message;
 
         let toolCalls: ToolCall[] = [];
@@ -48,17 +52,17 @@ export default class OpenAI implements Client {
             }));
         }
 
-        return {
+        return Message.new({
             model: model.name,
             name: '',
             role,
             content: content || '',
             toolCalls,
-        };
+        });
     }
 
     async models(): Promise<IModel[]> {
-        return (await this.client.models.list()).data.map(model => {
+        return (await this.client.models.list({ timeout: 1000 })).data.map(model => {
             const { id, ...metadata } = model;
             const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
 
@@ -66,7 +70,7 @@ export default class OpenAI implements Client {
                 id: `${this.id}:${name}`,
                 name,
                 metadata,
-                engineId: this.options.engine.id,
+                engineId: this.options.engineId,
                 supportsTools: true,
             };
         });
@@ -79,12 +83,18 @@ export default class OpenAI implements Client {
             id,
             name: id,
             metadata,
-            engineId: this.options.engine.id,
+            engineId: this.options.engineId,
             supportsTools: true,
         };
     }
 
     async connected(): Promise<boolean> {
-        return (await fetch(new URL(this.options.url).origin, { timeout: 200 })).status == 200;
+        try {
+            const resp = await this.client.models.list().asResponse();
+            const body = await resp.json();
+            return !Object.hasOwn(body, 'error');
+        } catch {
+            return false;
+        }
     }
 }

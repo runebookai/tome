@@ -76,3 +76,14 @@ pub async fn stop_session(session_id: i32, state: tauri::State<'_, State>) -> Re
 pub fn restart(app: AppHandle) {
     app.restart();
 }
+
+#[tauri::command]
+pub async fn rename_mcp_server(
+    session_id: i32,
+    old_name: String,
+    new_name: String,
+    state: tauri::State<'_, State>,
+) -> Result<(), String> {
+    println!("-> rename_mcp_server({}, {} -> {})", session_id, old_name, new_name);
+    ok_or_err!(mcp::rename_server(session_id, old_name, new_name, state).await)
+}

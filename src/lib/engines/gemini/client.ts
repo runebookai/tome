@@ -2,16 +2,16 @@ import { type GenerateContentConfig, GoogleGenAI } from '@google/genai';
 
 import GeminiMessage from '$lib/engines/gemini/message';
 import GeminiTools from '$lib/engines/gemini/tool';
-import type { Client, ClientOptions, Options, Tool, ToolCall } from '$lib/engines/types';
-import type { IMessage, IModel } from '$lib/models';
+import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
+import { type IModel, Message } from '$lib/models';
 
 export default class Gemini implements Client {
-    private options: ClientOptions;
+    private options: ClientProps;
     private client: GoogleGenAI;
 
     id = 'gemini';
 
-    constructor(options: ClientOptions) {
+    constructor(options: ClientProps) {
         this.options = options;
         this.client = new GoogleGenAI({
             apiKey: options.apiKey,
@@ -20,20 +20,32 @@ export default class Gemini implements Client {
 
     async chat(
         model: IModel,
-        history: IMessage[],
+        history: Message[],
         tools?: Tool[],
         options?: Options
-    ): Promise<IMessage> {
-        const messages = history.map(m => GeminiMessage.from(m)).compact();
+    ): Promise<Message> {
+        // Extract system messages for system instructions
+        const systemMessages = history.filter(m => m.role === 'system');
+        const nonSystemMessages = history.filter(m => m.role !== 'system');
 
-        let config: GenerateContentConfig = {
+        // Convert non-system messages to Gemini format
+        const messages = nonSystemMessages.map(m => GeminiMessage.from(m)).compact();
+
+        const config: GenerateContentConfig = {
             temperature: options?.temperature,
         };
 
-        if (tools && tools.length) {
-            config = {
-                tools: GeminiTools.from(tools),
+        // Add system instruction if system messages exist
+        if (systemMessages.length > 0) {
+            // Combine all system messages into one instruction
+            const systemInstruction = systemMessages.map(m => m.content).join('\n\n');
+            config.systemInstruction = {
+                parts: [{ text: systemInstruction }],
             };
+        }
+
+        if (tools && tools.length) {
+            config.tools = GeminiTools.from(tools);
         }
 
         const { text, functionCalls } = await this.client.models.generateContent({
@@ -53,17 +65,19 @@ export default class Gemini implements Client {
             }));
         }
 
-        return {
+        return Message.new({
             model: model.name,
             name: '',
             role: 'assistant',
             content: text || '',
             toolCalls,
-        };
+        });
     }
 
     async models(): Promise<IModel[]> {
-        return (await this.client.models.list()).page.map(model => {
+        return (
+            await this.client.models.list({ config: { httpOptions: { timeout: 1000 } } })
+        ).page.map(model => {
             const metadata = model;
             const name = metadata.name?.replace('models/', '') as string;
 
@@ -71,7 +85,7 @@ export default class Gemini implements Client {
                 id: `gemini:${name}`,
                 name,
                 metadata,
-                engineId: this.options.engine.id,
+                engineId: this.options.engineId,
                 supportsTools: true,
             };
         });
@@ -84,12 +98,17 @@ export default class Gemini implements Client {
             id: `gemini:${name}`,
             name: displayName as string,
             metadata,
-            engineId: this.options.engine.id,
+            engineId: this.options.engineId,
             supportsTools: true,
         };
     }
 
     async connected(): Promise<boolean> {
-        return true; // Assume Gemini is up
+        try {
+            await this.client.models.list();
+            return true;
+        } catch {
+            return false;
+        }
     }
 }

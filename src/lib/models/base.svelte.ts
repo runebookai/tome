@@ -9,104 +9,99 @@ import { info } from '$lib/logger';
 export let db: Database;
 
 /**
- * SQL rows should never include reserved columns.
+ * Connect to the database
  */
-export type ToSqlRow<Row> = Omit<Row, 'id' | 'created' | 'modified'>;
+async function connect() {
+    db ||= await Database.load(DATABASE_URL);
+}
 
 /**
- * Columns that should never be included in an UPDATE or INSERT query.
+ * SQL rows should never include reserved columns.
  */
-export const ReservedColumns = ['id', 'created', 'modified'];
+export type ToSqlRow<R> = Omit<R, 'id' | 'created' | 'modified'>;
 
 /**
  * # Model
  *
  * Base of all database models. This class supplies the ORM functions required
- * to interact with the database and the "repo" pass-through layer.
+ * to interact with the database and the "repo" cache.
  *
  * Model functionality is split by reads and writes. All reads are done from
- * the repo, while writes are done directory to the database, then synced
- * to the repo.
- *
- * ## Static Methods All the Way Down
- *
- * Since Svelte's reactivity only works on basic data structures – more or
- * less – we can't pass around instances of models. Instead, functions that
- * require an "instance" of a model needs to accept a object as an argument.
- *
- * NOTE: I'm a bit unsure of a ststic class interface is the right choice for
- * models. An alternative would be to build plain JS objects. This would remove
- * the need for all the `static` non-sense. :shrug:
- *
- * ## `Instance` Interface
- *
- * The `Instance` interface represent the object you pass around the app. They
- * are simple JS objects.
- *
- * `Instance` properties shouild reflect the interface you want to use in the
- * app. Meaning, camelCase keys and complex types (if needed).
- *
- * Foreign key properties should be optional to allow new `Instance`s to be
- * created where you don't know the associations at instantiation.
+ * the cache, while writes are done directory to the database, then synced
+ * to the cache.
  *
  * ## `Row` Interface
  *
  * The `Row` interface represents a database row. Meaning, property types
  * should match database types as closely as possible.
  *
- * For example, if you have a datetime column, it would be returned from the
- * database as a string, so declare that property with `string`, `JSON` columns
- * are represented as a `string`, etc.
+ * For example, if you have a `datetime` column, it would be returned from the
+ * database as a string, so declare that property with `string`. Similarly, `JSON`
+ * columns would be represented as a `string`, etc.
+ *
+ * ## Instantiation
+ *
+ * You MUST instantiate a model using the static `new` function. This is to
+ * work around limitations of JS's constructors + Svelte.
+ *
+ * ```ts
+ * Message.new({ content: 'Heyo' });
+ * ```
+ *
+ * ## Reactivity
+ *
+ * Models properties MUST be declares using Svelte's `$state()` and provide a
+ * default value for required properties.
  *
  * ## Serielization / Deserialization
  *
- * [De]Serialization is handled through two functions `fromSql` and `toSql`
- * that you need to implement on your model.
+ * [De]Serialization is handled through two functions `static fromSql(row: Row)` and
+ * `toSql()` that you need to implement on your model.
  *
- * ### `fromSql`
+ * ### `static fromSql(row: Row)`
  *
- * Converts a database row (`Row`) into an instance (`Instance`). This is where
+ * Converts a database row (`Row`) into an instance. This is where
  * you should convert fields like dates from a `string` to a `DateTime`, JSON
  * columns from a `string` to a "real" object, etc.
  *
  * This is called when objects are retrieved from the database.
  *
- * ### `toSql`
+ * ### `toSql()`
  *
- * Convert an instance (`Instance`) to a database row (`Row`). This is where
- * you should convert your complex types into simple database types. For
- * example, an object into the JSON stringify'ed version of itself.
+ * Convert an instance to a database row (`Row`). This is where you should convert
+ * your complex types into simple database types. For example, an object into the
+ * JSON stringify'ed version of itself.
  *
  * `toSql` should EXCLUDE properties for columns that are set automatically by
  * the database, like `id`, `created`, or `modified`.
  *
  * ## Lifecycle Callbacks
  *
- * You may implement `beforeCreate`, `afterCreate`, `beforeUpdate`, and
- * `afterUpdate`. See the documentation for these functions for more specific
- * information.
+ * You may implement `beforeCreate`, `afterCreate`, `beforeUpdate`, `afterUpdate`,
+ * `beforeSave`, and/or `afterSave`. See the documentation for these functions for
+ * more specific information.
  *
  * ## Usage
  *
- * `Model` is a function. It takes two generic types and the name of the table
- * records reside within.
+ * `Model` is a function. It takes one generic type representing the `Row` and the name
+ * of the table records reside within.
  *
  * @example
  *
  * ```ts
- * export interface IMessage {
- *     userId: string;
- *     content: string;
- * }
+ * import Base from '$lib/models/base.svelte';
  *
  * interface Row {
  *     user_id: string;
  *     content: string;
  * }
  *
- * class Message extends Model<Interface, Row>('messages') {
+ * class Message extends Base<Row>('messages') {
+ *     userId: string = $state('');
+ *     content: string = $state('');
+ *
  *     static function fromSql(row: Row): Promise<IMessage> {
- *         return {
+ *         return new Message({
  *             id: row.id,
  *             userId: row.user_id,
  *             content: row.content,
@@ -115,97 +110,141 @@ export const ReservedColumns = ['id', 'created', 'modified'];
  *         }
  *     }
  *
- *     static function toSql(message: IMessage): Promise<ToSqlRow<Row>> {
+ *     function toSql(): Promise<ToSqlRow<Row>> {
  *        return {
- *            user_id: message.rowId,
- *            content: message.content,
+ *            user_id: this.rowId,
+ *            content: this.content,
  *        }
  *     }
  * }
  * ```
  */
-export default function Model<Interface extends Obj, Row extends Obj>(table: string) {
-    let repo: Interface[] = $state([]);
+export default function Model<R extends object>(table: string) {
+    class ModelClass {
+        id?: number;
 
-    return class Model {
-        static defaults = {};
-
-        /**
-         * Reload records from the database and populate the Repository.
-         */
-        static async sync(): Promise<void> {
-            repo = [];
-
-            (await this.query(`SELECT * FROM ${table}`)).forEach(record => this.syncOne(record));
-
-            info(`[green]✔ synced ${table}`);
+        constructor(params: Partial<object>, privateInvocation = false) {
+            if (!privateInvocation) {
+                throw 'InvocationError: must instantiate models using `.new()`';
+            }
+            Object.assign(this, params);
         }
 
-        /**
-         * Create an empty, default, object.
-         *
-         * Use this instead of the `new Whatever()` syntax, as we need to
-         * always be passing around plain old JS objects for Svelte's
-         * reactivity to work properly.
-         */
-        static default(defaults: Partial<Interface> = {}): Interface {
-            defaults =
-                typeof this.defaults == 'function'
-                    ? { ...this.defaults(), ...defaults }
-                    : { ...this.defaults, ...defaults };
+        static new<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>> = {}
+        ): InstanceType<T> {
+            const inst = new this({}, true);
+            Object.assign(inst, inst.default);
+            Object.assign(inst, params);
+            return inst as InstanceType<T>;
+        }
 
-            return defaults as Interface;
+        static async create<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>> = {}
+        ): Promise<InstanceType<T>> {
+            return await this.new(params).save();
         }
 
         /**
          * Does a record with specific params exist.
          */
-        static exists(params: Partial<Interface>): boolean {
+        static exists<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): boolean {
             return this.where(params).length > 0;
         }
 
         /**
          * Retrieve all records.
          */
-        static all(): Interface[] {
-            return repo;
+        static all<T extends typeof ModelClass>(this: T): InstanceType<T>[] {
+            return repo as InstanceType<T>[];
         }
 
         /**
          * Find an individual record by`id`.
          */
-        static find(id: number | string): Interface {
-            return this.all().find(m => m.id == Number(id)) as Interface;
+        static find<T extends typeof ModelClass>(this: T, id: number): InstanceType<T> {
+            return this.all().find(m => m.id == Number(id)) as InstanceType<T>;
         }
 
         /**
          * Find the first occurence by a subset of the model's properties.
          */
-        static findBy(params: Partial<Interface>): Interface | undefined {
+        static findBy<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T> | undefined {
             return this.where(params)[0];
+        }
+
+        /**
+         * Find by specific properties or instantiate a new instance with them.
+         */
+        static findByOrNew<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T> {
+            return this.findBy(params) || this.new(params);
         }
 
         /**
          * Find a collection of records by a set of the model's properties.
          */
-        static where(params: Partial<Interface>): Interface[] {
-            return repo.filter(m => {
-                return Object.entries(params).every(([key, value]) => m[key] == value);
-            });
+        static where<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T>[] {
+            return repo.filter(m =>
+                Object.entries(params).every(([k, v]) => (m as Obj)[k] == v)
+            ) as InstanceType<T>[];
         }
 
         /**
          * Find the first record
          */
-        static first(): Interface {
-            return repo[0];
+        static first<T extends typeof ModelClass>(this: T): InstanceType<T> {
+            return repo[0] as InstanceType<T>;
         }
 
         /**
          * Find the last record
          */
-        static last(): Interface {
-            return repo[repo.length - 1];
+        static last<T extends typeof ModelClass>(this: T): InstanceType<T> {
+            return repo[repo.length - 1] as InstanceType<T>;
+        }
+
+        static async deleteBy<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): Promise<boolean> {
+            return (await Promise.all(this.where(params).map(async m => await m.delete()))).every(
+                i => i == true
+            );
+        }
+
+        /**
+         * Default values for new instance
+         */
+        get default() {
+            return {};
+        }
+
+        /**
+         * Delete a record, by`id`.
+         */
+        async delete(): Promise<boolean> {
+            const query = await db.execute(`DELETE FROM ${table} WHERE id = $1`, [this.id]);
+
+            if (query.rowsAffected == 1) {
+                repo = repo.filter(m => m.id !== this.id);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         /**
@@ -213,12 +252,54 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          *
          * If `params` contains `id`, it will update, otherwise create.
          */
-        static async save(params: Interface): Promise<Interface> {
-            if (params.id) {
-                return await this.update(params);
-            } else {
-                return await this.create(params);
-            }
+        async save(): Promise<this> {
+            return this.id ? await this.update() : await this.create();
+        }
+
+        /**
+         * Database connection
+         */
+        protected async db() {
+            await connect();
+            return db;
+        }
+
+        /**
+         * Update a record.
+         *
+         * Only pass the columns you intend to change.
+         */
+        private async update(): Promise<this> {
+            const cls = this.constructor as typeof ModelClass;
+
+            let row = await this.toSql();
+            row = await this.beforeSave(row);
+            row = await this.beforeUpdate(row);
+
+            const query = new Query(row);
+
+            const instance = (
+                await cls.query<this>(
+                    `
+                    UPDATE
+                        ${table}
+                    SET
+                        ${query.setters}
+                    WHERE
+                        id = ${this.id}
+                    RETURNING
+                        *
+                    `,
+                    query.values
+                )
+            )[0];
+
+            cls.syncOne(instance);
+
+            await instance.afterUpdate();
+            await instance.afterSave();
+
+            return instance;
         }
 
         /**
@@ -230,289 +311,155 @@ export default function Model<Interface extends Obj, Row extends Obj>(table: str
          * `id`, `created`, and `modified` values are ALWAYS ignored, since
          * they are garaunteed to be automatically set by the database.
          */
-        static async create(_params: Partial<Interface>): Promise<Interface> {
-            let row = await this.toSql(
-                this.exclude(
-                    {
-                        ...this.default(),
-                        ..._params,
-                    },
-                    ReservedColumns
-                )
-            );
+        private async create(): Promise<this> {
+            const cls = this.constructor as typeof ModelClass;
 
+            let row = await this.toSql();
             row = await this.beforeSave(row);
             row = await this.beforeCreate(row);
 
-            const columns = this.columns(row).join(', ');
-            const binds = this.binds(row).join(', ');
-            const values = Object.values(row);
+            const query = new Query(row);
 
-            let instance = (
-                await this.query(
-                    `INSERT INTO ${table} (${columns}) VALUES(${binds}) RETURNING * `,
-                    values
+            const instance = (
+                await cls.query<this>(
+                    `
+                    INSERT INTO
+                        ${table} (${query.columns})
+                    VALUES
+                        (${query.binds})
+                    RETURNING
+                        *
+                    `,
+                    query.values
                 )
             )[0];
 
-            this.syncOne(instance);
-            this.removeEphemeralInstances();
+            cls.syncOne(instance);
 
-            instance = await this.afterCreate(instance);
-            instance = await this.afterSave(instance);
+            await instance.afterCreate();
+            await instance.afterSave();
 
             return instance;
         }
 
         /**
-         * Update a record.
-         *
-         * Only pass the columns you intend to change.
+         * Reload records from the database and populate the Repository.
          */
-        static async update(_params: Interface): Promise<Interface> {
-            let row = await this.toSql(this.exclude(_params, ReservedColumns));
-
-            row = await this.beforeSave(row);
-            row = await this.beforeUpdate(row);
-
-            const setters = this.setters(row).join(', ');
-            const values = [...Object.values(row), _params.id];
-            const idBind = `$${values.length} `;
-
-            let instance = (
-                await this.query(
-                    `UPDATE ${table} SET ${setters} WHERE id = ${idBind} RETURNING * `,
-                    values
-                )
-            )[0];
-
-            this.syncOne(instance);
-            this.removeEphemeralInstances();
-
-            instance = await this.afterUpdate(instance);
-            instance = await this.afterSave(instance);
-
-            return instance;
-        }
-
-        /**
-         * Delete a record, by`id`.
-         */
-        static async delete(id: number): Promise<boolean> {
-            const result =
-                (await (await this.db()).execute(`DELETE FROM ${table} WHERE id = $1`, [id]))
-                    .rowsAffected == 1;
-
-            const i = this.find(id);
-            this.syncRemove(i);
-
-            return result;
-        }
-
-        /**
-         * Delete a record by a subset of columns
-         */
-        static async deleteBy(params: Partial<Row>): Promise<boolean> {
-            const conditions = this.setters(params).join(' AND ');
-            const values = Object.values(params);
-
-            const instances = await this.query(
-                `SELECT * FROM ${table} WHERE ${conditions} `,
-                values
-            );
-
-            const success =
-                (
-                    await (
-                        await this.db()
-                    ).execute(`DELETE FROM ${table} WHERE ${conditions} `, values)
-                ).rowsAffected >= 1;
-
-            if (success) {
-                instances.forEach(instance => {
-                    this.syncRemove(instance);
-                });
-            }
-
-            return success;
-        }
-
-        /**
-         * Run a query in the database, returning an object implementing`Instance`.
-         */
-        protected static async query(sql: string, values: unknown[] = []): Promise<Interface[]> {
-            const result: Row[] = await (await this.db()).select<Row[]>(sql, values);
-
-            return await Promise.all(result.map(async row => await this.fromSql(row)));
-        }
-
-        /**
-         * Memoized database connection.
-         */
-        protected static async db(): Promise<Database> {
-            if (!db) {
-                db = await Database.load(DATABASE_URL);
-            }
-            return db;
+        static async sync() {
+            repo = await this.query(`SELECT * FROM ${table}`);
+            info(`[green]✔ ${table} synced`);
         }
 
         /**
          * Update, or Add, a single record
          */
-        private static syncOne(record: Interface) {
-            const existing = this.find(record.id);
+        protected static syncOne<T extends typeof ModelClass>(this: T, instance: InstanceType<T>) {
+            const existing = this.find(Number(instance.id));
 
             if (existing) {
-                Object.assign(existing, record);
+                Object.assign(existing, instance);
             } else {
-                const reactive = $state(record);
-                repo.push(reactive);
+                repo.push(instance);
             }
         }
 
         /**
-         * Remove an instance from the repo
+         * Execute a query in the database.
          */
-        private static syncRemove(instance: Interface) {
-            repo = repo.filter(i => i.id !== instance.id);
+        protected static async query<T>(sql: string, values: unknown[] = []): Promise<T[]> {
+            await connect();
+            const rows = await db.select<R[]>(sql, values);
+            const promises = rows.map(async row => await this.fromSql(row));
+            return (await Promise.all(promises)) as T[];
         }
 
-        /**
-         * Remove ephemeral instances from the repo.
-         *
-         * Pages will often push an "empty" instance into a list of models, to
-         * so that it renders in a list and the user can configure it.
-         *
-         * We need to remove those "ephemeral" instances when we save a record,
-         * otherwise both would show up and appear to be duplicate.
-         *
-         * This leaves only persisted records(ones with an`id`).
-         */
-        private static removeEphemeralInstances() {
-            repo = repo.filter(record => record.id !== undefined);
-        }
+        // Abstract Functions
 
         /**
-         * Exclude k / v pairs in an object, by a list of keys.
-         */
-        private static exclude<T extends Obj>(params: T, exclude: string[]): T {
-            return Object.fromEntries(
-                Object.entries(params).filter(([k, _]) => !exclude.includes(k))
-            ) as T;
-        }
-
-        /**
-         * Retrieve the list of columns from`params`.
-         *
-         * Mostly just a more descriptive name for the operation.
-         */
-        private static columns<P extends Obj>(params: P): string[] {
-            return Object.keys(params);
-        }
-
-        /**
-         * Generate a list of `$k = $#` statements from`params`.
-         *
-         * `$k` is the name of the column and `$#` is the bind parameter.
-         */
-        private static setters<P extends Obj>(params: P): string[] {
-            return Object.keys(params).map((k, i) => `${k} = $${i + 1} `);
-        }
-
-        /**
-         * Individual numeric bind statements, like`['$1', '$2']`.
-         */
-        private static binds<P extends Obj>(params: P): string[] {
-            return Object.values(params).map((_, i) => `$${i + 1} `);
-        }
-
-        /**
-         * Transform a raw database row into an `Interface` object.
+         * Transform a database `Row` into an instance.
          */
         // eslint-disable-next-line
-        protected static async fromSql(row: Row): Promise<Interface> {
-            throw 'NotImplementedError';
+        protected static async fromSql(row: R): Promise<unknown> {
+            throw 'NotImeplementedError';
         }
 
         /**
-         * Transform an `Interface` object into a `Row` of database compatiable
-         * values.
+         * Transform an instance into a database `Row`
          */
-        // eslint-disable-next-line
-        protected static async toSql(instance: ToSqlRow<Interface>): Promise<ToSqlRow<Row>> {
-            throw 'NotImplementedError';
+        protected async toSql(): Promise<ToSqlRow<R>> {
+            throw 'NotImeplementedError';
         }
 
         /**
-         * Transform the `Row` object before it's used to generate a query.
+         * ## Callbacks
+         *
+         * Model callbacks occur when an instance is saved (created or updates)
+         * or one is read from the database.
+         *
+         * ### Callback Order
+         *   - beforeSave
+         *   - before[Create|Update]
+         *   - after[Create|Update]
+         *   - afterSave
          */
-        protected static async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
+
+        protected async beforeSave(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
             return row;
         }
 
-        /**
-         * Transform the `Instance` object after it's created/updated/retrieved
-         * from the database.
-         */
-        protected static async afterSave(instance: Interface): Promise<Interface> {
-            return instance;
-        }
-
-        protected static async beforeCreate(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
+        protected async beforeCreate(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
             return row;
         }
 
-        protected static async afterCreate(instance: Interface): Promise<Interface> {
-            return instance;
-        }
-
-        protected static async beforeUpdate(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
+        protected async beforeUpdate(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
             return row;
         }
 
-        protected static async afterUpdate(instance: Interface): Promise<Interface> {
-            return instance;
+        protected async afterCreate(): Promise<void> {
+            // noop
         }
-    };
+
+        protected async afterUpdate(): Promise<void> {
+            // noop
+        }
+
+        protected async afterSave(): Promise<void> {
+            // noop
+        }
+    }
+
+    /**
+     * Cache of model instances
+     */
+    let repo: InstanceType<typeof ModelClass>[] = $state([]);
+
+    return ModelClass;
 }
 
-/**
- * Model class NOT backed by a database
- */
-export function BareModel<T extends Obj>() {
-    let repo: T[] = $state([]);
+class Query<R extends Obj> {
+    row: R;
 
-    return class BareModel {
-        static reset(instances: T[] = []) {
-            repo = instances;
-        }
+    constructor(row: R) {
+        this.row = row;
+    }
 
-        static add(instance: T) {
-            repo.push(instance);
-        }
+    get columns() {
+        return Object.keys(this.row).join(', ');
+    }
 
-        static delete(instance: T) {
-            repo = repo.filter(i => i !== instance);
-        }
+    get setters() {
+        return Object.keys(this.row)
+            .map((k, i) => `${k} = $${i + 1}`)
+            .join(', ');
+    }
 
-        static all(): T[] {
-            return repo;
-        }
+    get binds() {
+        return Object.values(this.row)
+            .map((_, i) => `$${i + 1}`)
+            .join(', ');
+    }
 
-        static find(id: string): T | undefined {
-            return repo.findBy('id', id);
-        }
-
-        static findBy(params: Partial<T>): T | undefined {
-            return repo.find(r => Object.entries(params).every(([key, value]) => r[key] == value));
-        }
-
-        static first(): T {
-            return repo[0];
-        }
-
-        static last(): T {
-            return repo[repo.length - 1];
-        }
-    };
+    get values() {
+        return Object.values(this.row);
+    }
 }

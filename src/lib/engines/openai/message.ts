@@ -1,12 +1,12 @@
 import { OpenAI } from 'openai';
 
-import type { IMessage } from '$lib/models/message';
+import { Message } from '$lib/models';
 
 export default {
     from,
 };
 
-export function from(message: IMessage): OpenAI.ChatCompletionMessageParam {
+export function from(message: Message): OpenAI.ChatCompletionMessageParam {
     if (message.role == 'assistant') {
         return fromAssistant(message);
     } else if (message.role == 'system') {
@@ -18,14 +18,14 @@ export function from(message: IMessage): OpenAI.ChatCompletionMessageParam {
     }
 }
 
-export function fromUser(message: IMessage): OpenAI.ChatCompletionUserMessageParam {
+export function fromUser(message: Message): OpenAI.ChatCompletionUserMessageParam {
     return {
         role: 'user',
         content: message.content,
     };
 }
 
-export function fromAssistant(message: IMessage): OpenAI.ChatCompletionAssistantMessageParam {
+export function fromAssistant(message: Message): OpenAI.ChatCompletionAssistantMessageParam {
     return {
         role: 'assistant',
         content: message.content,
@@ -33,7 +33,7 @@ export function fromAssistant(message: IMessage): OpenAI.ChatCompletionAssistant
     };
 }
 
-export function fromTool(message: IMessage): OpenAI.ChatCompletionToolMessageParam {
+export function fromTool(message: Message): OpenAI.ChatCompletionToolMessageParam {
     return {
         tool_call_id: message.toolCallId as string,
         role: 'tool',
@@ -41,14 +41,14 @@ export function fromTool(message: IMessage): OpenAI.ChatCompletionToolMessagePar
     };
 }
 
-export function fromSystem(message: IMessage): OpenAI.ChatCompletionSystemMessageParam {
+export function fromSystem(message: Message): OpenAI.ChatCompletionSystemMessageParam {
     return {
         role: 'system',
         content: message.content,
     };
 }
 
-function toolCalls(message: IMessage): OpenAI.ChatCompletionMessageToolCall[] | undefined {
+function toolCalls(message: Message): OpenAI.ChatCompletionMessageToolCall[] | undefined {
     if (message.toolCalls.length == 0) {
         return;
     }

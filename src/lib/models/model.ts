@@ -1,6 +1,5 @@
-import { BareModel } from '$lib/models/base.svelte';
-import Config from '$lib/models/config';
-import Engine from '$lib/models/engine';
+import { Config, Engine } from '$lib/models';
+import BareModel from '$lib/models/bare.svelte';
 
 export interface IModel {
     id: string;
@@ -18,7 +17,7 @@ export default class Model extends BareModel<IModel>() {
     }
 
     static default(): IModel {
-        return this.find(Config.defaultModel) || Engine.first().models[0];
+        return this.find(Config.defaultModel) || this.first();
     }
 
     static findByOrDefault(params: Partial<IModel>): IModel {

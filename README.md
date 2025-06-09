@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/0775d100-3eba-4219-9e2f-360a01f28cce
 ## Quickstart
 
 1. Install [Tome](https://github.com/runebookai/tome/releases)
-2. Connect your preferred LLM provider
+2. Connect your preferred LLM provider - OpenAI, Ollama and Gemini are preset but you can also add providers like LM Studio by using http://localhost:1234/v1 as the URL
 3. Open the MCP tab in Tome and install your first [MCP server](https://github.com/modelcontextprotocol/servers) (Fetch is an easy one to get started with, just paste `uvx mcp-server-fetch` into the server field).
 4. Chat with your MCP-powered model! Ask it to fetch the top story on Hacker News.
 
