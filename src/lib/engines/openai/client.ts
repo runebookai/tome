@@ -57,7 +57,7 @@ export default class OpenAI implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        return (await this.client.models.list()).data.map(model => {
+        return (await this.client.models.list({ timeout: 1000 })).data.map(model => {
             const { id, ...metadata } = model;
             const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
 
