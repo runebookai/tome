@@ -1,5 +1,5 @@
 import { Config, Engine } from '$lib/models';
-import { BareModel } from '$lib/models';
+import BareModel from '$lib/models/bare.svelte';
 
 export interface IModel {
     id: string;

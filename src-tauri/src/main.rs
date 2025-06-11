@@ -86,6 +86,7 @@ fn main() {
             commands::call_mcp_tool,
             commands::start_mcp_server,
             commands::stop_mcp_server,
+            commands::rename_mcp_server,
             // Sessions
             commands::stop_session,
             // Misc
