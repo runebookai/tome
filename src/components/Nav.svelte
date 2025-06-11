@@ -35,6 +35,10 @@
         <Svg name="Models" />
     </Link>
 
+    <Link href="/tasks" aria-label="tasks" activeClass="text-purple">
+        <Svg name="Models" />
+    </Link>
+
     <div class="grow"></div>
 
     <Link href="/settings" aria-label="settings" activeClass="text-purple" class="text-dark pb-8">
