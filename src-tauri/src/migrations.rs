@@ -232,5 +232,19 @@ WHERE NOT EXISTS (SELECT 1 FROM settings WHERE key = 'color-scheme');
 "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 15,
+            description: "add_tasks",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS tasks (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    prompt      TEXT NOT NULL,
+    period      TEXT NOT NULL,
+    next_run    TEXT NOT NULL
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

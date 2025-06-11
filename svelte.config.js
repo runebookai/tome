@@ -22,6 +22,7 @@ const config = {
                 "/mcp-servers/smithery",
                 "/models",
                 "/settings",
+                "/tasks"
             ],
             'handleHttpError': "warn"
         }
