@@ -6,12 +6,27 @@
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
     import List from '$components/List.svelte';
+    import type { MenuItem } from '$components/Menu.svelte';
     import Menu from '$components/Menu.svelte';
-    import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
+    import Task from '$lib/models/task.svelte';
+
+    let allTasks: Task[] = $derived(Task.all());
+
+    const { children } = $props();
+
+    function items(task: Task): MenuItem[] {
+        return [
+            {
+                label: 'Delete',
+                style: 'text-red hover:bg-red hover:text-white',
+                onclick: async () => await destroy(task),
+            },
+        ];
+    }
 
     async function destroy(task: Task) {
-        await Task.delete(task.id as number);
+        await task.delete();
         goto(`/tasks`);
     }
 </script>
@@ -32,43 +47,24 @@
     </Titlebar>
 {/snippet}
 
-{#snippet TaskView(server: Task)}
-    <Menu items={items(server)}>
-        <Deleteable ondelete={() => destroy(server)}>
+{#snippet TaskView(task: Task)}
+    <Menu items={items(task)}>
+        <Deleteable ondelete={() => destroy(task)}>
             <Link
-                href={`/mcp-servers/${server.id}`}
+                href={`/tasks/${task.id}`}
                 class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
                 activeClass="text-purple border-l border-l-purple"
             >
-                {server.name}
+                {task.name}
             </Link>
         </Deleteable>
     </Menu>
 {/snippet}
 
-{#snippet RegistryView(registry: Registry)}
-    <Link
-        href={`/mcp-servers/${registry.name.toLowerCase()}`}
-        class="mb-4 flex h-full w-full items-center pl-8"
-        activeClass="text-purple"
-    >
-        <Svg name={registry.icon} class="mr-4 h-6 w-6" />
-        {registry.name}
-    </Link>
-{/snippet}
-
 <Layout {titlebar}>
     <Flex class="h-full items-start">
         <Flex class="border-r-light h-full w-[300px] flex-col items-start border-r">
-            <List items={Tasks} itemView={TaskView} />
-            <List
-                items={tasks}
-                itemView={TaskView}
-                borderless
-                title="Tasks"
-                class="mt-4"
-                titleClass="pl-8 my-4"
-            />
+            <List items={allTasks} itemView={TaskView} />
         </Flex>
 
         <Flex class="h-full w-[calc(100%-300px)] items-start p-8">
