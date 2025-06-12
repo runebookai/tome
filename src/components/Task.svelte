@@ -1,6 +1,7 @@
 <script lang="ts">
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
+    import PeriodInput from './PeriodInput.svelte';
     import { Task } from '$lib/models';
 
     interface Props {
@@ -13,10 +14,20 @@
     let prompt = $state('');
     let period = $state('');
 
+    $effect.pre(() => {
+        if (task) {
+            name = task.name;
+            prompt = task.prompt;
+            period = task.period;
+        }
+    })
+
     async function save(): Promise<void> {
         task.name = name;
         task.prompt = prompt;
         task.period = period;
+        task.next_run = await task.calculate_next_run();
+        console.log(task.next_run);
         task = await task.save();
     }
 </script>
@@ -44,8 +55,8 @@
         placeholder="task prompt"
     />
 
-    <h2 class="text-medium mt-8 mb-4 ml-4 text-xl">Period</h2>
-    <Input
+    <h2 class="text-medium mt-8 mb-4 ml-4 text-xl">Frequency</h2>
+    <PeriodInput
         bind:value={period}
         label={false}
         name="period"
@@ -53,4 +64,9 @@
         onchange={save}
         placeholder="task period"
     />
+    <p>Component Period: {period}</p>
+    <p>Task Period: {task.period}</p>
+
+    <p>Task Next Run: {task.next_run}</p>
+    <p>Task Should Run?: {task.should_run()}</p>
 </Flex>
