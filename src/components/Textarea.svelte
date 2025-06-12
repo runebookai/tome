@@ -8,6 +8,7 @@
         ref?: HTMLTextAreaElement;
         label: string | boolean;
         required?: boolean;
+        value: string;
         validate?: (value: string) => boolean;
     }
 
@@ -19,6 +20,8 @@
         ref = $bindable(),
         value = $bindable(),
         validate = () => true,
+        autocomplete,
+        autocorrect,
         ...rest
     }: Props = $props();
 
@@ -39,12 +42,12 @@
             'border-light min-h-[100px] w-full resize-y rounded-md border p-2 px-4 outline-none',
             cls?.toString()
         )}
-        class:border-red={!valid}
-        onkeyup={() => (valid = validate(value))}
-        onblur={() => (valid = validate(value))}
-        autocorrect="off"
-        autocomplete="off"
         {name}
+        class:border-red={!valid}
+        onkeyup={() => (valid = validate?.(value))}
+        onblur={() => (valid = validate?.(value))}
+        {autocomplete}
+        {autocorrect}
         bind:value
         bind:this={ref}
         {...rest}

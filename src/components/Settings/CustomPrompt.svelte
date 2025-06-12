@@ -3,7 +3,7 @@
 
     import Box from '$components/Box.svelte';
     import Textarea from '$components/Textarea.svelte';
-    import Setting, { CUSTOM_SYSTEM_PROMPT } from '$lib/models/setting';
+    import Setting, { CUSTOM_SYSTEM_PROMPT } from '$lib/models/setting.svelte';
 
     interface Props {
         saving?: boolean;
@@ -42,7 +42,7 @@
 
             if (existingSetting) {
                 existingSetting.value = customPrompt;
-                await Setting.update(existingSetting);
+                await existingSetting.save();
             } else {
                 await Setting.create({
                     display: 'Custom System Prompt',
@@ -73,6 +73,7 @@
         if (saveTimeout) {
             clearTimeout(saveTimeout);
         }
+        // @ts-expect-error LSP thinks this is node
         saveTimeout = setTimeout(() => {
             saveTimeout = undefined;
             save();
@@ -81,10 +82,9 @@
 </script>
 
 <Box class="bg-medium w-full flex-col items-start gap-2">
-    <h3 class="text-medium mb-2 text-sm font-medium">Custom System Prompt</h3>
-    <p class="text-medium mb-4 text-xs">
-        Override the default system prompt with your own custom instructions. Leave empty to use the
-        default prompt.
+    <h3 class="font-medium">Custom System Prompt</h3>
+    <p class="text-medium text-sm">
+        Override the default system prompt. Leave empty to use the default prompt.
         <strong>Note:</strong>
         This will only apply to new conversations. Existing conversations will keep their original system
         prompt.
@@ -96,8 +96,9 @@
         placeholder="You are a helpful assistant..."
         oninput={onInput}
         onblur={onBlur}
-        class="w-full {!isValid ? 'border-red-500' : ''}"
-        rows="4"
+        autocorrect="off"
+        class="mt-4 w-full {!isValid ? 'border-red-500' : ''}"
+        rows={4}
     />
 
     <div class="flex w-full justify-between text-xs">

@@ -4,8 +4,8 @@ import Engine from './engine.svelte';
 
 import type { Tool } from '$lib/engines/types';
 import { getMCPTools } from '$lib/mcp';
-import { App, McpServer, Message, Model, type ToSqlRow } from '$lib/models';
-import Base from '$lib/models/base.svelte';
+import { App, McpServer, Message, Model, Setting } from '$lib/models';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 /**
  * Generic context for the LLM.
@@ -158,7 +158,7 @@ export default class Session extends Base<Row>('sessions') {
         await Message.create({
             sessionId: this.id,
             role: 'system',
-            content: SYSTEM_PROMPT,
+            content: Setting.CustomSystemPrompt?.trim() || SYSTEM_PROMPT,
         });
 
         await Message.create({
