@@ -30,22 +30,19 @@ export default class Task extends Base<Row>('tasks') {
     
     async start(force: boolean = false): Promise<void> {
         if (this.should_run() || force) {
-            await this.update_next_run();
+            this.next_run = await this.calculate_next_run();
+            this.save();
             console.log("Starting: " + this.name + " in a webworker now...");
         }
     }
     
-    protected should_run(): boolean {
+    should_run(): boolean {
         return this.next_run <= new Date();
     }
 
-    protected async update_next_run(): Promise<void> {
-        this.next_run = new Date(CronExpressionParser.parse(this.period).toString());
-        await this.save()
-    }
-
-    protected async afterCreate(): Promise<void> {
-        await this.update_next_run();
+    async calculate_next_run(): Promise<Date> {
+        const interval = CronExpressionParser.parse(this.period);
+        return new Date(interval.next().toString());
     }
 
     protected static async fromSql(row: Row): Promise<Task> {
