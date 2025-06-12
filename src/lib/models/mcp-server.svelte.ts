@@ -80,20 +80,21 @@ export default class McpServer extends Base<Row>('mcp_servers') {
         });
     }
 
-    async afterCreate() {
-        this.metadata = JSON.parse(
+    async beforeCreate(row: Row): Promise<ToSqlRow<Row>> {
+        const metadata: Metadata = JSON.parse(
             await invoke('get_metadata', {
-                command: this.command,
-                args: this.args,
-                env: this.env,
+                command: row.command,
+                args: JSON.parse(row.args),
+                env: JSON.parse(row.env),
             })
         );
 
-        this.name = this.metadata?.serverInfo?.name
+        row.metadata = JSON.stringify(metadata);
+        row.name = metadata.serverInfo?.name
             ?.replace('mcp-server/', '')
             ?.replace('/', '-') as string;
 
-        await this.save();
+        return row;
     }
 
     static async fromSql(row: Row): Promise<McpServer> {

@@ -3,7 +3,6 @@ import { Ollama as OllamaClient } from 'ollama/browser';
 import OllamaMessage from '$lib/engines/ollama/message';
 import type { Client, ClientProps, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import { error } from '$lib/logger';
 import { type IModel, Message } from '$lib/models';
 
 export default class Ollama implements Client {
@@ -83,8 +82,7 @@ export default class Ollama implements Client {
     async connected(): Promise<boolean> {
         try {
             return (await this.models()) && true;
-        } catch (e) {
-            error(e);
+        } catch {
             return false;
         }
     }
