@@ -5,6 +5,7 @@
     import Input from '$components/Input.svelte';
     import Svg from '$components/Svg.svelte';
     import { McpServer } from '$lib/models';
+    import { join, split } from '$lib/shellwords';
 
     interface Props {
         server: McpServer;
@@ -18,15 +19,8 @@
     let key: string = $state('');
     let value: string = $state('');
 
-    $effect.pre(() => {
-        if (server) {
-            command = `${server.command} ${server.args.join(' ')}`.trim();
-            env = Object.entries(server.env);
-        }
-    });
-
     async function save() {
-        const cmd = command.split(' ');
+        const cmd = split(command);
         server.command = cmd[0];
         server.args = cmd.slice(1);
         server.env = Object.fromEntries(env.map(([k, v]) => [constantCase(k), v]));
@@ -44,6 +38,13 @@
         env = env.filter(e => e[0] !== key);
         await save();
     }
+
+    $effect.pre(() => {
+        if (server) {
+            command = `${server.command} ${join(server.args)}`.trim();
+            env = Object.entries(server.env);
+        }
+    });
 </script>
 
 <Flex class="w-full flex-col items-start">
