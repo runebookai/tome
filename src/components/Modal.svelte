@@ -25,12 +25,12 @@
     });
 </script>
 
-<div class="fixed top-0 left-0 z-40 h-screen w-screen bg-black/90"></div>
+<div class="fixed top-0 left-0 z-40 h-screen w-screen bg-dark/80"></div>
 
 <div
     bind:this={ref}
     class={twMerge(
-        'border-light bg-dark fixed top-[50%] left-[50%] z-50 max-h-3/4 min-w-[400px] -translate-[50%] rounded-xl border p-8',
+        'border-light bg-medium fixed top-[50%] left-[50%] z-50 max-h-3/4 min-w-[400px] -translate-[50%] rounded-xl border p-8',
         cls?.toString()
     )}
 >

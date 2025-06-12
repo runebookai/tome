@@ -10,7 +10,7 @@
 
 <nav
     class={twMerge(
-        'bg-md text-medium border-light flex flex-col items-center gap-8 border-r pt-20',
+        'bg-medium text-light border-light flex flex-col items-center gap-8 border-r pt-20',
         cls?.toString()
     )}
 >

@@ -7,11 +7,35 @@
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import Engine from '$lib/models/engine.svelte';
+    import Setting from '$lib/models/setting.svelte';
 
     const engines: Engine[] = $derived(Engine.all());
 
     let adding = $state(false);
     let saving = $state(false);
+
+    // Color scheme state
+    let colorScheme = $state(Setting.ColorScheme ?? 'system');
+
+    function onColorSchemeChange(e: Event) {
+        colorScheme = (e.target as HTMLSelectElement).value;
+        Setting.ColorScheme = colorScheme;
+        applyColorScheme(colorScheme);
+    }
+
+    function applyColorScheme(scheme: string) {
+        if (scheme === 'system') {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', scheme);
+        }
+    }
+
+    // Apply on load and whenever colorScheme changes
+    $effect(() => {
+        applyColorScheme(colorScheme);
+    });
 
     async function ondelete(engine: Engine) {
         await engine.delete();
@@ -36,6 +60,23 @@
 <Layout {titlebar}>
     <Scrollable class="!h-content">
         <Flex class="w-full flex-col gap-4 overflow-y-auto p-8">
+            
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Color Scheme</h2>
+                </section>
+            </Flex>
+
+            <Flex class="w-full flex-col items-start gap-2">
+            <section class="mb-8 w-2/5">
+                <select class="border-light mt-2 rounded-md border bg-medium text-light p-2" bind:value={colorScheme} on:change={onColorSchemeChange}>
+                    <option value="system">System</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </section>
+            </Flex>
+
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Engines</h2>

@@ -10,6 +10,8 @@ const GEMINI_API_KEY = 'gemini-api-key';
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
 
+const COLOR_SCHEME_KEY = 'color-scheme';
+
 interface Row {
     id: number;
     display: string;
@@ -35,6 +37,18 @@ export default class Setting extends Base<Row>('settings') {
 
     static get GeminiApiKey(): string | undefined {
         return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
+    }
+
+    static get ColorScheme(): string | undefined {
+        return this.findBy({ key: COLOR_SCHEME_KEY })?.value as string | undefined;
+    }
+
+    static set ColorScheme(value: string | undefined) {
+        const setting = this.findBy({ key: COLOR_SCHEME_KEY });
+        if (setting && value) {
+            setting.value = value;
+            setting.save();
+        }
     }
 
     protected async afterUpdate() {
