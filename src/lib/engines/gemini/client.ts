@@ -63,7 +63,9 @@ export default class Gemini implements Client {
     }
 
     async models(): Promise<IModel[]> {
-        return (await this.client.models.list()).page.map(model => {
+        return (
+            await this.client.models.list({ config: { httpOptions: { timeout: 1000 } } })
+        ).page.map(model => {
             const metadata = model;
             const name = metadata.name?.replace('models/', '') as string;
 
