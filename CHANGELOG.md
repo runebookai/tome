@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.0 - 2025-06-13
+
+### New Features
+
+- Customizable System Prompt (in settings)
+
+### Fixes
+
+- Correctly handle shell arguments with quotes
+
+### Refactors
+
+- Refactored models to be sane. They're now just instances of classes. No more
+  "static everything".
+
+### Fixes
+
+- Fixes false negetive issue when validating Engines
+
 ## 0.6.2 - 2025-06-03
 
 ### Fixes
