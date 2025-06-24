@@ -116,4 +116,26 @@ export default class McpServer extends Base<Row>('mcp_servers') {
             env: JSON.stringify(this.env),
         };
     }
+
+    async rename(newName: string) {
+        const oldName = this.name;
+        this.name = newName;
+        await this.save();
+        
+        // Update the server name in any active sessions
+        const sessions = await Session.all();
+        for (const session of sessions) {
+            if (session.hasMcpServer(oldName)) {
+                await invoke('rename_mcp_server', {
+                    sessionId: session.id,
+                    oldName,
+                    newName
+                });
+                session.config.enabledMcpServers = session.config.enabledMcpServers?.map(
+                    name => name === oldName ? newName : name
+                );
+                await session.save();
+            }
+        }
+    }
 }
