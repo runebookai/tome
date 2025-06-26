@@ -4,6 +4,8 @@
     import { twMerge } from 'tailwind-merge';
 
     import Flex from './Flex.svelte';
+    import Input from './Input.svelte';
+    import Svg from './Svg.svelte';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         items: Item[];
@@ -11,6 +13,8 @@
         borderless?: boolean;
         title?: string;
         titleClass?: string;
+        filterable?: boolean;
+        filterProp?: keyof Item;
     }
 
     const {
@@ -20,9 +24,19 @@
         titleClass = '',
         borderless = false,
         title,
+        filterable = false,
+        filterProp,
     }: Props = $props();
 
+    let filteredItems = $state(items);
+    let filterTerm = $state('');
     let css = borderless ? '' : 'border-b-light border-b';
+
+    function filter() {
+        if (filterable && filterProp) {
+            filteredItems = items.filter(item => (item[filterProp] as string).includes(filterTerm));
+        }
+    }
 </script>
 
 <Flex class={twMerge('w-full flex-col items-start', cls?.toString())}>
@@ -32,7 +46,21 @@
         </p>
     {/if}
 
-    {#each items as item, i (i)}
+    {#if filterable}
+        <Flex class="border-b-light w-full border-b px-4">
+            <Svg name="Search" class="text-dark h-4 w-4" />
+            <Input
+                label={false}
+                type="text"
+                placeholder="Filter..."
+                bind:value={filterTerm}
+                onkeyup={filter}
+                class="w-full border-0"
+            />
+        </Flex>
+    {/if}
+
+    {#each filteredItems as item, i (i)}
         <div class={twMerge('w-full', css)}>
             {@render itemView(item)}
         </div>

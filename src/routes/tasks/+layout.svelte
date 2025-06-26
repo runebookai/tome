@@ -18,6 +18,14 @@
     function items(task: Task): MenuItem[] {
         return [
             {
+                label: 'Run',
+                onclick: async () => await run(task),
+            },
+            {
+                label: 'Edit',
+                onclick: async () => await edit(task),
+            },
+            {
                 label: 'Delete',
                 style: 'text-red hover:bg-red hover:text-white',
                 onclick: async () => await destroy(task),
@@ -28,6 +36,14 @@
     async function destroy(task: Task) {
         await task.delete();
         goto(`/tasks`);
+    }
+
+    async function edit(task: Task) {
+        await goto(`/tasks/${task.id}/edit`);
+    }
+
+    async function run(task: Task) {
+        // noop for now
     }
 </script>
 
@@ -67,7 +83,7 @@
             <List items={allTasks} itemView={TaskView} />
         </Flex>
 
-        <Flex class="h-full w-[calc(100%-300px)] items-start p-8">
+        <Flex class="h-full w-[calc(100%-300px)] items-start">
             {@render children?.()}
         </Flex>
     </Flex>
