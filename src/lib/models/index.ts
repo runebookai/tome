@@ -7,6 +7,8 @@ import Model from '$lib/models/model';
 import Session from '$lib/models/session.svelte';
 import Setting from '$lib/models/setting.svelte';
 import Task from '$lib/models/task.svelte';
+import TaskMcpServer from '$lib/models/task-mcp-server.svelte';
+import TaskRun from '$lib/models/task-run.svelte';
 
 export { default as App } from '$lib/models/app.svelte';
 export { default as BareModel } from '$lib/models/bare.svelte';
@@ -19,6 +21,8 @@ export { type IModel, default as Model } from '$lib/models/model';
 export { default as Session } from '$lib/models/session.svelte';
 export { default as Setting } from '$lib/models/setting.svelte';
 export { default as Task } from '$lib/models/task.svelte';
+export { default as TaskMcpServer } from '$lib/models/task-mcp-server.svelte';
+export { default as TaskRun } from '$lib/models/task-run.svelte';
 
 export async function resync() {
     await Engine.sync();
@@ -30,4 +34,6 @@ export async function resync() {
     await Setting.sync();
     await Config.sync();
     await Task.sync();
+    await TaskMcpServer.sync();
+    await TaskRun.sync();
 }

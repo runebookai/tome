@@ -1,8 +1,7 @@
 import { CronExpressionParser } from 'cron-parser';
 
-import { type ToSqlRow } from '$lib/models';
-import Base from '$lib/models/base.svelte';
-
+import { McpServer, TaskMcpServer, TaskRun } from '$lib/models';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 interface Row {
     id: number;
@@ -16,26 +15,43 @@ export default class Task extends Base<Row>('tasks') {
     id?: number = $state();
     name: string = $state('New Task');
     prompt: string = $state('');
-    period: string = $state("0 12 * * *");
+    period: string = $state('0 12 * * *');
     next_run: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
 
-    get default() {
-        return {
-            name: 'New Task',
-            prompt: '',
-            period: '0 12 * * *',
-            next_run: new Date('2099-12-31T11:59:59.999Z'),
-        };
-    };
-    
+    get runs() {
+        return TaskRun.where({ taskId: this.id }).sortBy('timestamp').reverse();
+    }
+
+    get mcpServers() {
+        return TaskMcpServer.where({ taskId: this.id }).map(m => m.mcpServer);
+    }
+
+    get latestRun() {
+        return TaskRun.all().sortBy('timestamp').pop();
+    }
+
+    async addMcpServer(mcpServer: McpServer) {
+        const assoc = TaskMcpServer.findByOrNew({ taskId: this.id, mcpServerId: mcpServer.id });
+        await assoc.save();
+    }
+
+    async removeMcpServer(mcpServer: McpServer) {
+        const assoc = TaskMcpServer.findBy({ taskId: this.id, mcpServerId: mcpServer.id });
+        await assoc?.delete();
+    }
+
+    hasMcpServer(mcpServer: McpServer) {
+        return TaskMcpServer.exists({ taskId: this.id, mcpServerId: mcpServer.id });
+    }
+
     async start(force: boolean = false): Promise<void> {
         if (this.should_run() || force) {
             this.next_run = await this.calculate_next_run();
             this.save();
-            console.log("Starting: " + this.name + " in a webworker now...");
+            console.log('Starting: ' + this.name + ' in a webworker now...');
         }
     }
-    
+
     should_run(): boolean {
         return this.next_run <= new Date();
     }
@@ -43,6 +59,13 @@ export default class Task extends Base<Row>('tasks') {
     async calculate_next_run(): Promise<Date> {
         const interval = CronExpressionParser.parse(this.period);
         return new Date(interval.next().toString());
+    }
+
+    protected async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
+        return {
+            ...row,
+            next_run: (await this.calculate_next_run()).toISOString(),
+        };
     }
 
     protected static async fromSql(row: Row): Promise<Task> {

@@ -63,7 +63,7 @@
             <button
                 onclick={() => onclick(item)}
                 class={twMerge(
-                    'hover:bg-purple flex w-full flex-row items-center p-8 py-1 hover:cursor-pointer',
+                    'hover:bg-purple flex w-full flex-row items-center p-8 py-1.5 hover:cursor-pointer',
                     item.style
                 )}
             >

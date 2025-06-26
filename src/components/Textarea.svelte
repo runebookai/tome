@@ -20,8 +20,8 @@
         ref = $bindable(),
         value = $bindable(),
         validate = () => true,
-        autocomplete,
-        autocorrect,
+        autocomplete = 'off',
+        autocorrect = 'off',
         ...rest
     }: Props = $props();
 

@@ -246,5 +246,35 @@ CREATE TABLE IF NOT EXISTS tasks (
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 15,
+            description: "add_task_runs",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS task_runs (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    task_id     INTEGER NOT NULL,
+    session_id  INTEGER NOT NULL,
+    success     BOOLEAN NOT NULL,
+    timestamp   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(task_id) REFERENCES tasks(id),
+    FOREIGN KEY(session_id) REFERENCES sessions(id)
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 16,
+            description: "add_tasks_mcp_servers",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    task_id         INTEGER NOT NULL,
+    mcp_server_id   INTEGER NOT NULL,
+    FOREIGN KEY(task_id) REFERENCES tasks(id),
+    FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id)
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }
