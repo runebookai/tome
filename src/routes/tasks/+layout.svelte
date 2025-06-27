@@ -10,6 +10,7 @@
     import Menu from '$components/Menu.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import Task from '$lib/models/task.svelte';
+    import { execute } from '$lib/tasks';
 
     const { children } = $props();
     const tasks: Task[] = $derived(Task.all());
@@ -42,7 +43,11 @@
     }
 
     async function run(task: Task) {
-        // noop for now
+        const run = await execute(task);
+
+        if (run) {
+            await goto(`/tasks/${task.id}/runs/${run.id}`);
+        }
     }
 </script>
 

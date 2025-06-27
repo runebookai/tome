@@ -1,15 +1,13 @@
 <script lang="ts">
     import { twMerge } from 'tailwind-merge';
 
-    const { class: cls = '' } = $props();
+    const { class: cls = 'w-[24px] h-[24px]' } = $props();
 </script>
 
-<div class={twMerge('spinner', cls?.toString())}></div>
+<div class={twMerge('spinner before:border-[5px] before:border-white', cls?.toString())}></div>
 
 <style>
     .spinner {
-        width: 24px;
-        height: 24px;
         border-radius: 50%;
         position: relative;
         animation: rotate 1s linear infinite;
@@ -20,7 +18,6 @@
         position: absolute;
         inset: 0px;
         border-radius: 50%;
-        border: 3px solid #fff;
         animation: prixClipFix 2s linear infinite;
     }
 

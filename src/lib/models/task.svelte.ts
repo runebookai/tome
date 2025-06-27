@@ -16,8 +16,8 @@ interface Row {
 export default class Task extends Base<Row>('tasks') {
     id?: number = $state();
     name: string = $state('New Task');
-    engineId?: number = $state();
-    model?: string = $state();
+    engineId: number = $state(Model.default().engineId);
+    model: string = $state(Model.default().id);
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
     next_run: Date = $state(new Date('2099-12-31T11:59:59.999Z'));

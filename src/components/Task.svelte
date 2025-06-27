@@ -22,7 +22,7 @@
     const isEdit = $derived(task.id !== undefined);
 
     let mcpServers: McpServer[] = $state([]);
-    let model: IModel = $state(Model.find(String(task.model)) || Model.default());
+    let model: IModel = $state((task.model && Model.find(task.model)) || Model.default());
 
     async function addMcpServer(mcpServer: McpServer) {
         if (isEdit) {
