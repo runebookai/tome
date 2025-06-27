@@ -61,21 +61,23 @@
 <Layout {titlebar}>
     <Scrollable class="!h-content">
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
-            
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Color Scheme</h2>
+                    <p class="text-medium font-light">Set the color scheme of Tome</p>
                 </section>
-            </Flex>
 
-            <Flex class="w-full flex-col items-start gap-2">
-            <section class="mb-8 w-2/5">
-                <select class="border-light mt-2 rounded-md border bg-medium text-light p-2" bind:value={colorScheme} on:change={onColorSchemeChange}>
-                    <option value="system">System</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                </select>
-            </section>
+                <Flex class="w-full flex-col items-start gap-2">
+                    <select
+                        class="border-light bg-medium text-light mt-2 rounded-md border p-2"
+                        bind:value={colorScheme}
+                        onchange={onColorSchemeChange}
+                    >
+                        <option value="system">System</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </Flex>
             </Flex>
 
             <Flex class="w-full items-start gap-4">

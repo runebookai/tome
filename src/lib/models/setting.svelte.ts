@@ -51,6 +51,8 @@ export default class Setting extends Base<Row>('settings') {
 
     static get CustomSystemPrompt(): string | undefined {
         return this.findBy({ key: CUSTOM_SYSTEM_PROMPT })?.value as string | undefined;
+    }
+
     static get ColorScheme(): string | undefined {
         return this.findBy({ key: COLOR_SCHEME_KEY })?.value as string | undefined;
     }
