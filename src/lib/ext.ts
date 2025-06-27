@@ -110,6 +110,13 @@ Array.prototype.compact = function <T>(this: T[]): Exclude<T, undefined>[] {
 };
 
 /**
+ * Return the last element in the array
+ */
+Array.prototype.last = function <T>(this: T[]): T {
+    return this[this.length - 1];
+};
+
+/**
  * Truncate the text, suffixed by an ellipsis.
  */
 String.prototype.ellipsize = function (length: number = 25) {

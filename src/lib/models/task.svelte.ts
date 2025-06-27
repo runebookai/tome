@@ -18,7 +18,7 @@ export default class Task extends Base<Row>('tasks') {
     period: string = $state('0 12 * * *');
     next_run: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
 
-    get runs() {
+    get runs(): TaskRun[] {
         return TaskRun.where({ taskId: this.id }).sortBy('timestamp').reverse();
     }
 
@@ -27,7 +27,7 @@ export default class Task extends Base<Row>('tasks') {
     }
 
     get latestRun() {
-        return TaskRun.all().sortBy('timestamp').pop();
+        return this.runs[0];
     }
 
     async addMcpServer(mcpServer: McpServer) {

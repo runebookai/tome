@@ -29,15 +29,19 @@
     </Link>
 {/snippet}
 
-<Flex class="h-full w-full flex-col items-start">
-    <Flex class="h-3/5 w-full flex-col items-start overflow-y-scroll p-8">
-        {#each run.session.messages as message (message.id)}
-            <Message {message} />
-        {/each}
-    </Flex>
+{#key page.params.task_id}
+    <Flex class="h-full w-full flex-col items-start">
+        <Flex class="h-3/5 w-full flex-col items-start overflow-y-scroll p-8">
+            {#if run}
+                {#each run.session.messages as message (message.id)}
+                    <Message {message} />
+                {/each}
+            {/if}
+        </Flex>
 
-    <Flex class="border-t-light h-2/5 w-full flex-col items-start border-t py-4">
-        <h3 class="mb-4 ml-8 uppercase">History</h3>
-        <List items={task.runs} itemView={RunView} class="border-t-light border-t" />
+        <Flex class="border-t-light h-2/5 w-full flex-col items-start border-t py-4">
+            <h3 class="mb-4 ml-8 uppercase">History</h3>
+            <List items={task.runs} itemView={RunView} class="border-t-light border-t" />
+        </Flex>
     </Flex>
-</Flex>
+{/key}

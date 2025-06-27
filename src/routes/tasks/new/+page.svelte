@@ -3,6 +3,10 @@
     import { Task } from '$lib/models';
 
     const task: Task = $state(Task.new());
+
+    async function save() {
+        await task.save();
+    }
 </script>
 
-<TaskView {task} />
+<TaskView {task} onsave={save} />
