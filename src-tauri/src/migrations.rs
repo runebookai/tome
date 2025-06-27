@@ -222,5 +222,15 @@ INSERT INTO engines ("name", "type", "options") VALUES
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 14,
+            description: "add_color_scheme_setting",
+            sql: r#"
+INSERT INTO settings (display, key, value, type)
+SELECT 'Color Scheme', 'color-scheme', '"system"', 'select'
+WHERE NOT EXISTS (SELECT 1 FROM settings WHERE key = 'color-scheme');
+"#,
+            kind: MigrationKind::Up,
+        },
     ]
 }
