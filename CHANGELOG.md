@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 - 2025-06-27
+
+### Fixes
+
+- Reverted MSI removal – it's causing the Windows build to fail. Unsure why.
+
 ## 0.8.0 - 2025-06-27
 
 ### New Features
