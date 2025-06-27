@@ -10,6 +10,7 @@ import { resync } from '$lib/models';
 import Config from '$lib/models/config.svelte';
 import Engine from '$lib/models/engine.svelte';
 import startup, { StartupCheck } from '$lib/startup';
+import { cleanPendingTasks, startTasksLoop } from '$lib/tasks';
 import * as toolCallMigration from '$lib/tool-call-migration';
 import { isUpToDate } from '$lib/updates';
 
@@ -37,6 +38,12 @@ export const init: ClientInit = async () => {
         StartupCheck.NoModels,
         async () => Engine.all().flatMap(e => e.models).length > 0
     );
+
+    await cleanPendingTasks();
+    info('[green]✔ cleaned stale tasks');
+
+    startTasksLoop();
+    info('[green]✔ started tasks');
 };
 
 export const handleError: HandleClientError = async ({ error: err }) => {

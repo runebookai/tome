@@ -24,12 +24,33 @@ export default class TaskRun extends Base<Row>('task_runs') {
     state: State = $state(State.Pending);
     created?: moment.Moment = $state();
 
+    static stale() {
+        return TaskRun.where({ state: State.Pending }).filter(run =>
+            run.created?.isBefore(moment().subtract(24, 'hours'))
+        );
+    }
+
     get task() {
         return Task.find(Number(this.taskId));
     }
 
     get session() {
         return Session.find(Number(this.sessionId));
+    }
+
+    async pending() {
+        this.state = State.Pending;
+        await this.save();
+    }
+
+    async succeed() {
+        this.state = State.Success;
+        await this.save();
+    }
+
+    async fail() {
+        this.state = State.Failure;
+        await this.save();
     }
 
     protected static async fromSql(row: Row): Promise<TaskRun> {
