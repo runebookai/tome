@@ -20,7 +20,7 @@ export default class Task extends Base<Row>('tasks') {
     model: string = $state(Model.default().id);
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
-    next_run: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
+    nextRun: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
 
     get runs(): TaskRun[] {
         return TaskRun.where({ taskId: this.id }).sortBy('timestamp').reverse();
@@ -52,13 +52,18 @@ export default class Task extends Base<Row>('tasks') {
         return TaskMcpServer.exists({ taskId: this.id, mcpServerId: mcpServer.id });
     }
 
-    should_run(): boolean {
-        return this.next_run <= new Date();
+    shouldRun(): boolean {
+        return this.nextRun <= new Date();
+    }
+
+    async calculateNextRun(): Promise<Date> {
+        const interval = CronExpressionParser.parse(this.period);
+        return new Date(interval.next().toString());
     }
 
     async start(force: boolean = false): Promise<void> {
-        if (this.should_run() || force) {
-            this.next_run = await this.calculate_next_run();
+        if (this.shouldRun() || force) {
+            this.nextRun = await this.calculateNextRun();
             this.save();
             console.log('Starting: ' + this.name + ' in a webworker now...');
         }
@@ -69,16 +74,11 @@ export default class Task extends Base<Row>('tasks') {
         return super.delete();
     }
 
-    protected async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
+    protected async beforeCreate(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
         return {
             ...row,
-            next_run: (await this.calculate_next_run()).toISOString(),
+            next_run: (await this.calculateNextRun()).toISOString(),
         };
-    }
-
-    async calculate_next_run(): Promise<Date> {
-        const interval = CronExpressionParser.parse(this.period);
-        return new Date(interval.next().toString());
     }
 
     protected static async fromSql(row: Row): Promise<Task> {
@@ -89,7 +89,7 @@ export default class Task extends Base<Row>('tasks') {
             engineId: row.engine_id,
             model: row.model,
             period: row.period,
-            next_run: new Date(row.next_run),
+            nextRun: new Date(row.next_run),
         });
     }
 
@@ -100,7 +100,7 @@ export default class Task extends Base<Row>('tasks') {
             engine_id: Number(this.engineId),
             model: String(this.model),
             period: this.period,
-            next_run: this.next_run.toISOString(),
+            next_run: this.nextRun.toISOString(),
         };
     }
 }
