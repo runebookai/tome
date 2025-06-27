@@ -1,11 +1,13 @@
 import { CronExpressionParser } from 'cron-parser';
 
-import { McpServer, TaskMcpServer, TaskRun } from '$lib/models';
+import { Engine, McpServer, Model, TaskMcpServer, TaskRun } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 interface Row {
     id: number;
     name: string;
+    engine_id: number;
+    model: string;
     prompt: string;
     period: string;
     next_run: string;
@@ -14,12 +16,18 @@ interface Row {
 export default class Task extends Base<Row>('tasks') {
     id?: number = $state();
     name: string = $state('New Task');
+    engineId?: number = $state();
+    model?: string = $state();
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
     next_run: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
 
     get runs(): TaskRun[] {
         return TaskRun.where({ taskId: this.id }).sortBy('timestamp').reverse();
+    }
+
+    get engine() {
+        return Engine.find(Number(this.engineId));
     }
 
     get mcpServers() {
@@ -78,6 +86,8 @@ export default class Task extends Base<Row>('tasks') {
             id: row.id,
             name: row.name,
             prompt: row.prompt,
+            engineId: row.engine_id,
+            model: row.model,
             period: row.period,
             next_run: new Date(row.next_run),
         });
@@ -87,6 +97,8 @@ export default class Task extends Base<Row>('tasks') {
         return {
             name: this.name,
             prompt: this.prompt,
+            engine_id: Number(this.engineId),
+            model: String(this.model),
             period: this.period,
             next_run: this.next_run.toISOString(),
         };
