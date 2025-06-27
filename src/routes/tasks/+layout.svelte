@@ -11,9 +11,8 @@
     import Titlebar from '$components/Titlebar.svelte';
     import Task from '$lib/models/task.svelte';
 
-    let allTasks: Task[] = $derived(Task.all());
-
     const { children } = $props();
+    const tasks: Task[] = $derived(Task.all());
 
     function items(task: Task): MenuItem[] {
         return [
@@ -35,7 +34,7 @@
 
     async function destroy(task: Task) {
         await task.delete();
-        goto(`/tasks`);
+        await goto(`/tasks`);
     }
 
     async function edit(task: Task) {
@@ -80,7 +79,7 @@
 <Layout {titlebar}>
     <Flex class="h-full items-start">
         <Flex class="border-r-light h-full w-[300px] flex-col items-start border-r">
-            <List items={allTasks} itemView={TaskView} />
+            <List items={tasks} itemView={TaskView} />
         </Flex>
 
         <Flex class="h-full w-[calc(100%-300px)] items-start">

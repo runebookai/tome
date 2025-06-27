@@ -28,13 +28,14 @@
         filterProp,
     }: Props = $props();
 
-    let filteredItems = $state(items);
     let filterTerm = $state('');
     let css = borderless ? '' : 'border-b-light border-b';
 
     function filter() {
         if (filterable && filterProp) {
-            filteredItems = items.filter(item => (item[filterProp] as string).includes(filterTerm));
+            return items.filter(item => (item[filterProp] as string).includes(filterTerm));
+        } else {
+            return items;
         }
     }
 </script>
@@ -60,7 +61,7 @@
         </Flex>
     {/if}
 
-    {#each filteredItems as item, i (i)}
+    {#each filter() as item, i (i)}
         <div class={twMerge('w-full', css)}>
             {@render itemView(item)}
         </div>

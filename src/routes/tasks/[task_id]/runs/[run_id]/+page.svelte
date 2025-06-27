@@ -41,7 +41,7 @@
 
         <Flex class="border-t-light h-2/5 w-full flex-col items-start border-t py-4">
             <h3 class="mb-4 ml-8 uppercase">History</h3>
-            <List items={task.runs} itemView={RunView} class="border-t-light border-t" />
+            <List items={task?.runs} itemView={RunView} class="border-t-light border-t" />
         </Flex>
     </Flex>
 {/key}

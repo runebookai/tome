@@ -44,6 +44,10 @@ export default class Task extends Base<Row>('tasks') {
         return TaskMcpServer.exists({ taskId: this.id, mcpServerId: mcpServer.id });
     }
 
+    should_run(): boolean {
+        return this.next_run <= new Date();
+    }
+
     async start(force: boolean = false): Promise<void> {
         if (this.should_run() || force) {
             this.next_run = await this.calculate_next_run();
@@ -52,13 +56,9 @@ export default class Task extends Base<Row>('tasks') {
         }
     }
 
-    should_run(): boolean {
-        return this.next_run <= new Date();
-    }
-
-    async calculate_next_run(): Promise<Date> {
-        const interval = CronExpressionParser.parse(this.period);
-        return new Date(interval.next().toString());
+    async delete() {
+        TaskMcpServer.where({ taskId: this.id }).forEach(r => r.delete());
+        return super.delete();
     }
 
     protected async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
@@ -66,6 +66,11 @@ export default class Task extends Base<Row>('tasks') {
             ...row,
             next_run: (await this.calculate_next_run()).toISOString(),
         };
+    }
+
+    async calculate_next_run(): Promise<Date> {
+        const interval = CronExpressionParser.parse(this.period);
+        return new Date(interval.next().toString());
     }
 
     protected static async fromSql(row: Row): Promise<Task> {
