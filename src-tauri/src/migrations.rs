@@ -250,6 +250,10 @@ CREATE TABLE IF NOT EXISTS tasks (
             version: 15,
             description: "add_tasks_support",
             sql: r#"
+ALTER TABLE sessions ADD COLUMN ephemeral BOOLEAN DEFAULT "false";
+
+INSERT INTO apps ("name", "description", "interface") VALUES ("Task", "Scheduled task", "Task");
+
 ALTER TABLE tasks ADD COLUMN engine_id INTEGER REFERENCES engines(id);
 ALTER TABLE tasks ADD COLUMN model TEXT NOT NULL;
 
@@ -257,8 +261,8 @@ CREATE TABLE IF NOT EXISTS task_runs (
     id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     task_id     INTEGER NOT NULL,
     session_id  INTEGER NOT NULL,
-    success     BOOLEAN NOT NULL,
-    timestamp   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    state       TEXT NOT NULL DEFAULT "Pending",
+    created     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(session_id) REFERENCES sessions(id)
 );

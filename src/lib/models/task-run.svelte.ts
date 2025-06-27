@@ -3,20 +3,26 @@ import moment from 'moment';
 import { Session, Task } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
+export enum State {
+    Pending = 'Pending',
+    Success = 'Success',
+    Failure = 'Failure',
+}
+
 interface Row {
     id: number;
     task_id: number;
     session_id: number;
-    success: boolean;
-    timestamp: string;
+    state: State;
+    created: string;
 }
 
 export default class TaskRun extends Base<Row>('task_runs') {
     id?: number = $state();
     taskId?: number = $state();
     sessionId?: number = $state();
-    success: boolean = $state(false);
-    timestamp?: moment.Moment = $state();
+    state: State = $state(State.Pending);
+    created?: moment.Moment = $state();
 
     get task() {
         return Task.find(Number(this.taskId));
@@ -31,8 +37,8 @@ export default class TaskRun extends Base<Row>('task_runs') {
             id: row.id,
             taskId: row.task_id,
             sessionId: row.session_id,
-            success: row.success,
-            timestamp: moment.utc(row.timestamp),
+            state: row.state,
+            created: moment.utc(row.created),
         });
     }
 
@@ -40,8 +46,7 @@ export default class TaskRun extends Base<Row>('task_runs') {
         return {
             task_id: Number(this.taskId),
             session_id: Number(this.sessionId),
-            success: this.success,
-            timestamp: this.timestamp?.toString() as string,
+            state: this.state,
         };
     }
 }

@@ -40,7 +40,7 @@
     }
 </script>
 
-<Flex class={twMerge('w-full flex-col items-start', cls?.toString())}>
+<Flex class={twMerge('w-full flex-col items-start overflow-y-scroll', cls?.toString())}>
     {#if title}
         <p class={twMerge('text-medium text-sm', titleClass?.toString())}>
             {title}

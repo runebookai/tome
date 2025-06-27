@@ -27,7 +27,7 @@
         })
     );
 
-    const sessions: Session[] = $derived(Session.all());
+    const sessions: Session[] = $derived(Session.where({ ephemeral: false }));
     const mcpServers: McpServer[] = $derived(McpServer.all());
     const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);

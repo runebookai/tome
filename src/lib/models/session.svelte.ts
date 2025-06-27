@@ -42,6 +42,7 @@ interface Row {
     app_id: number;
     summary: string;
     config: string;
+    ephemeral: string;
     created: string;
     modified: string;
 }
@@ -51,6 +52,7 @@ export default class Session extends Base<Row>('sessions') {
     appId?: number = $state();
     summary: string = $state(DEFAULT_SUMMARY);
     config: Partial<Config> = $state({});
+    ephemeral: boolean = $state(false);
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
@@ -161,11 +163,13 @@ export default class Session extends Base<Row>('sessions') {
             content: Setting.CustomSystemPrompt?.trim() || SYSTEM_PROMPT,
         });
 
-        await Message.create({
-            sessionId: this.id,
-            role: 'assistant',
-            content: WELCOME_PROMPT,
-        });
+        if (!this.ephemeral) {
+            await Message.create({
+                sessionId: this.id,
+                role: 'assistant',
+                content: WELCOME_PROMPT,
+            });
+        }
     }
 
     protected static async fromSql(row: Row): Promise<Session> {
@@ -174,6 +178,7 @@ export default class Session extends Base<Row>('sessions') {
             appId: row.app_id,
             summary: row.summary,
             config: JSON.parse(row.config),
+            ephemeral: row.ephemeral === 'true',
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         });
@@ -184,6 +189,7 @@ export default class Session extends Base<Row>('sessions') {
             app_id: Number(this.appId),
             summary: this.summary,
             config: JSON.stringify(this.config),
+            ephemeral: this.ephemeral ? 'true' : 'false',
         };
     }
 }
