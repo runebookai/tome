@@ -24,6 +24,7 @@ declare global {
     interface Array<T extends Obj> {
         sortBy(key: string): T[];
         findBy(key: string, value: any): T | undefined;
+        last(): T;
     }
 
     interface Array<T> {

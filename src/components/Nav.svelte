@@ -22,6 +22,10 @@
         <Svg name="Chat" />
     </Link>
 
+    <Link href="/tasks" aria-label="tasks" activeClass="text-purple">
+        <Svg name="Tasks" />
+    </Link>
+
     <Link
         href="/mcp-servers"
         aria-label="mcp-servers"
@@ -32,10 +36,6 @@
     </Link>
 
     <Link href="/models" aria-label="models" activeClass="text-purple">
-        <Svg name="Models" />
-    </Link>
-
-    <Link href="/tasks" aria-label="tasks" activeClass="text-purple">
         <Svg name="Models" />
     </Link>
 

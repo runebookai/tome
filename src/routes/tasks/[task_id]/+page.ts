@@ -6,7 +6,7 @@ import { Task } from '$lib/models';
 
 export const load: PageLoad = async ({ params }): Promise<void> => {
     const task = Task.find(Number(params.task_id));
-    goto(`/tasks/${task.id}/runs/${task.latestRun?.id}`);
+    goto(`/tasks/${params.task_id}/runs/${task.latestRun?.id}`);
 };
 
 export const prerender = true;

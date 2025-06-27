@@ -8,7 +8,7 @@
         ref?: HTMLSelectElement;
         label: string | boolean;
         required?: boolean;
-        onchange?: () => Promise<void>;
+        onchange?: () => void | Promise<void>;
     }
 
     let {
@@ -101,4 +101,3 @@
         </div>
     </div>
 </Flex>
-
