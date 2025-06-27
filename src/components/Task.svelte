@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
 
     import Button from './Button.svelte';
+    import ModelMenu from './ModelMenu.svelte';
 
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
@@ -9,7 +10,7 @@
     import PeriodInput from '$components/PeriodInput.svelte';
     import Textarea from '$components/Textarea.svelte';
     import Toggle from '$components/Toggle.svelte';
-    import { McpServer, Task } from '$lib/models';
+    import { Engine, type IModel, McpServer, Model, Task } from '$lib/models';
 
     interface Props {
         task: Task;
@@ -17,9 +18,11 @@
     }
 
     const { task, onsave }: Props = $props();
+    const engines = $derived(Engine.all());
     const isEdit = $derived(task.id !== undefined);
 
     let mcpServers: McpServer[] = $state([]);
+    let model: IModel = $state(Model.find(String(task.model)) || Model.default());
 
     async function addMcpServer(mcpServer: McpServer) {
         if (isEdit) {
@@ -43,6 +46,12 @@
         } else {
             return mcpServers.includes(mcpServer);
         }
+    }
+
+    async function setModel(_model: IModel) {
+        task.engineId = _model.engineId;
+        task.model = _model.id;
+        model = _model;
     }
 
     async function autosave() {
@@ -82,6 +91,9 @@
         onchange={autosave}
         placeholder="task name"
     />
+
+    <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Model</h2>
+    <ModelMenu {engines} selected={model} onselect={setModel} />
 
     <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Prompt</h2>
     <Textarea
