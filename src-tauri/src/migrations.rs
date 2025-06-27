@@ -258,11 +258,12 @@ ALTER TABLE tasks ADD COLUMN engine_id INTEGER REFERENCES engines(id);
 ALTER TABLE tasks ADD COLUMN model TEXT NOT NULL;
 
 CREATE TABLE IF NOT EXISTS task_runs (
-    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    task_id     INTEGER NOT NULL,
-    session_id  INTEGER NOT NULL,
-    state       TEXT NOT NULL DEFAULT "Pending",
-    created     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    task_id         INTEGER NOT NULL,
+    session_id      INTEGER NOT NULL,
+    state           TEXT NOT NULL DEFAULT "Pending",
+    state_reason    TEXT,
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(session_id) REFERENCES sessions(id)
 );
@@ -274,13 +275,6 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
     FOREIGN KEY(task_id) REFERENCES tasks(id),
     FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id)
 );
-            "#,
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 16,
-            description: "add_tasks_mcp_servers",
-            sql: r#"
             "#,
             kind: MigrationKind::Up,
         },

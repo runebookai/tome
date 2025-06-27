@@ -1,7 +1,9 @@
 import { CronExpressionParser } from 'cron-parser';
+import moment from 'moment';
 
 import { Engine, McpServer, Model, TaskMcpServer, TaskRun } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import { execute } from '$lib/tasks';
 
 interface Row {
     id: number;
@@ -20,7 +22,11 @@ export default class Task extends Base<Row>('tasks') {
     model: string = $state(Model.default().id);
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
-    nextRun: Date = $state(new Date('2099-12-31T11:59:59.999Z'));
+    nextRun: moment.Moment = $state(moment());
+
+    static needsToRun() {
+        return Task.all().filter(t => t.shouldRun());
+    }
 
     get runs(): TaskRun[] {
         return TaskRun.where({ taskId: this.id }).sortBy('timestamp').reverse();
@@ -53,24 +59,28 @@ export default class Task extends Base<Row>('tasks') {
     }
 
     shouldRun(): boolean {
-        return this.nextRun <= new Date();
+        return this.nextRun.isBefore(moment());
     }
 
-    async calculateNextRun(): Promise<Date> {
+    async calculateNextRun(): Promise<moment.Moment> {
         const interval = CronExpressionParser.parse(this.period);
-        return new Date(interval.next().toString());
+        return moment.utc(interval.next().toISOString());
     }
 
-    async start(force: boolean = false): Promise<void> {
-        if (this.shouldRun() || force) {
-            this.nextRun = await this.calculateNextRun();
-            this.save();
-            console.log('Starting: ' + this.name + ' in a webworker now...');
-        }
+    async setNextRun() {
+        this.nextRun = await this.calculateNextRun();
+        await this.save();
+    }
+
+    async start(): Promise<TaskRun | undefined> {
+        this.nextRun = await this.calculateNextRun();
+        await this.save();
+        return await execute(this);
     }
 
     async delete() {
         TaskMcpServer.where({ taskId: this.id }).forEach(r => r.delete());
+        TaskRun.where({ taskId: this.id }).forEach(r => r.delete());
         return super.delete();
     }
 
@@ -89,7 +99,7 @@ export default class Task extends Base<Row>('tasks') {
             engineId: row.engine_id,
             model: row.model,
             period: row.period,
-            nextRun: new Date(row.next_run),
+            nextRun: moment.utc(row.next_run),
         });
     }
 

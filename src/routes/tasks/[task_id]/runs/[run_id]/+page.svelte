@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
+    import { afterNavigate } from '$app/navigation';
     import { page } from '$app/state';
 
     import Flex from '$components/Flex.svelte';
@@ -22,6 +24,14 @@
             content.scroll({ top: 9e15 });
         }
     }
+
+    afterNavigate(() => {
+        scrollToBottom(content);
+    });
+
+    onMount(() => {
+        scrollToBottom(content);
+    });
 </script>
 
 {#snippet RunView(run: TaskRun)}
@@ -35,20 +45,24 @@
         {:else if run.state == State.Success}
             <Svg name="Check" class="text-green h-4 w-4" />
         {:else}
-            <Svg name="Warning" class="text-red h-4 w-4" />
+            <Svg name="Error" class="text-red h-4 w-4" />
         {/if}
 
-        <p class="ml-4">{run.created?.format('LLLL')}</p>
+        <p class="ml-4">{run.created?.format('LLLL')} UTC</p>
     </Link>
 {/snippet}
 
 {#key page.params.task_id}
     <Flex class="h-full w-full flex-col items-start">
-        <Flex bind:ref={content} class="h-3/5 w-full flex-col items-start overflow-y-scroll p-8">
+        <Flex
+            bind:ref={content}
+            class="h-3/5 w-full flex-col items-start overflow-y-scroll p-8
+            shadow-[inset_0px_-55px_55px_-55px_#00000066]"
+        >
             {#if run}
                 {#each run.session.messages as message (message.id)}
-                    <div use:scrollToBottom class="hidden"></div>
                     <Message {message} />
+                    <div use:scrollToBottom class="hidden"></div>
                 {/each}
             {/if}
         </Flex>

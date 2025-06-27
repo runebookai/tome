@@ -22,7 +22,11 @@ const config = {
                 "/mcp-servers/smithery",
                 "/models",
                 "/settings",
-                "/tasks"
+                "/tasks",
+                "/tasks/new",
+                "/tasks/[task_id]",
+                "/tasks/[task_id]/edit",
+                "/tasks/[task_id]/runs/[run_id]",
             ],
             'handleHttpError': "warn"
         }
