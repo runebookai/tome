@@ -5,7 +5,7 @@
     const task: Task = $state(Task.new());
 
     async function save() {
-        await task.save();
+        return await task.save();
     }
 </script>
 

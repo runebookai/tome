@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+
     import Button from './Button.svelte';
 
     import Flex from '$components/Flex.svelte';
@@ -11,11 +13,12 @@
 
     interface Props {
         task: Task;
-        onsave?: () => void | Promise<void>;
+        onsave?: () => Task | Promise<Task>;
     }
 
     const { task, onsave }: Props = $props();
-    const isEdit = task.id !== undefined;
+    const isEdit = $derived(task.id !== undefined);
+
     let mcpServers: McpServer[] = $state([]);
 
     async function addMcpServer(mcpServer: McpServer) {
@@ -45,6 +48,15 @@
     async function autosave() {
         if (isEdit) {
             await onsave?.();
+        }
+    }
+
+    async function save() {
+        const task = await onsave?.();
+
+        if (task) {
+            mcpServers.forEach(server => task.addMcpServer(server));
+            goto(`/tasks/${task.id}`);
         }
     }
 </script>
@@ -101,6 +113,6 @@
     />
 
     {#if !isEdit}
-        <Button onclick={onsave} class="border-purple text-purple mt-8">Save</Button>
+        <Button onclick={save} class="border-purple text-purple mt-8">Save</Button>
     {/if}
 </Flex>
