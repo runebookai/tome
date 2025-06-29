@@ -52,7 +52,7 @@
 
 <Layout>
     {#if check}
-        <Modal>
+        <Modal class="w-[700px] overflow-y-scroll xl:w-[700px]">
             {#if check[0] == StartupCheck.Agreement}
                 <Welcome />
             {:else if check[0] == StartupCheck.UpdateAvailable}
