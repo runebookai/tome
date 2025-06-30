@@ -15,6 +15,7 @@
         titleClass?: string;
         filterable?: boolean;
         filterProp?: keyof Item;
+        emptyMessage?: string;
     }
 
     const {
@@ -26,6 +27,7 @@
         title,
         filterable = false,
         filterProp,
+        emptyMessage = 'Nothing yet.',
     }: Props = $props();
 
     let filterTerm = $state('');
@@ -61,9 +63,13 @@
         </Flex>
     {/if}
 
-    {#each filter() as item, i (i)}
-        <div class={twMerge('w-full', css)}>
-            {@render itemView(item)}
-        </div>
-    {/each}
+    {#if items.length > 0}
+        {#each filter() as item, i (i)}
+            <div class={twMerge('w-full', css)}>
+                {@render itemView(item)}
+            </div>
+        {/each}
+    {:else}
+        <p class="text-medium p-8">{emptyMessage}</p>
+    {/if}
 </Flex>
