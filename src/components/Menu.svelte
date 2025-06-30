@@ -56,7 +56,7 @@
 
     <Flex
         bind:ref={inner}
-        class={`${isOpen ? 'fixed' : 'hidden'} bg-medium z-20 min-w-56 flex-col 
+        class={`${isOpen ? 'fixed' : 'hidden'} bg-light z-20 min-w-56 flex-col 
         rounded-lg border border-light py-2 text-base shadow-md shadow-black/10 group-hover:block`}
     >
         {#each items as item, i (i)}
