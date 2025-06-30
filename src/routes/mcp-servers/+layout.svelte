@@ -1,6 +1,5 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { invoke } from '@tauri-apps/api/core';
 
     import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
@@ -40,7 +39,7 @@
                     newName = server.name;
                     renamingServer = server;
                     isRenaming = true;
-                }
+                },
             },
             {
                 label: 'Delete',
@@ -86,7 +85,10 @@
             {#if isRenaming && renamingServer?.id === server.id}
                 <form
                     class="w-full py-3 pl-8"
-                    onsubmit={e => { e.preventDefault(); handleRename(); }}
+                    onsubmit={e => {
+                        e.preventDefault();
+                        handleRename();
+                    }}
                 >
                     <input
                         type="text"
