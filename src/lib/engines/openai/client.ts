@@ -1,4 +1,5 @@
 import { OpenAI as OpenAIClient } from 'openai';
+import type { ChatCompletionCreateParamsNonStreaming } from 'openai/resources/index.mjs';
 
 import OpenAiMessage from '$lib/engines/openai/message';
 import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
@@ -28,12 +29,16 @@ export default class OpenAI implements Client {
         _options: Options = {}
     ): Promise<Message> {
         const messages = history.map(m => OpenAiMessage.from(m));
-        const response = await this.client.chat.completions.create({
+        const completion: ChatCompletionCreateParamsNonStreaming = {
             model: model.name,
             messages,
-            tools,
-        });
+        };
 
+        if (tools.length > 0) {
+            completion.tools = tools;
+        }
+
+        const response = await this.client.chat.completions.create(completion);
         const { role, content, tool_calls } = response.choices[0].message;
 
         let toolCalls: ToolCall[] = [];
