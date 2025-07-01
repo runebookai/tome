@@ -1,8 +1,10 @@
 <!-- App-wide event handlers -->
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { goto, onNavigate } from '$app/navigation';
 
     import closables from '$lib/closables';
+    import { Setting } from '$lib/models';
     import { resync } from '$lib/models';
 
     const { children } = $props();
@@ -24,6 +26,10 @@
             goto('/');
         }
     }
+
+    onMount(() => {
+        document.documentElement.setAttribute('data-theme', Setting.ColorScheme as string);
+    });
 
     onNavigate(navigation => {
         if (!document.startViewTransition) {

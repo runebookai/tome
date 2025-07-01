@@ -67,7 +67,7 @@
     <Flex class="w-full">
         <Input
             bind:value={query}
-            class="mb-8"
+            class="placeholder:text-light mb-8"
             label={false}
             name="search"
             onkeyup={debounce(search)}
