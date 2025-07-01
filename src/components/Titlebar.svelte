@@ -10,7 +10,7 @@
 <Flex
     id="titlebar"
     data-tauri-drag-region
-    class={twMerge('h-titlebar border-b-light w-full border-b', cls?.toString())}
+    class={twMerge('h-titlebar border-b-light bg-medium w-full border-b', cls?.toString())}
 >
     {@render children?.()}
 </Flex>

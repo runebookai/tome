@@ -62,10 +62,6 @@ body {
     color: var(--text-color-light);
 }
 
-input::placeholder {
-    color: #ffffff33;
-}
-
 html[data-theme="light"] {
     --color-purple-dark: #7c5fc0;
     --color-purple: #7c5fc0;
@@ -106,40 +102,18 @@ html[data-theme="dark"] {
     --text-color-dark: #333333;
 }
 
-html[data-theme="light"], body[data-theme="light"] {
-    background: #fff;
+html[data-theme="light"],
+body[data-theme="light"] {
+    background: var(--background-color-medium);
     color: #222;
 }
 
-html[data-theme="dark"], body[data-theme="dark"] {
+html[data-theme="dark"],
+body[data-theme="dark"] {
     background: #0b0b0b;
     color: #fff;
 }
 
-.bg-dark {
-    background-color: var(--background-color-dark) !important;
-}
-.bg-medium {
-    background-color: var(--background-color-medium) !important;
-}
-.bg-light {
-    background-color: var(--background-color-light) !important;
-}
-.text-dark {
-    color: var(--text-color-dark) !important;
-}
-.text-medium {
-    color: var(--text-color-medium) !important;
-}
-.text-light {
-    color: var(--text-color-light) !important;
-}
-.border-light {
-    border-color: var(--border-color-light) !important;
-}
-.border-medium {
-    border-color: var(--border-color-medium) !important;
-}
-.border-dark {
-    border-color: var(--border-color-dark) !important;
+input::placeholder {
+    color: var(--text-color-medium);
 }

@@ -119,7 +119,7 @@
         onkeydown={onChatInput}
         disabled={!model}
         placeholder="Message..."
-        class="disabled:text-dark item bg-dark border-light focus:border-purple/15 mb-8
+        class="disabled:text-dark item bg-medium border-light focus:border-purple/15 mb-8
         h-auto w-[calc(100%-calc(var(--spacing)*6))] grow self-start rounded-xl border
         p-3 pl-4 outline-0 transition duration-300"
     ></textarea>

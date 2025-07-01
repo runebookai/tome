@@ -59,7 +59,7 @@
 {/snippet}
 
 <Layout {titlebar}>
-    <Scrollable class="!h-content">
+    <Scrollable class="!h-content bg-medium">
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">

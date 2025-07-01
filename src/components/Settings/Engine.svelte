@@ -115,7 +115,7 @@
     <Flex class="w-full justify-between">
         <Flex class="mb-2 items-center">
             {#if NON_DELETEABLE_ENGINES.includes(engine.type)}
-                <Svg name={capitalCase(engine.type)} class="ml-2 h-4 w-4 text-white" />
+                <Svg name={capitalCase(engine.type)} class="text-light ml-2 h-4 w-4" />
             {/if}
 
             <Input
