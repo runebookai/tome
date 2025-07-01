@@ -278,5 +278,18 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 17,
+            description: "add_app_steps",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS app_steps (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    prompt      TEXT NOT NULL,
+    app_id      INTEGER NOT NULL,
+    FOREIGN KEY(app_id) REFERENCES apps(id)
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }
