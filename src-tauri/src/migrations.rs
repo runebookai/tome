@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS tasks (
             kind: MigrationKind::Up,
         },
         Migration {
-            version: 15,
+            version: 16,
             description: "add_tasks_support",
             sql: r#"
 ALTER TABLE sessions ADD COLUMN ephemeral BOOLEAN DEFAULT "false";
