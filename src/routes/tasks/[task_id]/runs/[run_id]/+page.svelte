@@ -57,7 +57,7 @@
         <Flex
             bind:ref={content}
             class="h-3/5 w-full flex-col items-start overflow-y-scroll p-8
-            shadow-[inset_0px_-55px_55px_-55px_#00000066]"
+            shadow-[inset_0px_-55px_55px_-55px_var(--background-color-dark)]"
         >
             {#if run}
                 {#each run.session.messages as message (message.id)}
