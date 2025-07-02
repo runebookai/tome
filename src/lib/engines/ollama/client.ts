@@ -3,7 +3,7 @@ import { Ollama as OllamaClient } from 'ollama/browser';
 import OllamaMessage from '$lib/engines/ollama/message';
 import type { Client, ClientProps, Options, Role, Tool } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import { type IModel, Message } from '$lib/models';
+import { Message, Model } from '$lib/models';
 
 export default class Ollama implements Client {
     private options: ClientProps;
@@ -22,7 +22,7 @@ export default class Ollama implements Client {
     }
 
     async chat(
-        model: IModel,
+        model: Model,
         history: Message[],
         tools: Tool[] = [],
         options: Options = {}
@@ -57,26 +57,26 @@ export default class Ollama implements Client {
         });
     }
 
-    async models(): Promise<IModel[]> {
+    async models(): Promise<Model[]> {
         return await Promise.all(
             (await this.client.list()).models.map(async model => await this.info(model.name))
         );
     }
 
-    async info(name: string): Promise<IModel> {
+    async info(name: string): Promise<Model> {
         const metadata = await this.client.show({ model: name });
 
         // @ts-expect-error The Ollama SDK doesn't define the `capabilities`
         // property, but the API returns it.
         const capabilities = metadata.capabilities as string[];
 
-        return {
+        return Model.new({
             id: name,
             name,
             metadata,
             engineId: Number(this.options.engineId),
             supportsTools: capabilities.includes('tools'),
-        };
+        });
     }
 
     async connected(): Promise<boolean> {

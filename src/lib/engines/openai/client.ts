@@ -4,7 +4,7 @@ import type { ChatCompletionCreateParamsNonStreaming } from 'openai/resources/in
 import OpenAiMessage from '$lib/engines/openai/message';
 import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
 import { fetch } from '$lib/http';
-import { type IModel, Message } from '$lib/models';
+import { Message, Model } from '$lib/models';
 
 export default class OpenAI implements Client {
     private options: ClientProps;
@@ -23,7 +23,7 @@ export default class OpenAI implements Client {
     }
 
     async chat(
-        model: IModel,
+        model: Model,
         history: Message[],
         tools: Tool[] = [],
         _options: Options = {}
@@ -61,31 +61,31 @@ export default class OpenAI implements Client {
         });
     }
 
-    async models(): Promise<IModel[]> {
+    async models(): Promise<Model[]> {
         return (await this.client.models.list({ timeout: 1000 })).data.map(model => {
             const { id, ...metadata } = model;
             const name = id.replace('models/', ''); // Gemini model ids are prefixed with "model/"
 
-            return {
+            return Model.new({
                 id: `${this.id}:${name}`,
                 name,
                 metadata,
                 engineId: this.options.engineId,
                 supportsTools: true,
-            };
+            });
         });
     }
 
-    async info(model: string): Promise<IModel> {
+    async info(model: string): Promise<Model> {
         const { id, ...metadata } = await this.client.models.retrieve(model);
 
-        return {
+        return Model.new({
             id,
             name: id,
             metadata,
             engineId: this.options.engineId,
             supportsTools: true,
-        };
+        });
     }
 
     async connected(): Promise<boolean> {

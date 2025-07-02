@@ -18,8 +18,8 @@ interface Row {
 export default class Task extends Base<Row>('tasks') {
     id?: number = $state();
     name: string = $state('New Task');
-    engineId: number = $state(Model.default().engineId);
-    model: string = $state(Model.default().id);
+    engineId: number = $state(Model.default().engineId as number);
+    model: string = $state(Model.default().id as string);
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
     nextRun: moment.Moment = $state(moment());

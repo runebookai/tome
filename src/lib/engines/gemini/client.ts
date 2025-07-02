@@ -3,7 +3,7 @@ import { type GenerateContentConfig, GoogleGenAI } from '@google/genai';
 import GeminiMessage from '$lib/engines/gemini/message';
 import GeminiTools from '$lib/engines/gemini/tool';
 import type { Client, ClientProps, Options, Tool, ToolCall } from '$lib/engines/types';
-import { type IModel, Message } from '$lib/models';
+import { Message, Model } from '$lib/models';
 
 export default class Gemini implements Client {
     private options: ClientProps;
@@ -19,7 +19,7 @@ export default class Gemini implements Client {
     }
 
     async chat(
-        model: IModel,
+        model: Model,
         history: Message[],
         tools?: Tool[],
         options?: Options
@@ -74,33 +74,33 @@ export default class Gemini implements Client {
         });
     }
 
-    async models(): Promise<IModel[]> {
+    async models(): Promise<Model[]> {
         return (
             await this.client.models.list({ config: { httpOptions: { timeout: 1000 } } })
         ).page.map(model => {
             const metadata = model;
             const name = metadata.name?.replace('models/', '') as string;
 
-            return {
+            return Model.new({
                 id: `gemini:${name}`,
                 name,
                 metadata,
                 engineId: this.options.engineId,
                 supportsTools: true,
-            };
+            });
         });
     }
 
-    async info(model: string): Promise<IModel> {
+    async info(model: string): Promise<Model> {
         const { name, displayName, ...metadata } = await this.client.models.get({ model });
 
-        return {
+        return Model.new({
             id: `gemini:${name}`,
             name: displayName as string,
             metadata,
             engineId: this.options.engineId,
             supportsTools: true,
-        };
+        });
     }
 
     async connected(): Promise<boolean> {

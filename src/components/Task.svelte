@@ -10,7 +10,7 @@
     import PeriodInput from '$components/PeriodInput.svelte';
     import Textarea from '$components/Textarea.svelte';
     import Toggle from '$components/Toggle.svelte';
-    import { Engine, type IModel, McpServer, Model, Task } from '$lib/models';
+    import { Engine, McpServer, Model, Task } from '$lib/models';
 
     interface Props {
         task: Task;
@@ -22,7 +22,7 @@
     const isEdit = $derived(task.id !== undefined);
 
     let mcpServers: McpServer[] = $state([]);
-    let model: IModel = $state((task.model && Model.find(task.model)) || Model.default());
+    let model: Model = $state((task.model && Model.find(task.model)) || Model.default());
 
     async function addMcpServer(mcpServer: McpServer) {
         if (isEdit) {
@@ -48,9 +48,9 @@
         }
     }
 
-    async function setModel(_model: IModel) {
-        task.engineId = _model.engineId;
-        task.model = _model.id;
+    async function setModel(_model: Model) {
+        task.engineId = Number(_model.engineId);
+        task.model = String(_model.id);
         model = _model;
     }
 
