@@ -40,9 +40,17 @@ export default class TaskRun extends Base<Row>('task_runs') {
         return Session.find(Number(this.sessionId));
     }
 
+    isPending() {
+        return this.state == State.Pending;
+    }
+
     async pending() {
         this.state = State.Pending;
         await this.save();
+    }
+
+    isSuccess() {
+        return this.state == State.Success;
     }
 
     async succeed() {
@@ -50,8 +58,13 @@ export default class TaskRun extends Base<Row>('task_runs') {
         await this.save();
     }
 
-    async fail() {
+    isFailure() {
+        return this.state == State.Failure;
+    }
+
+    async fail(reason: string = '') {
         this.state = State.Failure;
+        this.stateReason = reason;
         await this.save();
     }
 

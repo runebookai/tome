@@ -1,11 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/state';
 
     import Flex from '$components/Flex.svelte';
     import Link from '$components/Link.svelte';
     import List from '$components/List.svelte';
+    import Menu from '$components/Menu.svelte';
     import Message from '$components/Message.svelte';
     import Spinner from '$components/Spinner.svelte';
     import Svg from '$components/Svg.svelte';
@@ -25,6 +26,25 @@
         }
     }
 
+    async function cancel(run: TaskRun) {
+        await run.fail('Cancelled');
+        goto(`/tasks/${task.id}`);
+    }
+
+    function menuItems(run: TaskRun) {
+        if (run.isPending()) {
+            return [
+                {
+                    label: 'Cancel',
+                    style: 'text-red hover:bg-red hover:text-white',
+                    onclick: async () => await cancel(run),
+                },
+            ];
+        } else {
+            return [];
+        }
+    }
+
     afterNavigate(() => {
         scrollToBottom(content);
     });
@@ -34,22 +54,28 @@
     });
 </script>
 
-{#snippet RunView(run: TaskRun)}
-    <Link
-        href={`/tasks/${task.id}/runs/${run.id}`}
-        class="text-medium flex flex-row items-center px-7 py-2"
-        activeClass="text-purple border-l border-l-purple"
-    >
-        {#if run.state == State.Pending}
-            <Spinner class="h-4 w-4 before:border-[2px] before:border-white/30" />
-        {:else if run.state == State.Success}
-            <Svg name="Check" class="text-green h-4 w-4" />
-        {:else}
-            <Svg name="Error" class="text-red h-4 w-4" />
-        {/if}
+{#snippet RunListItem(run: TaskRun)}
+    <Menu items={menuItems(run)}>
+        <Flex class="w-full pr-8">
+            <Link
+                href={`/tasks/${task.id}/runs/${run.id}`}
+                class="text-medium flex grow flex-row items-center px-7 py-2"
+                activeClass="text-purple border-l border-l-purple"
+            >
+                {#if run.state == State.Pending}
+                    <Spinner class="h-4 w-4 before:border-[2px] before:border-white/30" />
+                {:else if run.state == State.Success}
+                    <Svg name="Check" class="text-green h-4 w-4" />
+                {:else}
+                    <Svg name="Error" class="text-red h-4 w-4" />
+                {/if}
 
-        <p class="ml-4">{run.created?.format('LLLL')} UTC</p>
-    </Link>
+                <p class="ml-4">{run.created?.format('LLLL')} UTC</p>
+            </Link>
+
+            <p class="text-medium text-xs">{run.stateReason}</p>
+        </Flex>
+    </Menu>
 {/snippet}
 
 {#key page.params.task_id}
@@ -69,7 +95,7 @@
 
         <Flex class="border-t-light h-2/5 w-full flex-col items-start border-t">
             <h3 class="bg-medium w-full py-2 pl-8 font-medium uppercase">History</h3>
-            <List items={task?.runs} itemView={RunView} class="border-t-light border-t" />
+            <List items={task?.runs} itemView={RunListItem} class="border-t-light border-t" />
         </Flex>
     </Flex>
 {/key}
