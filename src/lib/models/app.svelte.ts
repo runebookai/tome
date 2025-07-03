@@ -3,6 +3,9 @@ import moment from 'moment';
 import { McpServer, type ToSqlRow } from '$lib/models';
 import Base from '$lib/models/base.svelte';
 
+const CHAT_APP_ID = 1;
+const TASK_APP_ID = 2;
+
 interface Row {
     id: number;
     name: string;
@@ -44,6 +47,14 @@ export default class App extends Base<Row>('apps') {
     mcpServers: McpServer[] = $state([]);
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
+
+    static get CHAT() {
+        return App.find(CHAT_APP_ID);
+    }
+
+    static get TASK() {
+        return App.find(TASK_APP_ID);
+    }
 
     get defaults() {
         return {

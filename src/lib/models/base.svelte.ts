@@ -1,7 +1,11 @@
 import Database from '@tauri-apps/plugin-sql';
 
-import { DATABASE_URL } from '$lib/const';
 import { info } from '$lib/logger';
+
+/**
+ * Database URL
+ */
+export const DATABASE_URL = 'sqlite:tome.db';
 
 /**
  * Database connection

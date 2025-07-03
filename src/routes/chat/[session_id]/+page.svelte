@@ -3,7 +3,6 @@
     import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
     import { page } from '$app/state';
 
-    import { CHAT_APP_ID } from '$lib/const';
     import Chat from '$components/Chat.svelte';
     import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
@@ -14,6 +13,7 @@
     import ModelMenu from '$components/ModelMenu.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
+    import { App } from '$lib/models';
     import Engine from '$lib/models/engine.svelte';
     import McpServer from '$lib/models/mcp-server.svelte';
     import Message from '$lib/models/message.svelte';
@@ -62,7 +62,7 @@
     }
 
     async function addSession() {
-        const session = await Session.create({ appId: CHAT_APP_ID });
+        const session = await Session.create({ appId: App.CHAT.id });
         await goto(`/chat/${session.id}`);
     }
 
