@@ -1,8 +1,9 @@
+import type { Mode } from 'highlight.js';
 import moment from 'moment';
 
 import { dispatch } from '$lib/dispatch';
 import { info } from '$lib/logger';
-import { Engine, Session, Task, TaskRun } from '$lib/models';
+import { Engine, Model, Session, Task, TaskRun } from '$lib/models';
 import { State } from '$lib/models/task-run.svelte';
 
 const TASK_APP_ID = 2;
@@ -62,21 +63,22 @@ export async function execute(task: Task): Promise<TaskRun | undefined> {
         ephemeral: true,
     });
 
-    if (!session) {
-        return;
-    }
-
-    task.mcpServers.forEach(async server => {
-        await session.addMcpServer(server);
-        await server.start(session);
-    });
-
     const run = await TaskRun.create({
         taskId: task.id,
         sessionId: session.id,
     });
 
-    dispatch(session, model, task.prompt)
+    // Run without awaiting, so we can return immediately, render the UI,
+    // and wait for result asynchronously.
+    _execute(run, model);
+
+    return run;
+}
+
+async function _execute(run: TaskRun, model: Model) {
+    await run.session.start();
+
+    await dispatch(run.session, model, run.task.prompt)
         .then(_ => {
             run.state = State.Success;
             run.save();
@@ -87,5 +89,5 @@ export async function execute(task: Task): Promise<TaskRun | undefined> {
             run.save();
         });
 
-    return run;
+    await run.session.stop();
 }

@@ -79,6 +79,20 @@ export default class Session extends Base<Row>('sessions') {
         return Message.where({ sessionId: this.id });
     }
 
+    get mcpServers(): McpServer[] {
+        return (this.config.enabledMcpServers || [])
+            .map(name => McpServer.findBy({ name }))
+            .compact();
+    }
+
+    async start() {
+        await Promise.all(this.mcpServers.map(async server => await server.start(this)));
+    }
+
+    async stop() {
+        await Promise.all(this.mcpServers.map(async server => await server.stop(this)));
+    }
+
     async tools(): Promise<Tool[]> {
         if (!this.id || !this.config?.model) {
             return [];

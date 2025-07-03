@@ -51,6 +51,11 @@
     async function setModel(_model: Model) {
         task.engineId = Number(_model.engineId);
         task.model = String(_model.id);
+
+        if (isEdit) {
+            await onsave?.();
+        }
+
         model = _model;
     }
 
@@ -75,8 +80,8 @@
         <Toggle
             label={mcpServer.name}
             value={hasMcpServer(mcpServer) ? 'on' : 'off'}
-            onEnable={() => addMcpServer(mcpServer)}
-            onDisable={() => removeMcpServer(mcpServer)}
+            onEnable={async () => await addMcpServer(mcpServer)}
+            onDisable={async () => await removeMcpServer(mcpServer)}
         />
     </Flex>
 {/snippet}
