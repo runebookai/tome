@@ -20,9 +20,18 @@ MINOR=${SEMVER[1]}
 PATCH=${SEMVER[2]}
 
 case "$TIER" in
-    "major") MAJOR=$((MAJOR + 1)) ;;
-    "minor") MINOR=$((MINOR + 1)) ;;
-    "patch") PATCH=$((PATCH + 1)) ;;
+    "major")
+        MAJOR=$((MAJOR + 1))
+        MINOR=0
+        PATCH=0
+        ;;
+    "minor")
+        MINOR=$((MINOR + 1))
+        PATCH=0
+        ;;
+    "patch")
+        PATCH=$((PATCH + 1))
+        ;;
     *)
         echo "Error: missing bump tier"
         echo "Usage: bump major|minor|patch"
@@ -37,3 +46,6 @@ cat package.json | jq --indent 4 ".version |= \"$MAJOR.$MINOR.$PATCH\"" | tee pa
 
 # Update Cargo.toml
 cat src-tauri/Cargo.toml | sed -E "s/^version = \"[0-9]+.[0-9+].[0-9]+\"$/version = \"$MAJOR.$MINOR.$PATCH\"/" | tee src-tauri/Cargo.toml 2>&1 >/dev/null
+
+# Cargo check to update Cargo.lock
+cd src-tauri && cargo check && cd -
