@@ -1,14 +1,14 @@
-import { type IModel, Message as TomeMessage } from '$lib/models';
+import { Message as TomeMessage, Model } from '$lib/models';
 
 export interface Client {
     chat(
-        model: IModel,
+        model: Model,
         history: TomeMessage[],
         tools?: Tool[],
         options?: Options
     ): Promise<TomeMessage>;
-    models(): Promise<IModel[]>;
-    info(model: string): Promise<IModel>;
+    models(): Promise<Model[]>;
+    info(model: string): Promise<Model>;
     connected(): Promise<boolean>;
 }
 

@@ -24,6 +24,7 @@
 
     let isOpen = $state(false);
 
+    // svelte-ignore non_reactive_update
     let outer: HTMLButtonElement;
     // svelte-ignore non_reactive_update
     let inner: HTMLDivElement;
@@ -51,30 +52,39 @@
     });
 </script>
 
-<button bind:this={outer} onclick={close} oncontextmenu={toggle} class="h-full w-full text-left">
-    {@render children?.()}
-
-    <Flex
-        bind:ref={inner}
-        class={`${isOpen ? 'fixed' : 'hidden'} bg-light z-20 min-w-56 flex-col 
-        rounded-lg border border-light py-2 text-base shadow-md shadow-black/10 group-hover:block`}
+{#if items.length}
+    <button
+        bind:this={outer}
+        onclick={close}
+        oncontextmenu={toggle}
+        class="h-full w-full text-left"
     >
-        {#each items as item, i (i)}
-            <button
-                onclick={() => onclick(item)}
-                class={twMerge(
-                    'hover:bg-purple flex w-full flex-row items-center p-8 py-1 hover:cursor-pointer',
-                    item.style
-                )}
-            >
-                {#if item.icon}
-                    <div class="mr-4 h-4 w-4">
-                        <Svg name={item.icon} />
-                    </div>
-                {/if}
+        {@render children?.()}
 
-                <p>{item.label}</p>
-            </button>
-        {/each}
-    </Flex>
-</button>
+        <Flex
+            bind:ref={inner}
+            class={`${isOpen ? 'fixed' : 'hidden'} bg-light border-light z-20 min-w-56 
+        flex-col rounded-lg border py-2 text-base shadow-md shadow-black/10 group-hover:block`}
+        >
+            {#each items as item, i (i)}
+                <button
+                    onclick={() => onclick(item)}
+                    class={twMerge(
+                        'hover:bg-purple flex w-full flex-row items-center p-8 py-1.5 hover:cursor-pointer',
+                        item.style
+                    )}
+                >
+                    {#if item.icon}
+                        <div class="mr-4 h-4 w-4">
+                            <Svg name={item.icon} />
+                        </div>
+                    {/if}
+
+                    <p>{item.label}</p>
+                </button>
+            {/each}
+        </Flex>
+    </button>
+{:else}
+    {@render children?.()}
+{/if}

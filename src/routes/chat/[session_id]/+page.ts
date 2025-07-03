@@ -4,7 +4,7 @@ import type { PageLoad } from './$types';
 
 import { CHAT_APP_ID } from '$lib/const';
 import Config from '$lib/models/config.svelte';
-import Model from '$lib/models/model';
+import Model from '$lib/models/model.svelte';
 import Session from '$lib/models/session.svelte';
 
 export const load: PageLoad = async ({ params }): Promise<void> => {

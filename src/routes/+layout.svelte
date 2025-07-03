@@ -19,11 +19,23 @@
         }
     }
 
+    const metaKeyShortcuts: Record<string, string> = {
+        '1': '/chat/latest',
+        '2': '/tasks',
+        '3': '/mcp-servers',
+        '4': '/models',
+        ',': '/settings',
+    };
+
     async function onkeydown(e: KeyboardEvent) {
         // manually reload data from database
         if (e.metaKey && e.key == 'r') {
             await resync();
-            goto('/');
+            await goto('/');
+        }
+
+        if (e.metaKey && Object.keys(metaKeyShortcuts).includes(e.key)) {
+            await goto(metaKeyShortcuts[e.key]);
         }
     }
 

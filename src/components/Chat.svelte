@@ -5,11 +5,11 @@
     import MessageView from '$components/Message.svelte';
     import Scrollable from '$components/Scrollable.svelte';
     import { dispatch } from '$lib/dispatch';
-    import { type IModel, Message, Session } from '$lib/models';
+    import { Message, Model, Session } from '$lib/models';
 
     interface Props {
         session: Session;
-        model?: IModel;
+        model?: Model;
         onMessages?: (message: Message[]) => Promise<void>;
     }
 

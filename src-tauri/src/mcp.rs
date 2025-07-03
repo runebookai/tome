@@ -213,29 +213,30 @@ pub async fn rename_server(
     state: tauri::State<'_, State>,
 ) -> Result<()> {
     let mut sessions = state.sessions.lock().await;
-    
+
     if let Some(session) = sessions.get_mut(&session_id) {
         if let Some(server) = session.mcp_servers.get_mut(&old_name) {
             // Update the server's name
             server.set_name(new_name.clone());
-            
+
             // Update the tools mapping
-            let tools_to_update: Vec<String> = session.tools
+            let tools_to_update: Vec<String> = session
+                .tools
                 .iter()
                 .filter(|(_, server_name)| *server_name == &old_name)
                 .map(|(tool_name, _)| tool_name.clone())
                 .collect();
-                
+
             for tool_name in tools_to_update {
                 session.tools.insert(tool_name, new_name.clone());
             }
-            
+
             // Move the server to the new name in the map
             if let Some(server) = session.mcp_servers.remove(&old_name) {
                 session.mcp_servers.insert(new_name, server);
             }
         }
     }
-    
+
     Ok(())
 }

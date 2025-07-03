@@ -3,19 +3,19 @@
 
     import Flex from '$components/Flex.svelte';
     import closables from '$lib/closables';
-    import { Engine, type IModel } from '$lib/models';
+    import { Engine, Model } from '$lib/models';
 
     interface Props {
         engines: Engine[];
-        selected?: IModel;
-        onselect?: (model: IModel) => Promise<void>;
+        selected?: Model;
+        onselect?: (model: Model) => Promise<void>;
     }
 
     let { engines, onselect, selected }: Props = $props();
     let isOpen = $state(false);
     let ref: ReturnType<typeof Flex>;
 
-    async function select(m: IModel) {
+    async function select(m: Model) {
         close();
         await onselect?.(m);
     }

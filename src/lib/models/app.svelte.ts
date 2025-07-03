@@ -28,6 +28,7 @@ export enum NodeType {
 export enum Interface {
     Voice = 'Voice',
     Chat = 'Chat',
+    Task = 'Task',
     Dashboard = 'Dashboard',
     Daemon = 'Daemon',
 }

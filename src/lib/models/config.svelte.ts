@@ -1,7 +1,6 @@
 import { BaseDirectory, exists, readTextFile } from '@tauri-apps/plugin-fs';
 
-import { type ToSqlRow } from '$lib/models';
-import Base from '$lib/models/base.svelte';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 interface Row {
     id: number;

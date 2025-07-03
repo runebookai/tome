@@ -28,7 +28,7 @@ export default {
 
     close(e: Event) {
         closables.forEach(([ele, fn]) => {
-            if (!ele.contains?.(e.target as Node)) {
+            if (!ele?.contains?.(e.target as Node)) {
                 fn();
             }
         });
