@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.9.0 - 2025-07-03
+
+### 🎉 BIG CHANGES 🎉
+
+- INTRODUCING Scheduled Tasks
+    - Schedule prompts to run automatically hourly or at a specific time every day.
+    - Use all your favorite MCP Servers.
+    - Use any model
+- Light Mode! Huge thanks to @bneil for contributing a System/Light/Dark Mode to
+  Tome! Choose your theme in Settings.
+
+### Fixes
+
+- Fixed text formatting issue with welcome modal on smaller resolutions
+- Removed MSI Windows installer due to problems with auto-update. Use the NSIS
+  exe 🙂
+- Fixed issue where certain OpenAI-compatible Engines would error out if you
+  passed an empty array of `tools`.
+
 ## 0.8.1 - 2025-06-27
 
 ### Fixes
