@@ -1,3 +1,34 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="right">
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=en">English</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=zh-CN">简体中文</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=zh-TW">繁體中文</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=ja">日本語</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=ko">한국어</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=hi">हिन्दी</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=th">ไทย</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=fr">Français</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=de">Deutsch</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=es">Español</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=it">Itapano</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=ru">Русский</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=pt">Português</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=nl">Nederlands</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=pl">Polski</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=ar">العربية</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=fa">فارسی</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=tr">Türkçe</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=vi">Tiếng Việt</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=runebookai&project=tome&lang=id">Bahasa Indonesia</a></p>
+      </div>
+    </div>
+  </details>
+</div>
+
 # Tome - Magical AI Spellbook
 
 <img src="static/images/repo-header.png" alt="Tome" />
