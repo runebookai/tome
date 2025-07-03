@@ -1,4 +1,3 @@
-import type { Mode } from 'highlight.js';
 import moment from 'moment';
 
 import { dispatch } from '$lib/dispatch';

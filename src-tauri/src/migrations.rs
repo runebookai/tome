@@ -280,14 +280,25 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
         },
         Migration {
             version: 17,
-            description: "add_app_steps",
+            description: "add_app_steps_triggers",
             sql: r#"
 CREATE TABLE IF NOT EXISTS app_steps (
     id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    prompt      TEXT NOT NULL,
     app_id      INTEGER NOT NULL,
+    prompt      TEXT NOT NULL,
     FOREIGN KEY(app_id) REFERENCES apps(id)
 );
+
+CREATE TABLE IF NOT EXISTS triggers (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    app_id      INTEGER NOT NULL,
+    event       TEXT NOT NULL,
+    action      TEXT NOT NULL,
+    config      JSON NOT NULL DEFAULT "{}",
+    FOREIGN KEY(app_id) REFERENCES apps(id)
+);
+
+ALTER TABLE tasks ADD COLUMN app_id INTEGER REFERENCES apps(id);
             "#,
             kind: MigrationKind::Up,
         },

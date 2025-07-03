@@ -9,6 +9,7 @@ interface Row {
     id: number;
     name: string;
     engine_id: number;
+    app_id: number;
     model: string;
     prompt: string;
     period: string;
@@ -19,6 +20,7 @@ export default class Task extends Base<Row>('tasks') {
     id?: number = $state();
     name: string = $state('New Task');
     engineId: number = $state(Model.default().engineId as number);
+    appId?: number = $state();
     model: string = $state(Model.default().id as string);
     prompt: string = $state('');
     period: string = $state('0 12 * * *');
@@ -97,6 +99,7 @@ export default class Task extends Base<Row>('tasks') {
             name: row.name,
             prompt: row.prompt,
             engineId: row.engine_id,
+            appId: row.app_id,
             model: row.model,
             period: row.period,
             nextRun: moment.utc(row.next_run),
@@ -108,6 +111,7 @@ export default class Task extends Base<Row>('tasks') {
             name: this.name,
             prompt: this.prompt,
             engine_id: Number(this.engineId),
+            app_id: Number(this.appId),
             model: String(this.model),
             period: this.period,
             next_run: this.nextRun.toISOString(),
