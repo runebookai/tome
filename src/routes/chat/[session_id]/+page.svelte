@@ -11,6 +11,7 @@
     import Link from '$components/Link.svelte';
     import Menu, { type MenuItem } from '$components/Menu.svelte';
     import ModelMenu from '$components/ModelMenu.svelte';
+    import ResizablePanels from '$components/ResizablePanels.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
     import Engine from '$lib/models/engine.svelte';
@@ -106,7 +107,7 @@
 </script>
 
 {#snippet titlebar()}
-    <Flex class="border-r-light z-10 h-full w-[300px] items-center border-r px-8 pr-4">
+    <Flex class="border-r-light z-10 h-full items-center border-r px-8 pr-4">
         <h1 class="grow font-[500]">Chat</h1>
         <button
             onclick={() => addSession()}
@@ -119,128 +120,142 @@
 {/snippet}
 
 <Layout {titlebar}>
-    <Flex class="h-full items-start">
-        <Flex class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r">
-            {#each sessions as sess (sess.id)}
-                <Flex
-                    class={`text-medium border-b-light w-full justify-between border-b 
-                    border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
-                >
-                    <Menu items={menuItems(sess)}>
-                        <Deleteable ondelete={async () => await deleteSession(sess)}>
-                            <Link
-                                href={`/chat/${sess.id}`}
-                                class="w-full py-3 pl-8 text-left"
-                                activeClass="text-purple border-l border-l-purple"
-                                data-sveltekit-preload-data="off"
+    {#if session}
+        <ResizablePanels
+            class="h-full"
+            panels={[
+                { id: 'history', minWidth: 200, defaultWidth: 300 },
+                { id: 'chat', minWidth: 400, defaultWidth: 800 },
+                { id: 'settings', minWidth: 200, defaultWidth: 300 }
+            ]}
+        >
+            {#snippet children(panelIndex)}
+                {#if panelIndex === 0}
+                    <!-- History Panel -->
+                    <Flex class="border-light bg-medium h-full flex-col overflow-auto border-r">
+                        {#each sessions as sess (sess.id)}
+                            <Flex
+                                class={`text-medium border-b-light w-full justify-between border-b 
+                                border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
                             >
-                                {sess.summary}
-                            </Link>
-                        </Deleteable>
-                    </Menu>
-                </Flex>
-            {/each}
-        </Flex>
-
-        {#if session}
-            <Flex class="bg-medium h-full w-[calc(100%-600px)] grow items-start">
-                {#key session.id}
-                    <Chat {session} {model} />
-                {/key}
-            </Flex>
-
-            <Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
-                {#key session.config.model}
-                    <ModelMenu {engines} selected={model} onselect={modelDidUpdate} />
-                {/key}
-
-                {#if !hasModels}
-                    <Flex class="text-red mb-8 w-full justify-center gap-2">
-                        <Svg class="h-6 w-6" name="Warning" />
-                        No engines connected
-                    </Flex>
-                {/if}
-
-                {#if hasModels && !model}
-                    <Flex class="text-red mb-8 w-full justify-center gap-2">
-                        <Svg class="h-6 w-6" name="Warning" />
-                        Model no longer exists
-                    </Flex>
-                {/if}
-
-                {#if model && !model.supportsTools}
-                    <Flex class="text-red w-full justify-start gap-2 pl-3">
-                        <Svg class="h-6 w-6" name="Warning" />
-                        Model doesn't support MCP
-                    </Flex>
-                {/if}
-
-                <div class="mt-4">
-                    {#each mcpServers as server (server.id)}
-                        <Flex class="text-light z-0 mb-4 ml-2">
-                            <Toggle
-                                label={server.name}
-                                value={session.hasMcpServer(server.name) && model?.supportsTools
-                                    ? 'on'
-                                    : 'off'}
-                                disabled={!model?.supportsTools}
-                                onEnable={() => startMcpServer(server)}
-                                onDisable={() => stopMcpServer(server)}
-                            />
-                        </Flex>
-                    {/each}
-                </div>
-
-                <Flex class="mt-8 w-full flex-col items-start">
-                    <button
-                        class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
-                        onclick={() => toggleAdvanced()}
-                    >
-                        Advanced <span class="ml-4">
-                            {advancedIsOpen ? '⏷' : '⏵'}
-                        </span>
-                    </button>
-
-                    {#if advancedIsOpen}
-                        <Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
-                            <label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
-                                Context Window Size
-                            </label>
-                            <input
-                                name="ctx_num"
-                                type="number"
-                                autocomplete="off"
-                                autocorrect="off"
-                                class="border-light w-full rounded-lg border px-4 py-1 outline-none"
-                                oninput={saveSession}
-                                bind:value={session.config.contextWindow}
-                            />
-
-                            <label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
-                                Temperature
-                            </label>
-
-                            <Flex class="w-full pl-4">
-                                <p>{session.config.temperature}</p>
-                                <input
-                                    name="temperature"
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.1"
-                                    autocomplete="off"
-                                    autocorrect="off"
-                                    oninput={saveSession}
-                                    class="bg-light ml-4 h-1 w-full appearance-none"
-                                    bind:value={session.config.temperature}
-                                />
+                                <Menu items={menuItems(sess)}>
+                                    <Deleteable ondelete={async () => await deleteSession(sess)}>
+                                        <Link
+                                            href={`/chat/${sess.id}`}
+                                            class="w-full py-3 pl-8 text-left"
+                                            activeClass="text-purple border-l border-l-purple"
+                                            data-sveltekit-preload-data="off"
+                                        >
+                                            {sess.summary}
+                                        </Link>
+                                    </Deleteable>
+                                </Menu>
                             </Flex>
+                        {/each}
+                    </Flex>
+                {:else if panelIndex === 1}
+                    <!-- Chat Panel -->
+                    <Flex class="bg-medium h-full w-full items-start">
+                        {#key session.id}
+                            <Chat {session} {model} />
+                        {/key}
+                    </Flex>
+                {:else if panelIndex === 2}
+                    <!-- Settings Panel -->
+                    <Flex class="bg-medium border-light h-full w-full flex-col items-start border-l p-4">
+                        {#key session.config.model}
+                            <ModelMenu {engines} selected={model} onselect={modelDidUpdate} />
+                        {/key}
+
+                        {#if !hasModels}
+                            <Flex class="text-red mb-8 w-full justify-center gap-2">
+                                <Svg class="h-6 w-6" name="Warning" />
+                                No engines connected
+                            </Flex>
+                        {/if}
+
+                        {#if hasModels && !model}
+                            <Flex class="text-red mb-8 w-full justify-center gap-2">
+                                <Svg class="h-6 w-6" name="Warning" />
+                                Model no longer exists
+                            </Flex>
+                        {/if}
+
+                        {#if model && !model.supportsTools}
+                            <Flex class="text-red w-full justify-start gap-2 pl-3">
+                                <Svg class="h-6 w-6" name="Warning" />
+                                Model doesn't support MCP
+                            </Flex>
+                        {/if}
+
+                        <div class="mt-4">
+                            {#each mcpServers as server (server.id)}
+                                <Flex class="text-light z-0 mb-4 ml-2">
+                                    <Toggle
+                                        label={server.name}
+                                        value={session.hasMcpServer(server.name) && model?.supportsTools
+                                            ? 'on'
+                                            : 'off'}
+                                        disabled={!model?.supportsTools}
+                                        onEnable={() => startMcpServer(server)}
+                                        onDisable={() => stopMcpServer(server)}
+                                    />
+                                </Flex>
+                            {/each}
+                        </div>
+
+                        <Flex class="mt-8 w-full flex-col items-start">
+                            <button
+                                class="text-dark mb-4 ml-2 self-start text-sm font-medium hover:cursor-pointer"
+                                onclick={() => toggleAdvanced()}
+                            >
+                                Advanced <span class="ml-4">
+                                    {advancedIsOpen ? '⏷' : '⏵'}
+                                </span>
+                            </button>
+
+                            {#if advancedIsOpen}
+                                <Flex class="m-auto w-full flex-col items-start px-4 pt-4 pl-0">
+                                    <label for="ctx_num" class="text-medium mb-1 ml-2 text-sm">
+                                        Context Window Size
+                                    </label>
+                                    <input
+                                        name="ctx_num"
+                                        type="number"
+                                        autocomplete="off"
+                                        autocorrect="off"
+                                        class="border-light w-full rounded-lg border px-4 py-1 outline-none"
+                                        oninput={saveSession}
+                                        bind:value={session.config.contextWindow}
+                                    />
+
+                                    <label for="temperature" class="text-medium mt-4 mb-1 ml-2 text-sm">
+                                        Temperature
+                                    </label>
+
+                                    <Flex class="w-full pl-4">
+                                        <p>{session.config.temperature}</p>
+                                        <input
+                                            name="temperature"
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.1"
+                                            autocomplete="off"
+                                            autocorrect="off"
+                                            oninput={saveSession}
+                                            class="bg-light ml-4 h-1 w-full appearance-none"
+                                            bind:value={session.config.temperature}
+                                        />
+                                    </Flex>
+                                </Flex>
+                            {/if}
                         </Flex>
-                    {/if}
-                </Flex>
-            </Flex>
-        {/if}
-    </Flex>
+                    </Flex>
+                {/if}
+            {/snippet}
+        </ResizablePanels>
+    {/if}
 </Layout>
 
 <style>
