@@ -19,7 +19,7 @@ type Service = RunningService<RoleClient, ()>;
 #[derive(Debug)]
 pub enum McpTransport {
     Stdio { pid: Pid },
-    Http { url: String, session_id: Option<String> },
+    Http { _url: String, _session_id: Option<String> },
 }
 
 #[derive(Debug)]
@@ -82,7 +82,7 @@ impl McpServer {
                 let config = HttpTransportConfig {
                     url: url.clone(),
                     timeout: Duration::from_secs(timeout),
-                    retries,
+                    _retries: retries,
                     session_id: None, // Will be set during initialization
                     headers,
                 };
@@ -99,7 +99,7 @@ impl McpServer {
                 
                 Ok(Self { 
                     service, 
-                    transport: McpTransport::Http { url, session_id },
+                    transport: McpTransport::Http { _url: url, _session_id: session_id },
                     custom_name: None,
                 })
             }

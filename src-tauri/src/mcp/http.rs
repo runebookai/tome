@@ -4,20 +4,18 @@ use std::time::Duration;
 
 use anyhow::{anyhow, Result};
 use futures::stream::{BoxStream, StreamExt};
-use futures::sink::SinkExt;
 use futures::{Sink, Stream};
 use reqwest::{Client, Response};
-use rmcp::service::{RxJsonRpcMessage, ServiceRole, TxJsonRpcMessage};
+use rmcp::service::{RxJsonRpcMessage, TxJsonRpcMessage};
 use rmcp::transport::IntoTransport;
 use serde_json::{json, Value};
 use tokio::sync::{mpsc, Mutex};
-use tokio::time::timeout;
 
 #[derive(Debug, Clone)]
 pub struct HttpTransportConfig {
     pub url: String,
     pub timeout: Duration,
-    pub retries: u32,
+    pub _retries: u32,
     pub session_id: Option<String>,
     pub headers: HashMap<String, String>,
 }
@@ -27,7 +25,7 @@ impl Default for HttpTransportConfig {
         Self {
             url: String::new(),
             timeout: Duration::from_secs(30),
-            retries: 3,
+            _retries: 3,
             session_id: None,
             headers: HashMap::new(),
         }
@@ -122,12 +120,12 @@ impl HttpTransport {
         Ok(response)
     }
 
-    async fn send_request(&self, body: Value) -> Result<Response> {
+    async fn _send_request(&self, body: Value) -> Result<Response> {
         let config = self.config.lock().await;
         self.send_request_with_config(&config, body).await
     }
 
-    async fn handle_sse_stream(&self, response: Response) -> Result<BoxStream<'static, Value>> {
+    async fn _handle_sse_stream(&self, response: Response) -> Result<BoxStream<'static, Value>> {
         let content_type = response.headers()
             .get("content-type")
             .and_then(|v| v.to_str().ok())
@@ -200,7 +198,7 @@ impl HttpTransportSink {
     }
 }
 
-impl<R: ServiceRole> Sink<TxJsonRpcMessage<R>> for HttpTransportSink {
+impl Sink<TxJsonRpcMessage<rmcp::service::RoleClient>> for HttpTransportSink {
     type Error = std::io::Error;
 
     fn poll_ready(
@@ -212,7 +210,7 @@ impl<R: ServiceRole> Sink<TxJsonRpcMessage<R>> for HttpTransportSink {
 
     fn start_send(
         self: std::pin::Pin<&mut Self>,
-        item: TxJsonRpcMessage<R>,
+        item: TxJsonRpcMessage<rmcp::service::RoleClient>,
     ) -> Result<(), Self::Error> {
         let this = self.get_mut();
         let json_value = serde_json::to_value(&item)
@@ -285,8 +283,8 @@ impl HttpTransportStream {
     }
 }
 
-impl<R: ServiceRole> Stream for HttpTransportStream {
-    type Item = RxJsonRpcMessage<R>;
+impl Stream for HttpTransportStream {
+    type Item = RxJsonRpcMessage<rmcp::service::RoleClient>;
 
     fn poll_next(
         mut self: std::pin::Pin<&mut Self>,
@@ -294,7 +292,7 @@ impl<R: ServiceRole> Stream for HttpTransportStream {
     ) -> std::task::Poll<Option<Self::Item>> {
         match self.stream.poll_next_unpin(cx) {
             std::task::Poll::Ready(Some(value)) => {
-                match serde_json::from_value::<RxJsonRpcMessage<R>>(value) {
+                match serde_json::from_value::<RxJsonRpcMessage<rmcp::service::RoleClient>>(value) {
                     Ok(message) => std::task::Poll::Ready(Some(message)),
                     Err(e) => {
                         log::error!("Failed to deserialize JSON-RPC message: {}", e);
@@ -310,12 +308,12 @@ impl<R: ServiceRole> Stream for HttpTransportStream {
     }
 }
 
-impl<R: ServiceRole> IntoTransport<R, std::io::Error, ()> for HttpTransport {
+impl IntoTransport<rmcp::service::RoleClient, std::io::Error, ()> for HttpTransport {
     fn into_transport(
         self,
     ) -> (
-        impl Sink<TxJsonRpcMessage<R>, Error = std::io::Error> + Send + 'static,
-        impl Stream<Item = RxJsonRpcMessage<R>> + Send + 'static,
+        impl Sink<TxJsonRpcMessage<rmcp::service::RoleClient>, Error = std::io::Error> + Send + 'static,
+        impl Stream<Item = RxJsonRpcMessage<rmcp::service::RoleClient>> + Send + 'static,
     ) {
         let sink = HttpTransportSink::new(self.config.clone());
         
