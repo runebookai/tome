@@ -10,7 +10,7 @@
 
 <nav
     class={twMerge(
-        'bg-md text-medium border-light flex flex-col items-center gap-8 border-r pt-20',
+        'bg-medium text-medium border-light flex flex-col items-center gap-8 border-r pt-20',
         cls?.toString()
     )}
 >
@@ -20,6 +20,10 @@
     -->
     <Link href="/chat/latest" aria-label="chat" prefix="/chat" activeClass="text-purple">
         <Svg name="Chat" />
+    </Link>
+
+    <Link href="/tasks" aria-label="tasks" activeClass="text-purple">
+        <Svg name="Tasks" />
     </Link>
 
     <Link

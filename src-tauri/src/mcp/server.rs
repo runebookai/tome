@@ -18,6 +18,7 @@ type Service = RunningService<RoleClient, ()>;
 pub struct McpServer {
     service: Service,
     pid: Pid,
+    custom_name: Option<String>,
 }
 
 impl McpServer {
@@ -34,11 +35,19 @@ impl McpServer {
         let proc = McpProcess::start(command, args, env, app)?;
         let pid = proc.pid();
         let service = ().serve(proc).await?;
-        Ok(Self { service, pid })
+        Ok(Self { 
+            service, 
+            pid,
+            custom_name: None,
+        })
     }
 
     pub fn name(&self) -> String {
-        self.peer_info().server_info.name
+        self.custom_name.clone().unwrap_or_else(|| self.peer_info().server_info.name)
+    }
+
+    pub fn set_name(&mut self, new_name: String) {
+        self.custom_name = Some(new_name);
     }
 
     pub fn peer_info(&self) -> <RoleClient as ServiceRole>::PeerInfo {

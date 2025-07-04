@@ -10,6 +10,18 @@ const GEMINI_API_KEY = 'gemini-api-key';
 // Ollama URL
 export const OLLAMA_URL_CONFIG_KEY = 'ollama-url';
 
+// Custom System Prompt
+export const CUSTOM_SYSTEM_PROMPT = 'custom-system-prompt';
+const COLOR_SCHEME_KEY = 'color-scheme';
+
+export interface ISetting {
+    id?: number;
+    display: string;
+    key: string;
+    value: unknown;
+    type: string;
+}
+
 interface Row {
     id: number;
     display: string;
@@ -37,7 +49,23 @@ export default class Setting extends Base<Row>('settings') {
         return this.findBy({ key: GEMINI_API_KEY })?.value as string | undefined;
     }
 
-    protected async afterUpdate() {
+    static get CustomSystemPrompt(): string | undefined {
+        return this.findBy({ key: CUSTOM_SYSTEM_PROMPT })?.value as string | undefined;
+    }
+
+    static get ColorScheme(): string | undefined {
+        return this.findBy({ key: COLOR_SCHEME_KEY })?.value as string | undefined;
+    }
+
+    static set ColorScheme(value: string | undefined) {
+        const setting = this.findBy({ key: COLOR_SCHEME_KEY });
+        if (setting && value) {
+            setting.value = value;
+            setting.save();
+        }
+    }
+
+    protected static async afterUpdate() {
         // Resync models in case a Provider key/url was updated.
         await Engine.sync();
     }

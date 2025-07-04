@@ -3,11 +3,11 @@ import uuid4 from 'uuid4';
 
 import type { Options } from '$lib/engines/types';
 import { error } from '$lib/logger';
-import { App, Engine, type IModel, Message, Session } from '$lib/models';
+import { App, Engine, Message, Model, Session } from '$lib/models';
 
-export async function dispatch(session: Session, model: IModel, prompt?: string): Promise<Message> {
+export async function dispatch(session: Session, model: Model, prompt?: string): Promise<Message> {
     const app = App.find(session.appId as number);
-    const engine = Engine.find(model.engineId);
+    const engine = Engine.find(Number(model.engineId));
 
     if (!engine || !engine.client) {
         error(`MissingEngineError`, model.id);
@@ -68,7 +68,7 @@ export async function dispatch(session: Session, model: IModel, prompt?: string)
         }
     }
 
-    message.model = model.id;
+    message.model = String(model.id);
     message.sessionId = session.id;
     await message.save();
 

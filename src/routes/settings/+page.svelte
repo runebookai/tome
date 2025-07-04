@@ -3,15 +3,40 @@
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Scrollable from '$components/Scrollable.svelte';
+    import CustomPromptView from '$components/Settings/CustomPrompt.svelte';
     import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import Engine from '$lib/models/engine.svelte';
+    import Setting from '$lib/models/setting.svelte';
 
     const engines: Engine[] = $derived(Engine.all());
 
     let adding = $state(false);
     let saving = $state(false);
+
+    // Color scheme state
+    let colorScheme = $state(Setting.ColorScheme ?? 'system');
+
+    function onColorSchemeChange(e: Event) {
+        colorScheme = (e.target as HTMLSelectElement).value;
+        Setting.ColorScheme = colorScheme;
+        applyColorScheme(colorScheme);
+    }
+
+    function applyColorScheme(scheme: string) {
+        if (scheme === 'system') {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', scheme);
+        }
+    }
+
+    // Apply on load and whenever colorScheme changes
+    $effect(() => {
+        applyColorScheme(colorScheme);
+    });
 
     async function ondelete(engine: Engine) {
         await engine.delete();
@@ -34,8 +59,41 @@
 {/snippet}
 
 <Layout {titlebar}>
-    <Scrollable class="!h-content">
-        <Flex class="w-full flex-col gap-4 overflow-y-auto p-8">
+    <Scrollable class="!h-content bg-medium">
+        <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Color Scheme</h2>
+                    <p class="text-medium font-light">Set the color scheme of Tome</p>
+                </section>
+
+                <Flex class="w-full flex-col items-start gap-2">
+                    <select
+                        class="border-light bg-medium text-light mt-2 rounded-md border p-2"
+                        bind:value={colorScheme}
+                        onchange={onColorSchemeChange}
+                    >
+                        <option value="system">System</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </Flex>
+            </Flex>
+
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Custom Prompt</h2>
+                    <p class="text-medium font-light">
+                        Set a custom system prompt that will be used for all new conversations
+                        instead of the default prompt.
+                    </p>
+                </section>
+
+                <Flex class="w-full flex-col items-start">
+                    <CustomPromptView bind:saving />
+                </Flex>
+            </Flex>
+
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Engines</h2>

@@ -6,16 +6,16 @@
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Svg from '$components/Svg.svelte';
-    import { Config, Engine, type IModel } from '$lib/models';
+    import { Config, Engine, Model } from '$lib/models';
 
     const engines: Engine[] = Engine.all();
 
-    function isDefault(model: IModel) {
+    function isDefault(model: Model) {
         return Config.defaultModel == model.id;
     }
 
-    function setDefault(model: IModel) {
-        Config.defaultModel = model.id;
+    function setDefault(model: Model) {
+        Config.defaultModel = String(model.id);
     }
 
     onMount(async () => {

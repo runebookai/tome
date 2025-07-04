@@ -80,20 +80,21 @@ export default class McpServer extends Base<Row>('mcp_servers') {
         });
     }
 
-    async afterCreate() {
-        this.metadata = JSON.parse(
+    async beforeCreate(row: Row): Promise<ToSqlRow<Row>> {
+        const metadata: Metadata = JSON.parse(
             await invoke('get_metadata', {
-                command: this.command,
-                args: this.args,
-                env: this.env,
+                command: row.command,
+                args: JSON.parse(row.args),
+                env: JSON.parse(row.env),
             })
         );
 
-        this.name = this.metadata?.serverInfo?.name
+        row.metadata = JSON.stringify(metadata);
+        row.name = metadata.serverInfo?.name
             ?.replace('mcp-server/', '')
             ?.replace('/', '-') as string;
 
-        await this.save();
+        return row;
     }
 
     static async fromSql(row: Row): Promise<McpServer> {
@@ -115,5 +116,27 @@ export default class McpServer extends Base<Row>('mcp_servers') {
             args: JSON.stringify(this.args),
             env: JSON.stringify(this.env),
         };
+    }
+
+    async rename(newName: string) {
+        const oldName = this.name;
+        this.name = newName;
+        await this.save();
+
+        // Update the server name in any active sessions
+        const sessions = Session.all();
+        for (const session of sessions) {
+            if (session.hasMcpServer(oldName)) {
+                await invoke('rename_mcp_server', {
+                    sessionId: session.id,
+                    oldName,
+                    newName,
+                });
+                session.config.enabledMcpServers = session.config.enabledMcpServers?.map(name =>
+                    name === oldName ? newName : name
+                );
+                await session.save();
+            }
+        }
     }
 }

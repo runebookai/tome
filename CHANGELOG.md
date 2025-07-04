@@ -1,5 +1,67 @@
 # Changelog
 
+## 0.9.0 - 2025-07-03
+
+### 🎉 BIG CHANGES 🎉
+
+- INTRODUCING Scheduled Tasks
+    - Schedule prompts to run automatically hourly or at a specific time every day.
+    - Use all your favorite MCP Servers.
+    - Use any model
+- Light Mode! Huge thanks to @bneil for contributing a System/Light/Dark Mode to
+  Tome! Choose your theme in Settings.
+
+### Fixes
+
+- Fixed text formatting issue with welcome modal on smaller resolutions
+- Removed MSI Windows installer due to problems with auto-update. Use the NSIS
+  exe 🙂
+- Fixed issue where certain OpenAI-compatible Engines would error out if you
+  passed an empty array of `tools`.
+
+## 0.8.1 - 2025-06-27
+
+### Fixes
+
+- Reverted MSI removal – it's causing the Windows build to fail. Unsure why.
+
+## 0.8.0 - 2025-06-27
+
+### New Features
+
+- Ability to rename MCP servers
+
+### Improvements
+
+- Improved error handling a bit, when adding MCP servers
+
+### Misc
+
+- Removed MSI Windows installer
+
+> [!IMPORTANT]
+> If you previously installed on Windows via the MSI installer, you MUST
+> reinstall using the `.exe`
+
+## 0.7.0 - 2025-06-13
+
+### New Features
+
+- Customizable System Prompt (in settings)
+
+### Fixes
+
+- Correctly handle shell arguments with quotes
+
+### Refactors
+
+- Refactored models to be sane. They're now just instances of classes. No more
+  "static everything".
+
+### Fixes
+
+- Fixes false negetive issue when validating Engines
+
 ## 0.6.2 - 2025-06-03
 
 ### Fixes

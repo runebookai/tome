@@ -16,10 +16,10 @@
     }
 </script>
 
-<Flex class="w-full items-start">
+<Flex class="w-full items-start overflow-hidden">
     <img class="mr-12 h-48 w-48" src="/images/tome.png" alt="tome" />
 
-    <Flex class="flex-col items-start gap-4">
+    <Flex class="max-w-[400px] flex-col items-start gap-4 overflow-y-scroll">
         <h1 class="text-purple text-3xl">Welcome to Tome</h1>
         <p>
             Thanks for being an early adopter! We appreciate you kicking the tires of our
@@ -33,7 +33,8 @@
         </p>
         <button
             onclick={() => accept()}
-            class="from-purple-dark to-purple mt-2 rounded-md bg-linear-to-t p-1 px-4 hover:cursor-pointer"
+            class="from-purple-dark to-purple mt-2 rounded-md bg-linear-to-t
+            p-1 px-4 font-medium hover:cursor-pointer"
         >
             Sounds good, let's go!
         </button>

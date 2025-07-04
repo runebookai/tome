@@ -1,40 +1,74 @@
 /**
  * Model class NOT backed by a database
  */
-export default function BareModel<T extends Obj>() {
-    let repo: T[] = $state([]);
+export default function BareModel() {
+    class BareModel {
+        constructor(params: Partial<object>, privateInvocation = false) {
+            if (!privateInvocation) {
+                throw 'InvocationError: must instantiate models using `.new()`';
+            }
+            Object.assign(this, params);
+        }
 
-    return class BareModel {
-        static reset(instances: T[] = []) {
+        static new<T extends typeof BareModel>(this: T, params: Partial<InstanceType<T>> = {}) {
+            const inst = new this({}, true);
+            Object.assign(inst, params);
+            return inst as InstanceType<T>;
+        }
+
+        static reset<T extends typeof BareModel>(this: T, instances: InstanceType<T>[] = []) {
             repo = instances;
         }
 
-        static add(instance: T) {
+        static add<T extends typeof BareModel>(this: T, instance: InstanceType<T>) {
             repo.push(instance);
         }
 
-        static delete(instance: T) {
-            repo = repo.filter(i => i !== instance);
+        static all<T extends typeof BareModel>(this: T): InstanceType<T>[] {
+            return repo as InstanceType<T>[];
         }
 
-        static all(): T[] {
-            return repo;
+        static find<T extends typeof BareModel>(this: T, id: string): InstanceType<T> | undefined {
+            return repo.findBy('id', id) as InstanceType<T>;
         }
 
-        static find(id: string): T | undefined {
-            return repo.findBy('id', id);
+        static where<T extends typeof BareModel>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T>[] {
+            return repo.filter(m =>
+                Object.entries(params).every(([k, v]) => (m as Obj)[k] == v)
+            ) as InstanceType<T>[];
         }
 
-        static findBy(params: Partial<T>): T | undefined {
-            return repo.find(r => Object.entries(params).every(([key, value]) => r[key] == value));
+        static findBy<T extends typeof BareModel>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T> | undefined {
+            return this.where(params)[0];
         }
 
-        static first(): T {
-            return repo[0];
+        static findByOrDefault<T extends typeof BareModel>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): InstanceType<T> {
+            return this.findBy(params) || this.new();
         }
 
-        static last(): T {
-            return repo[repo.length - 1];
+        static first<T extends typeof BareModel>(this: T): InstanceType<T> {
+            return repo[0] as InstanceType<T>;
         }
-    };
+
+        static last<T extends typeof BareModel>(this: T): InstanceType<T> {
+            return repo[repo.length - 1] as InstanceType<T>;
+        }
+
+        delete() {
+            repo = repo.filter(i => i !== this);
+        }
+    }
+
+    let repo: InstanceType<typeof BareModel>[] = $state([]);
+
+    return BareModel;
 }

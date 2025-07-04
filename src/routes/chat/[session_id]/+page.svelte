@@ -17,25 +17,25 @@
     import Engine from '$lib/models/engine.svelte';
     import McpServer from '$lib/models/mcp-server.svelte';
     import Message from '$lib/models/message.svelte';
-    import Model, { type IModel } from '$lib/models/model';
+    import Model from '$lib/models/model.svelte';
     import Session from '$lib/models/session.svelte';
 
     const session: Session = $derived(Session.find(Number(page.params.session_id)));
-    const model: IModel | undefined = $derived(
+    const model: Model | undefined = $derived(
         Model.findBy({
             id: session.config.model,
             engineId: session.config.engineId,
         })
     );
 
-    const sessions: Session[] = $derived(Session.all());
+    const sessions: Session[] = $derived(Session.where({ ephemeral: false }));
     const mcpServers: McpServer[] = $derived(McpServer.all());
     const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);
 
     let advancedIsOpen = $state(false);
 
-    async function modelDidUpdate(model: IModel) {
+    async function modelDidUpdate(model: Model) {
         session.config.model = model.id;
         session.config.engineId = model.engineId;
         await session.save();

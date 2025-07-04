@@ -234,7 +234,7 @@ export default function Model<R extends object>(table: string) {
         }
 
         /**
-         * Delete a record, by`id`.
+         * Delete a record, by `id`.
          */
         async delete(): Promise<boolean> {
             const query = await db.execute(`DELETE FROM ${table} WHERE id = $1`, [this.id]);

@@ -4,6 +4,8 @@
     import { twMerge } from 'tailwind-merge';
 
     import Flex from './Flex.svelte';
+    import Input from './Input.svelte';
+    import Svg from './Svg.svelte';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         items: Item[];
@@ -11,6 +13,9 @@
         borderless?: boolean;
         title?: string;
         titleClass?: string;
+        filterable?: boolean;
+        filterProp?: keyof Item;
+        emptyMessage?: string;
     }
 
     const {
@@ -20,21 +25,51 @@
         titleClass = '',
         borderless = false,
         title,
+        filterable = false,
+        filterProp,
+        emptyMessage = 'Nothing yet.',
     }: Props = $props();
 
+    let filterTerm = $state('');
     let css = borderless ? '' : 'border-b-light border-b';
+
+    function filter() {
+        if (filterable && filterProp) {
+            return items.filter(item => (item[filterProp] as string).includes(filterTerm));
+        } else {
+            return items;
+        }
+    }
 </script>
 
-<Flex class={twMerge('w-full flex-col items-start', cls?.toString())}>
+<Flex class={twMerge('w-full flex-col items-start overflow-y-scroll', cls?.toString())}>
     {#if title}
         <p class={twMerge('text-medium text-sm', titleClass?.toString())}>
             {title}
         </p>
     {/if}
 
-    {#each items as item, i (i)}
-        <div class={twMerge('w-full', css)}>
-            {@render itemView(item)}
-        </div>
-    {/each}
+    {#if filterable}
+        <Flex class="border-b-light w-full border-b px-4">
+            <Svg name="Search" class="text-dark h-4 w-4" />
+            <Input
+                label={false}
+                type="text"
+                placeholder="Filter..."
+                bind:value={filterTerm}
+                onkeyup={filter}
+                class="w-full border-0"
+            />
+        </Flex>
+    {/if}
+
+    {#if items.length > 0}
+        {#each filter() as item, i (i)}
+            <div class={twMerge('w-full', css)}>
+                {@render itemView(item)}
+            </div>
+        {/each}
+    {:else}
+        <p class="text-medium p-8">{emptyMessage}</p>
+    {/if}
 </Flex>
