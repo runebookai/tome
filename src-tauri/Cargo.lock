@@ -32,6 +32,7 @@ dependencies = [
  "tauri-plugin-updater",
  "tauri-plugin-window-state",
  "tokio",
+ "tokio-stream",
  "webview2-com 0.37.0",
  "webview2-com-sys 0.37.0",
  "windows 0.61.1",

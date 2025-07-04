@@ -7,6 +7,9 @@
     const { children, class: cls = '', ...rest }: SvelteHTMLElements['div'] = $props();
 </script>
 
-<Flex class={twMerge('border-light bg-medium mb-2 rounded-lg border p-4', cls?.toString())} {...rest}>
+<Flex
+    class={twMerge('border-light bg-medium mb-2 rounded-lg border p-4', cls?.toString())}
+    {...rest}
+>
     {@render children?.()}
 </Flex>
