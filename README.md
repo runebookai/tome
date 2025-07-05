@@ -3,7 +3,7 @@
 <img src="static/images/repo-header.png" alt="Tome" />
 
 <p align="center">
-    <code>a magical desktop app that puts the power of LLMs and MCP in the hands of everyone</code>
+    <code>a magical desktop app that lets you chat with local or remote LLMs, schedule hourly or daily tasks, all superpowered by MCP</code>
 </p>
 
 <p align="center">
@@ -20,6 +20,8 @@
 
 Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Download Tome, connect any local or remote LLM and hook it up to thousands of MCP servers to create your own magical AI-powered spellbook.
 
+> **What is MCP?** MCP stands for Model Context Protocol and lets your LLM access tools - like search engines, your filesystem, or APIs like Scryfall or Atlassian
+
 🫥 Want it to be 100% local, 100% private? Use Ollama and Qwen3 with only local MCP servers to cast spells in your own pocket universe. ⚡ Want state of the art cloud models with the latest remote MCP servers? You can have that too. It's all up to you!
 
 🏗️ This is a Technical Preview so bear in mind things will be rough around the edges. [Join us on Discord](https://discord.gg/9CH6us29YA) to share tips, tricks, and issues you run into. Star this repo to stay on top of updates and feature releases!
@@ -29,6 +31,10 @@ Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Do
 - 🧙 **Streamlined Beginner Friendly Experience**
   - Simply download and install Tome and hook up the LLM of your choice
   - No fiddling with JSON, Docker, python or node
+  - Chat with MCP-powered models within minutes
+- 🗓 **NEW! Scheduled Tasks**
+  - Schedule prompts to run hourly or at a specific time every day
+  - Support for any model or MCP servers
 - 🤖 **AI Model Support**
   - **Remote**: Google Gemini, OpenAI, any OpenAI API-compatible endpoint
   - **Local**: Ollama, LM Studio, Cortex, any OpenAI API-compatible endpoint
