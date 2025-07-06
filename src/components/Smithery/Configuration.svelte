@@ -51,7 +51,9 @@
             }));
     }
 
-    function install() {
+    function install(e: Event) {
+        e.preventDefault();
+        e.stopPropagation();
         validateAll();
 
         if (isValid()) {
