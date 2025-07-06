@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 - 2025-07-06
+
+### Fixes
+
+- Fix Smithery MCP install from in-app
+
 ## 0.9.0 - 2025-07-03
 
 ### 🎉 BIG CHANGES 🎉
