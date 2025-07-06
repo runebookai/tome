@@ -49,8 +49,8 @@
     }
 
     async function install(config: McpConfig) {
-        serverToInstall = null;
         await McpServer.create(config);
+        serverToInstall = null;
     }
 </script>
 
