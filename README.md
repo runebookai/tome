@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-    🔮 Download the Tome Desktop App: <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_x64-setup.exe">Windows</a> | <a href="https://github.com/runebookai/tome/releases/download/0.6.0/Tome_0.6.0_aarch64.dmg">MacOS</a>
+    🔮 Download the Tome Desktop App: <a href="https://github.com/runebookai/tome/releases/download/0.9.1/Tome_0.9.1_x64-setup.exe">Windows</a> | <a href="https://github.com/runebookai/tome/releases/download/0.9.1/Tome_0.9.1_aarch64.dmg">MacOS</a>
 </p>
 
 # Tome
