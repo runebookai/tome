@@ -282,11 +282,115 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
             version: 17,
             description: "add_app_steps_triggers",
             sql: r#"
+------------------------------------------------------------------------------------------------
+-- ALTER the `apps_mcp_servers` table to include ON DELETE CASCADE
+------------------------------------------------------------------------------------------------
+
+CREATE TABLE apps_mcp_servers_new (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    app_id          INTEGER NOT NULL,
+    mcp_server_id   INTEGER NOT NULL,
+
+    FOREIGN KEY(app_id) REFERENCES apps(id) ON DELETE CASCADE,
+    FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id) ON DELETE CASCADE,
+
+    UNIQUE(app_id, mcp_server_id)
+);
+
+INSERT INTO apps_mcp_servers_new (id, app_id, mcp_server_id)
+SELECT id, app_id, mcp_server_id FROM apps_mcp_servers;
+
+DROP TABLE apps_mcp_servers;
+ALTER TABLE apps_mcp_servers_new RENAME TO apps_mcp_servers;
+
+------------------------------------------------------------------------------------------------
+-- ALTER the `sessions` and `messages` to include ON DELETE CASCADE
+------------------------------------------------------------------------------------------------
+
+CREATE TABLE sessions_new (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    app_id          INTEGER NOT NULL,
+    summary         TEXT NOT NULL DEFAULT "Untitled",
+    ephemeral       BOOLEAN DEFAULT "false",
+    config          JSON NOT NULL DEFAULT "{}",
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(app_id) REFERENCES apps(id) ON DELETE CASCADE
+);
+
+CREATE TABLE messages_new (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    session_id      INTEGER NOT NULL,
+    engine_id       INTEGER,
+    tool_call_id    TEXT,
+    model           TEXT NOT NULL,
+    role            TEXT NOT NULL,
+    content         TEXT NOT NULL,
+    thought         TEXT,
+    name            TEXT,
+    tool_calls      JSON NOT NULL DEFAULT "[]",
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(session_id) REFERENCES sessions_new(id) ON DELETE CASCADE
+);
+
+CREATE TABLE task_runs_new (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    task_id         INTEGER NOT NULL,
+    session_id      INTEGER NOT NULL,
+    state           TEXT NOT NULL DEFAULT "Pending",
+    state_reason    TEXT,
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY(session_id) REFERENCES sessions_new(id) ON DELETE CASCADE
+);
+
+INSERT INTO sessions_new (id, app_id, summary, ephemeral, config, created, modified)
+SELECT id, app_id, summary, ephemeral, config, created, modified FROM sessions;
+
+INSERT INTO messages_new (id, session_id, tool_call_id, model, role, content, thought, name, tool_calls, created, modified)
+SELECT id, session_id, tool_call_id, model, role, content, thought, name, tool_calls, created, modified FROM messages;
+
+INSERT INTO task_runs_new (id, task_id, session_id, state, state_reason, created)
+SELECT id, task_id, session_id, state, state_reason, created FROM task_runs;
+
+DROP TABLE task_runs;
+ALTER TABLE task_runs_new RENAME TO task_runs;
+
+DROP TABLE messages;
+ALTER TABLE messages_new RENAME TO messages;
+
+DROP TABLE sessions;
+ALTER TABLE sessions_new RENAME TO sessions;
+
+------------------------------------------------------------------------------------------------
+-- New columns/tables to support Apps
+------------------------------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS app_steps (
     id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     app_id      INTEGER NOT NULL,
+    engine_id   INTEGER NOT NULL,
+    model       TEXT NOT NULL,
     prompt      TEXT NOT NULL,
-    FOREIGN KEY(app_id) REFERENCES apps(id)
+
+    FOREIGN KEY(app_id) REFERENCES apps(id) ON DELETE CASCADE,
+    FOREIGN KEY(engine_id) REFERENCES engines(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS app_runs (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    app_id          INTEGER NOT NULL,
+    session_id      INTEGER NOT NULL,
+    state           TEXT NOT NULL DEFAULT "Pending",
+    state_reason    TEXT,
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(app_id) REFERENCES apps(id) ON DELETE CASCADE,
+    FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS triggers (
@@ -295,10 +399,35 @@ CREATE TABLE IF NOT EXISTS triggers (
     event       TEXT NOT NULL,
     action      TEXT NOT NULL,
     config      JSON NOT NULL DEFAULT "{}",
-    FOREIGN KEY(app_id) REFERENCES apps(id)
+
+    FOREIGN KEY(app_id) REFERENCES apps(id) ON DELETE CASCADE
 );
 
-ALTER TABLE tasks ADD COLUMN app_id INTEGER REFERENCES apps(id);
+ALTER TABLE tasks ADD COLUMN app_id INTEGER REFERENCES apps(id) ON DELETE CASCADE;
+
+INSERT INTO apps (name, interface) SELECT name, "Task" FROM tasks;
+UPDATE tasks SET app_id = (SELECT id FROM apps WHERE apps.name = tasks.name);
+
+INSERT INTO app_steps (app_id, engine_id, model, prompt)
+SELECT app_id, engine_id, model, prompt FROM tasks;
+
+INSERT INTO apps_mcp_servers (app_id, mcp_server_id)
+SELECT tasks.app_id, tasks_mcp_servers.mcp_server_id FROM tasks_mcp_servers JOIN tasks ON tasks.id = tasks_mcp_servers.task_id;
+
+INSERT INTO app_runs (app_id, session_id, state, state_reason, created)
+SELECT tasks.app_id, task_runs.session_id, task_runs.state, task_runs.state_reason, task_runs.created FROM task_runs JOIN tasks ON tasks.id = task_runs.task_id;
+
+INSERT INTO triggers (app_id, event, action, config)
+SELECT app_id, "scheduled", "tick", json_object('period', period) FROM tasks;
+
+DROP TABLE tasks_mcp_servers;
+DROP TABLE task_runs;
+
+ALTER TABLE tasks DROP COLUMN prompt;
+ALTER TABLE tasks DROP COLUMN period;
+ALTER TABLE tasks DROP COLUMN next_run;
+ALTER TABLE tasks DROP COLUMN engine_id;
+ALTER TABLE tasks DROP COLUMN model;
             "#,
             kind: MigrationKind::Up,
         },

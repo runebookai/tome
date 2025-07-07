@@ -1,54 +1,47 @@
-import moment from 'moment';
+import { dispatch } from './dispatch';
 
-import { App } from '$lib/models';
+import { App, AppRun, AppStep, Model, Session } from '$lib/models';
 
-interface ScheduledEvent {
-    type: 'scheduled';
-    action: 'tick';
-    data: {
-        timestamp: moment.Moment;
-    };
-}
+// eslint-disable-next-line
+export async function execute(app: App, input: any = undefined): Promise<AppRun> {
+    const session = await Session.create({
+        appId: app.id,
+        ephemeral: true,
+        config: {
+            enabledMcpServers: app.mcpServers.map(m => m.name),
+        },
+    });
 
-interface FilesystemEvent {
-    type: 'filesystem';
-    action: 'new_file' | 'file_updated';
-    data: {
-        path: string;
-        contents: string;
-    };
-}
-
-interface TelegramEvent {
-    type: 'telegram';
-    action: 'message';
-    data: string;
-}
-
-type Event = ScheduledEvent | FilesystemEvent | TelegramEvent;
-
-export async function trigger(event: Event) {
-    const input = inputPromptFrom(event);
-}
-
-function inputPromptFrom(event: Event): null | string {
-    if (event.type == 'scheduled') {
-        return null;
+    if (input) {
+        session.addMessage(input);
     }
 
-    if (event.type == 'filesystem') {
-        if (event.action == 'new_file') {
-            return `A new file was added at ${event.data.path} with the contents:\n\n\`\`\`${event.data.contents}\n\`\`\``;
-        } else if (event.action == 'file_updated') {
-            return `${event.data.path} was updated with the contents:\n\n\`\`\`${event.data.contents}\n\`\`\``;
-        }
-    }
+    const run = await AppRun.create({
+        appId: app.id,
+        sessionId: session.id,
+    });
 
-    if (event.type == 'telegram') {
-        return event.data;
-    }
+    asyncExecute(app, session)
+        .then(_ => run.succeed())
+        .catch(e => run.fail(e.toString()));
 
-    return null;
+    return run;
 }
 
-export async function invoke(app: App, input: string) {}
+async function asyncExecute(app: App, session: Session) {
+    await session.start();
+
+    for (const step of app.steps) {
+        await executeStep(step, session);
+    }
+}
+
+async function executeStep(step: AppStep, session: Session) {
+    const model = Model.findBy({ engineId: step.engineId, id: step.model });
+
+    if (!model) {
+        throw 'MissingModelError';
+    }
+
+    await dispatch(session, model, step.prompt);
+}

@@ -11,7 +11,6 @@
     import Scrollable from '$components/Scrollable.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import Task from '$lib/models/task.svelte';
-    import { execute } from '$lib/tasks';
 
     const { children } = $props();
     const tasks: Task[] = $derived(Task.all());
@@ -44,7 +43,7 @@
     }
 
     async function run(task: Task) {
-        const run = await execute(task);
+        const run = await task.app.execute();
 
         if (run) {
             await goto(`/tasks/${task.id}/runs/${run.id}`);
@@ -76,7 +75,7 @@
                 class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
                 activeClass="text-purple border-l border-l-purple"
             >
-                {task.name}
+                {task.app.name}
             </Link>
         </Deleteable>
     </Menu>

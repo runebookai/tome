@@ -1,4 +1,3 @@
-import type { Part } from '@google/genai';
 import Database from '@tauri-apps/plugin-sql';
 
 import { info } from '$lib/logger';
@@ -242,6 +241,13 @@ export default function Model<Row extends object>(table: string) {
         }
 
         /**
+         * Does the record exist in the database yet.
+         */
+        isPersisted(): boolean {
+            return this.id !== undefined;
+        }
+
+        /**
          * Default values for new instance
          */
         get default() {
@@ -265,7 +271,7 @@ export default function Model<Row extends object>(table: string) {
         /**
          * Update the instance.
          */
-        async update(params: Partial<this>): Promise<this> {
+        async update(params: Partial<this>) {
             Object.assign(this, params);
             return await this.save();
         }

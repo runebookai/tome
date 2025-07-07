@@ -13,7 +13,6 @@ interface Row {
     name: string;
     tool_calls: string;
     session_id: number;
-    response_id?: number;
     tool_call_id?: string;
     created: string;
     modified: string;
@@ -28,7 +27,6 @@ export default class Message extends Base<Row>('messages') {
     name: string = $state('');
     toolCalls: ToolCall[] = $state([]);
     sessionId?: number = $state();
-    responseId?: number = $state();
     toolCallId?: string = $state();
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
@@ -66,7 +64,6 @@ export default class Message extends Base<Row>('messages') {
             name: row.name,
             toolCalls: JSON.parse(row.tool_calls),
             sessionId: row.session_id,
-            responseId: row.response_id,
             toolCallId: row.tool_call_id,
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
@@ -82,7 +79,6 @@ export default class Message extends Base<Row>('messages') {
             name: this.name,
             tool_calls: JSON.stringify(this.toolCalls),
             session_id: this.sessionId as number,
-            response_id: this.responseId,
             tool_call_id: this.toolCallId,
         };
     }

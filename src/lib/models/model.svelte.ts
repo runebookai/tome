@@ -1,3 +1,4 @@
+import { info } from '$lib/logger';
 import { Config, Engine } from '$lib/models';
 import BareModel from '$lib/models/bare.svelte';
 
@@ -14,6 +15,7 @@ export default class Model extends BareModel() {
 
     static async sync() {
         this.reset(Engine.all().flatMap(e => e.models));
+        info(`[green]✔ models synced`);
     }
 
     static default() {

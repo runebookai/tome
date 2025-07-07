@@ -2,14 +2,12 @@
     import { page } from '$app/state';
 
     import TaskView from '$components/Task.svelte';
-    import { Task } from '$lib/models';
+    import { App, AppStep, Task, Trigger } from '$lib/models';
 
-    const taskId = Number(page.params.task_id);
-    const task: Task = $derived(Task.find(taskId));
-
-    async function save() {
-        return await task.save();
-    }
+    const task: Task = $derived(Task.find(Number(page.params.task_id)));
+    const app: App = $derived(task.app);
+    const steps: AppStep[] = $derived(app.steps);
+    const trigger: Trigger = $derived(app.trigger as Trigger);
 </script>
 
-<TaskView {task} onsave={save} />
+<TaskView {task} {app} {steps} {trigger} />

@@ -10,23 +10,27 @@
     import PeriodInput from '$components/PeriodInput.svelte';
     import Textarea from '$components/Textarea.svelte';
     import Toggle from '$components/Toggle.svelte';
-    import { Engine, McpServer, Model, Task } from '$lib/models';
+    import { App, AppStep, Engine, McpServer, Model, Task, Trigger } from '$lib/models';
+    import type { ScheduledConfig } from '$lib/models/trigger.svelte';
 
     interface Props {
         task: Task;
-        onsave?: () => Task | Promise<Task>;
+        app: App;
+        steps: AppStep[];
+        trigger: Trigger;
     }
 
-    const { task, onsave }: Props = $props();
+    let { task, app, steps, trigger }: Props = $props();
+
     const engines = $derived(Engine.all());
-    const isEdit = $derived(task.id !== undefined);
+    const isEdit = $derived(task.isPersisted());
 
     let mcpServers: McpServer[] = $state([]);
-    let model: Model = $state((task.model && Model.find(task.model)) || Model.default());
+    let model: Model = $state(Model.find(steps[0].model) || Model.default());
 
     async function addMcpServer(mcpServer: McpServer) {
         if (isEdit) {
-            task.addMcpServer(mcpServer);
+            app.addMcpServer(mcpServer);
         } else {
             mcpServers.push(mcpServer);
         }
@@ -34,7 +38,7 @@
 
     async function removeMcpServer(mcpServer: McpServer) {
         if (isEdit) {
-            task.removeMcpServer(mcpServer);
+            app.removeMcpServer(mcpServer);
         } else {
             mcpServers = mcpServers.filter(mcp => mcp !== mcpServer);
         }
@@ -42,18 +46,21 @@
 
     function hasMcpServer(mcpServer: McpServer) {
         if (isEdit) {
-            return task.hasMcpServer(mcpServer);
+            return app.hasMcpServer(mcpServer);
         } else {
             return mcpServers.includes(mcpServer);
         }
     }
 
     async function setModel(_model: Model) {
-        task.engineId = Number(_model.engineId);
-        task.model = String(_model.id);
-
         if (isEdit) {
-            await onsave?.();
+            await Promise.all(
+                steps.map(async step => {
+                    step.engineId = Number(_model.engineId);
+                    step.model = String(_model.id);
+                    await step.save();
+                })
+            );
         }
 
         model = _model;
@@ -61,17 +68,36 @@
 
     async function autosave() {
         if (isEdit) {
-            await onsave?.();
+            await app.save();
+            await task.save();
+            await Promise.all(steps.map(async step => await step.save()));
+            await trigger.save();
         }
     }
 
     async function save() {
-        const task = await onsave?.();
+        app = await app.save();
 
-        if (task) {
-            mcpServers.forEach(server => task.addMcpServer(server));
-            goto(`/tasks/${task.id}`);
-        }
+        task.appId = app.id;
+        task = await task.save();
+
+        await Promise.all(
+            steps.map(async step => {
+                step.appId = app.id;
+                await step.save();
+            })
+        );
+
+        trigger.appId = app.id;
+        await trigger.save();
+
+        await Promise.all(
+            mcpServers.map(async server => {
+                await app.addMcpServer(server);
+            })
+        );
+
+        goto(`/tasks/${task.id}`);
     }
 </script>
 
@@ -89,7 +115,7 @@
 <Flex class="w-full flex-col items-start p-8">
     <h2 class="text-medium mb-4 ml-2 text-xl">Name</h2>
     <Input
-        bind:value={task.name}
+        bind:value={app.name}
         label={false}
         name="name"
         class="w-full"
@@ -100,19 +126,22 @@
     <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Model</h2>
     <ModelMenu {engines} selected={model} onselect={setModel} />
 
-    <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Prompt</h2>
-    <Textarea
-        bind:value={task.prompt}
-        label={false}
-        name="prompt"
-        class="w-full"
-        onchange={autosave}
-        placeholder="task prompt"
-    />
+    {#each steps as step, i (i)}
+        <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Prompt</h2>
+        <Textarea
+            bind:value={step.prompt}
+            label={false}
+            name="prompt"
+            class="w-full"
+            onchange={autosave}
+            placeholder="task prompt"
+        />
+    {/each}
 
     <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Frequency</h2>
+    <!-- prettier-ignore -->
     <PeriodInput
-        bind:value={task.period}
+        bind:value={(trigger.config as ScheduledConfig).period}
         label={false}
         name="period"
         class="ml-3 w-full"

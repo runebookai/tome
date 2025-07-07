@@ -1,35 +1,35 @@
-import { McpServer, Task } from '$lib/models';
+import { App, McpServer } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 interface Row {
     id: number;
-    task_id: number;
+    app_id: number;
     mcp_server_id: number;
 }
 
-export default class TaskMcpServer extends Base<Row>('tasks_mcp_servers') {
-    taskId?: number = $state();
+export default class AppMcpServer extends Base<Row>('apps_mcp_servers') {
+    appId?: number = $state();
     mcpServerId?: number = $state();
 
-    get task() {
-        return Task.find(Number(this.taskId));
+    get app() {
+        return App.find(Number(this.appId));
     }
 
     get mcpServer() {
         return McpServer.find(Number(this.mcpServerId));
     }
 
-    protected static async fromSql(row: Row): Promise<TaskMcpServer> {
-        return TaskMcpServer.new({
+    protected static async fromSql(row: Row): Promise<AppMcpServer> {
+        return AppMcpServer.new({
             id: row.id,
-            taskId: row.task_id,
+            appId: row.app_id,
             mcpServerId: row.mcp_server_id,
         });
     }
 
     protected async toSql(): Promise<ToSqlRow<Row>> {
         return {
-            task_id: Number(this.taskId),
+            app_id: Number(this.appId),
             mcp_server_id: Number(this.mcpServerId),
         };
     }

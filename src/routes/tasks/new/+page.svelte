@@ -1,12 +1,11 @@
 <script lang="ts">
     import TaskView from '$components/Task.svelte';
-    import { Task } from '$lib/models';
+    import { App, AppStep, Task, Trigger } from '$lib/models';
 
     const task: Task = $state(Task.new());
-
-    async function save() {
-        return await task.save();
-    }
+    const app: App = App.new();
+    const steps: AppStep[] = [AppStep.new()];
+    const trigger: Trigger = Trigger.newScheduled();
 </script>
 
-<TaskView {task} onsave={save} />
+<TaskView {task} {app} {steps} {trigger} />

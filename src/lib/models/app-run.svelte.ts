@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { Session, Task } from '$lib/models';
+import { App, Session } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 export enum State {
@@ -11,29 +11,29 @@ export enum State {
 
 interface Row {
     id: number;
-    task_id: number;
+    app_id: number;
     session_id: number;
     state: State;
     state_reason: string | undefined;
     created: string;
 }
 
-export default class TaskRun extends Base<Row>('task_runs') {
+export default class AppRun extends Base<Row>('app_runs') {
     id?: number = $state();
-    taskId?: number = $state();
+    appId?: number = $state();
     sessionId?: number = $state();
     state: State = $state(State.Pending);
     stateReason: undefined | string = $state();
     created?: moment.Moment = $state();
 
     static stale() {
-        return TaskRun.where({ state: State.Pending }).filter(run =>
+        return AppRun.where({ state: State.Pending }).filter(run =>
             run.created?.isBefore(moment().subtract(24, 'hours'))
         );
     }
 
-    get task() {
-        return Task.find(Number(this.taskId));
+    get app() {
+        return App.find(Number(this.appId));
     }
 
     get session() {
@@ -63,15 +63,16 @@ export default class TaskRun extends Base<Row>('task_runs') {
     }
 
     async fail(reason: string = '') {
-        this.state = State.Failure;
-        this.stateReason = reason;
-        await this.save();
+        await (this as AppRun).update({
+            state: State.Failure,
+            stateReason: reason,
+        });
     }
 
-    protected static async fromSql(row: Row): Promise<TaskRun> {
-        return TaskRun.new({
+    protected static async fromSql(row: Row): Promise<AppRun> {
+        return AppRun.new({
             id: row.id,
-            taskId: row.task_id,
+            appId: row.app_id,
             sessionId: row.session_id,
             state: row.state,
             stateReason: row.state_reason,
@@ -81,7 +82,7 @@ export default class TaskRun extends Base<Row>('task_runs') {
 
     protected async toSql(): Promise<ToSqlRow<Row>> {
         return {
-            task_id: Number(this.taskId),
+            app_id: Number(this.appId),
             session_id: Number(this.sessionId),
             state: this.state,
             state_reason: this.stateReason,

@@ -10,12 +10,12 @@
     import Message from '$components/Message.svelte';
     import Spinner from '$components/Spinner.svelte';
     import Svg from '$components/Svg.svelte';
-    import { TaskRun } from '$lib/models';
+    import { AppRun } from '$lib/models';
+    import { State } from '$lib/models/app-run.svelte';
     import Task from '$lib/models/task.svelte';
-    import { State } from '$lib/models/task-run.svelte';
 
     const task: Task = $derived(Task.find(Number(page.params.task_id)));
-    const run: TaskRun = $derived(TaskRun.find(Number(page.params.run_id)));
+    const run: AppRun = $derived(AppRun.find(Number(page.params.run_id)));
 
     // svelte-ignore non_reactive_update
     let content: HTMLDivElement;
@@ -26,12 +26,12 @@
         }
     }
 
-    async function cancel(run: TaskRun) {
+    async function cancel(run: AppRun) {
         await run.fail('Cancelled');
         goto(`/tasks/${task.id}`);
     }
 
-    function menuItems(run: TaskRun) {
+    function menuItems(run: AppRun) {
         if (run.isPending()) {
             return [
                 {
@@ -54,7 +54,7 @@
     });
 </script>
 
-{#snippet RunListItem(run: TaskRun)}
+{#snippet RunListItem(run: AppRun)}
     <Menu items={menuItems(run)}>
         <Flex class="w-full pr-8">
             <Link

@@ -1,6 +1,5 @@
 // Data Migrations
 
-import * as tasksToApps from './task-to-apps';
 import * as toolCalls from './tool-call-migration';
 
 import { info } from '$lib/logger';
@@ -12,7 +11,4 @@ export async function migrate() {
 
     await Config.migrate();
     info('[green]✔ config migrated');
-
-    await tasksToApps.migrate();
-    info('[green]✔ tasks → apps migrated');
 }

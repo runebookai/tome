@@ -11,8 +11,9 @@ import { resync } from '$lib/models';
 import Config from '$lib/models/config.svelte';
 import Engine from '$lib/models/engine.svelte';
 import startup, { StartupCheck } from '$lib/startup';
-import { cleanPendingTasks, startTasksLoop } from '$lib/tasks';
 import { isUpToDate } from '$lib/updates';
+import { spawn } from '$lib/web-workers';
+import Scheduler from '$lib/workers/tasks?url';
 
 // App Initialization
 export const init: ClientInit = async () => {
@@ -25,6 +26,10 @@ export const init: ClientInit = async () => {
     info('[green]✔ database synced');
 
     await migrate();
+    info('[green]✔ database migrated');
+
+    spawn(Scheduler);
+    info('[green]✔ scheduler started');
 
     await startup.addCheck(StartupCheck.Agreement, async () => Config.agreedToWelcome);
     await startup.addCheck(StartupCheck.UpdateAvailable, async () => await isUpToDate());
@@ -32,12 +37,6 @@ export const init: ClientInit = async () => {
         StartupCheck.NoModels,
         async () => Engine.all().flatMap(e => e.models).length > 0
     );
-
-    await cleanPendingTasks();
-    info('[green]✔ cleaned stale tasks');
-
-    startTasksLoop();
-    info('[green]✔ started tasks');
 };
 
 export const handleError: HandleClientError = async ({ error: err }) => {
