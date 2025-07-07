@@ -42,7 +42,7 @@
     }
 </script>
 
-<Flex class={twMerge('w-full flex-col items-start overflow-y-scroll', cls?.toString())}>
+<Flex class={twMerge('w-full flex-col items-start overflow-y-auto', cls?.toString())}>
     {#if title}
         <p class={twMerge('text-medium text-sm', titleClass?.toString())}>
             {title}
@@ -65,7 +65,7 @@
 
     {#if items.length > 0}
         {#each filter() as item, i (i)}
-            <div class={twMerge('w-full', css)}>
+            <div class={twMerge('w-full', css?.toString())}>
                 {@render itemView(item)}
             </div>
         {/each}
