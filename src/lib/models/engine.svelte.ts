@@ -4,7 +4,6 @@ import Gemini from '$lib/engines/gemini/client';
 import Ollama from '$lib/engines/ollama/client';
 import OpenAI from '$lib/engines/openai/client';
 import type { Client, ClientOptions } from '$lib/engines/types';
-import { info } from '$lib/logger';
 import { Model } from '$lib/models';
 import Base from '$lib/models/base.svelte';
 
@@ -85,10 +84,6 @@ export default class Engine extends Base<Row>('engines') {
                             AVAILABLE_MODELS[engine.type] == 'all' ||
                             AVAILABLE_MODELS[engine.type].includes(m.name)
                     )
-                    .map(m => {
-                        info(m.id);
-                        return m;
-                    })
                     .sortBy('name');
             } catch {
                 // noop
