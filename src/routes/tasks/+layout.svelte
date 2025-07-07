@@ -8,6 +8,7 @@
     import List from '$components/List.svelte';
     import type { MenuItem } from '$components/Menu.svelte';
     import Menu from '$components/Menu.svelte';
+    import Scrollable from '$components/Scrollable.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import Task from '$lib/models/task.svelte';
     import { execute } from '$lib/tasks';
@@ -88,7 +89,9 @@
         </Flex>
 
         <Flex class="h-full w-[calc(100%-300px)] items-start">
-            {@render children?.()}
+            <Scrollable>
+                {@render children?.()}
+            </Scrollable>
         </Flex>
     </Flex>
 </Layout>
