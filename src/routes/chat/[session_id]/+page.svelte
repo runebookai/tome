@@ -9,6 +9,7 @@
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
+    import List from '$components/List.svelte';
     import Menu, { type MenuItem } from '$components/Menu.svelte';
     import ModelMenu from '$components/ModelMenu.svelte';
     import Svg from '$components/Svg.svelte';
@@ -118,28 +119,28 @@
     </Flex>
 {/snippet}
 
+{#snippet SessionItem(sess: Session)}
+    <Flex
+        class={`text-medium border-b-light w-full justify-between border-b 
+                border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
+    >
+        <Menu items={menuItems(sess)}>
+            <Link
+                href={`/chat/${sess.id}`}
+                class="w-full py-3 pl-8 text-left"
+                activeClass="text-purple border-l border-l-purple"
+                data-sveltekit-preload-data="off"
+            >
+                {sess.summary}
+            </Link>
+        </Menu>
+    </Flex>
+{/snippet}
+
 <Layout {titlebar}>
     <Flex class="h-full items-start">
         <Flex class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r">
-            {#each sessions as sess (sess.id)}
-                <Flex
-                    class={`text-medium border-b-light w-full justify-between border-b 
-                    border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
-                >
-                    <Menu items={menuItems(sess)}>
-                        <Deleteable ondelete={async () => await deleteSession(sess)}>
-                            <Link
-                                href={`/chat/${sess.id}`}
-                                class="w-full py-3 pl-8 text-left"
-                                activeClass="text-purple border-l border-l-purple"
-                                data-sveltekit-preload-data="off"
-                            >
-                                {sess.summary}
-                            </Link>
-                        </Deleteable>
-                    </Menu>
-                </Flex>
-            {/each}
+            <List items={sessions} itemView={SessionItem} />
         </Flex>
 
         {#if session}
