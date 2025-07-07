@@ -90,6 +90,7 @@
                         handleRename();
                     }}
                 >
+                    <!-- svelte-ignore a11y_autofocus -->
                     <input
                         type="text"
                         bind:value={newName}
