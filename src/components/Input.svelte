@@ -42,6 +42,7 @@
         class:border-red={!valid}
         onkeyup={() => (valid = validate(value))}
         onblur={() => (valid = validate(value))}
+        spellcheck="false"
         autocorrect="off"
         autocomplete="off"
         {name}

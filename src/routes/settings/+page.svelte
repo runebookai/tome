@@ -7,6 +7,7 @@
     import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
+    import * as color from '$lib/colorscheme';
     import Engine from '$lib/models/engine.svelte';
     import Setting from '$lib/models/setting.svelte';
 
@@ -14,29 +15,14 @@
 
     let adding = $state(false);
     let saving = $state(false);
+    let scheme: color.ColorScheme = $state(Setting.ColorScheme ?? 'system');
 
     // Color scheme state
-    let colorScheme = $state(Setting.ColorScheme ?? 'system');
 
-    function onColorSchemeChange(e: Event) {
-        colorScheme = (e.target as HTMLSelectElement).value;
-        Setting.ColorScheme = colorScheme;
-        applyColorScheme(colorScheme);
+    function onColorSchemeChange() {
+        Setting.ColorScheme = scheme;
+        color.apply(scheme);
     }
-
-    function applyColorScheme(scheme: string) {
-        if (scheme === 'system') {
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        } else {
-            document.documentElement.setAttribute('data-theme', scheme);
-        }
-    }
-
-    // Apply on load and whenever colorScheme changes
-    $effect(() => {
-        applyColorScheme(colorScheme);
-    });
 
     async function ondelete(engine: Engine) {
         await engine.delete();
@@ -70,7 +56,7 @@
                 <Flex class="w-full flex-col items-start gap-2">
                     <select
                         class="border-light bg-medium text-light mt-2 rounded-md border p-2"
-                        bind:value={colorScheme}
+                        bind:value={scheme}
                         onchange={onColorSchemeChange}
                     >
                         <option value="system">System</option>

@@ -3,7 +3,7 @@
 
     import Box from '$components/Box.svelte';
     import Textarea from '$components/Textarea.svelte';
-    import Setting, { CUSTOM_SYSTEM_PROMPT } from '$lib/models/setting.svelte';
+    import Setting from '$lib/models/setting.svelte';
 
     interface Props {
         saving?: boolean;
@@ -38,20 +38,7 @@
 
         try {
             isSaving = true;
-            const existingSetting = Setting.findBy({ key: CUSTOM_SYSTEM_PROMPT });
-
-            if (existingSetting) {
-                existingSetting.value = customPrompt;
-                await existingSetting.save();
-            } else {
-                await Setting.create({
-                    display: 'Custom System Prompt',
-                    key: CUSTOM_SYSTEM_PROMPT,
-                    value: customPrompt,
-                    type: 'string',
-                });
-            }
-
+            Setting.CustomSystemPrompt = customPrompt;
             saving = true;
             setTimeout(() => (saving = false), 2000);
         } catch (error) {

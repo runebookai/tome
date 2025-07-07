@@ -11,7 +11,7 @@
     let { children, ref = $bindable(), class: cls = '' }: Props = $props();
 </script>
 
-<Flex bind:ref class={twMerge('h-full w-full items-start overflow-y-scroll', cls?.toString())}>
+<Flex bind:ref class={twMerge('h-content w-full items-start overflow-y-scroll', cls?.toString())}>
     <div class="w-full">
         {@render children?.()}
     </div>

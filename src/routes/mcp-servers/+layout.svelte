@@ -8,6 +8,7 @@
     import List from '$components/List.svelte';
     import type { MenuItem } from '$components/Menu.svelte';
     import Menu from '$components/Menu.svelte';
+    import Scrollable from '$components/Scrollable.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import { McpServer } from '$lib/models';
@@ -139,7 +140,9 @@
         </Flex>
 
         <Flex class="h-full w-[calc(100%-300px)] items-start p-8">
-            {@render children?.()}
+            <Scrollable>
+                {@render children?.()}
+            </Scrollable>
         </Flex>
     </Flex>
 </Layout>
