@@ -4,6 +4,7 @@
     import { goto, onNavigate } from '$app/navigation';
 
     import closables from '$lib/closables';
+    import * as colorscheme from '$lib/colorscheme';
     import { Setting } from '$lib/models';
     import { resync } from '$lib/models';
 
@@ -40,7 +41,7 @@
     }
 
     onMount(() => {
-        document.documentElement.setAttribute('data-theme', Setting.ColorScheme as string);
+        colorscheme.apply(Setting.ColorScheme);
     });
 
     onNavigate(navigation => {
