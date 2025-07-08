@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.9.2 - 2025-07-07
+
+### Fixes
+
+- Fixed issue with scrollbars rendering empty space in lists
+- Silenced various Svelte warnings
+- Fixed issue where double dashes were being replaced with an emdash in inputs
+  (caused any MCP commands with flags to not work)
+- Ensure the User's selected colorscheme is applied on startup
+- Ensure the content area on all tabs is scrollable
+
+### Refactors
+
+- Refactored the `Setting` model to behave the same as `Config` (static
+  properties that both getters/setters)
+
+### Misc
+
+- Updated Gemini models to the currently available ones
+
 ## 0.9.1 - 2025-07-06
 
 ### Fixes
