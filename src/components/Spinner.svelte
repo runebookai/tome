@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { twMerge } from 'tailwind-merge';
-
     const { class: cls = 'w-[24px] h-[24px]' } = $props();
 </script>
 
-<div class={twMerge('spinner', cls?.toString())}></div>
+<div class={`spinner ${cls?.toString()}`}></div>
 
 <style>
     .spinner {

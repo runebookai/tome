@@ -85,12 +85,58 @@ export default class Session extends Base<Row>('sessions') {
             .compact();
     }
 
+    get mcpServersByTransport(): { stdio: McpServer[], http: McpServer[] } {
+        const servers = this.mcpServers;
+        return {
+            stdio: servers.filter(server => server.transportType === 'stdio'),
+            http: servers.filter(server => server.transportType === 'http')
+        };
+    }
+
     async start() {
-        await Promise.all(this.mcpServers.map(async server => await server.start(this)));
+        const results = await Promise.allSettled(
+            this.mcpServers.map(async server => {
+                try {
+                    await server.start(this);
+                    return { server: server.name, transport: server.transportType, success: true };
+                } catch (error) {
+                    console.error(`Failed to start MCP server ${server.name} (${server.transportType}):`, error);
+                    return { server: server.name, transport: server.transportType, success: false, error };
+                }
+            })
+        );
+        
+        // Log any failures for debugging
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to start MCP server ${this.mcpServers[index].name} (${this.mcpServers[index].transportType}):`, result.reason);
+            }
+        });
+        
+        return results;
     }
 
     async stop() {
-        await Promise.all(this.mcpServers.map(async server => await server.stop(this)));
+        const results = await Promise.allSettled(
+            this.mcpServers.map(async server => {
+                try {
+                    await server.stop(this);
+                    return { server: server.name, transport: server.transportType, success: true };
+                } catch (error) {
+                    console.error(`Failed to stop MCP server ${server.name} (${server.transportType}):`, error);
+                    return { server: server.name, transport: server.transportType, success: false, error };
+                }
+            })
+        );
+        
+        // Log any failures for debugging
+        results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+                console.error(`Failed to stop MCP server ${this.mcpServers[index].name} (${this.mcpServers[index].transportType}):`, result.reason);
+            }
+        });
+        
+        return results;
     }
 
     async tools(): Promise<Tool[]> {
@@ -113,6 +159,67 @@ export default class Session extends Base<Row>('sessions') {
         return !!this.config.enabledMcpServers?.includes(server);
     }
 
+    getMcpServerStatus(server: McpServer): 'enabled' | 'disabled' | 'unconfigured' {
+        if (!server.isConfigured) {
+            return 'unconfigured';
+        }
+        return this.hasMcpServer(server.name) ? 'enabled' : 'disabled';
+    }
+
+    getMcpServerDisplayInfo(server: McpServer): string {
+        const status = this.getMcpServerStatus(server);
+        const transportInfo = server.displayInfo;
+        
+        switch (status) {
+            case 'unconfigured':
+                return `${transportInfo} (Not configured)`;
+            case 'enabled':
+                return `${transportInfo} (Active)`;
+            case 'disabled':
+                return `${transportInfo} (Inactive)`;
+            default:
+                return transportInfo;
+        }
+    }
+
+    async startMcpServersByTransport(transportType: 'stdio' | 'http'): Promise<any[]> {
+        const serversByTransport = this.mcpServersByTransport;
+        const serversToStart = transportType === 'stdio' ? serversByTransport.stdio : serversByTransport.http;
+        
+        const results = await Promise.allSettled(
+            serversToStart.map(async server => {
+                try {
+                    await server.start(this);
+                    return { server: server.name, transport: server.transportType, success: true };
+                } catch (error) {
+                    console.error(`Failed to start ${transportType} MCP server ${server.name}:`, error);
+                    return { server: server.name, transport: server.transportType, success: false, error };
+                }
+            })
+        );
+        
+        return results;
+    }
+
+    async stopMcpServersByTransport(transportType: 'stdio' | 'http'): Promise<any[]> {
+        const serversByTransport = this.mcpServersByTransport;
+        const serversToStop = transportType === 'stdio' ? serversByTransport.stdio : serversByTransport.http;
+        
+        const results = await Promise.allSettled(
+            serversToStop.map(async server => {
+                try {
+                    await server.stop(this);
+                    return { server: server.name, transport: server.transportType, success: true };
+                } catch (error) {
+                    console.error(`Failed to stop ${transportType} MCP server ${server.name}:`, error);
+                    return { server: server.name, transport: server.transportType, success: false, error };
+                }
+            })
+        );
+        
+        return results;
+    }
+
     async addMessage(message: Partial<Message>): Promise<Message> {
         return await Message.create({
             sessionId: this.id,
@@ -126,14 +233,15 @@ export default class Session extends Base<Row>('sessions') {
             return this;
         }
 
-        this.config.enabledMcpServers?.push(server.name);
+        this.config.enabledMcpServers = this.config.enabledMcpServers || [];
+        this.config.enabledMcpServers.push(server.name);
         return await this.save();
     }
 
     async removeMcpServer(server: McpServer): Promise<Session> {
         this.config.enabledMcpServers = this.config.enabledMcpServers?.filter(
             s => s !== server.name
-        );
+        ) || [];
         return await this.save();
     }
 
