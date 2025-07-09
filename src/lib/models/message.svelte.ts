@@ -6,28 +6,30 @@ import Base from '$lib/models/base.svelte';
 
 interface Row {
     id: number;
+    session_id: number;
+    engine_id?: number;
+    tool_call_id?: string;
+    model: string;
     role: string;
     content: string;
     thought?: string;
-    model: string;
     name: string;
     tool_calls: string;
-    session_id: number;
-    tool_call_id?: string;
     created: string;
     modified: string;
 }
 
 export default class Message extends Base<Row>('messages') {
     id?: number = $state();
+    sessionId?: number = $state();
+    engineId?: number = $state();
+    toolCallId?: string = $state();
+    model: string = $state('');
     role: Role = $state('user');
     content: string = $state('');
     thought?: string = $state();
-    model: string = $state('');
     name: string = $state('');
     toolCalls: ToolCall[] = $state([]);
-    sessionId?: number = $state();
-    toolCallId?: string = $state();
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
@@ -57,14 +59,15 @@ export default class Message extends Base<Row>('messages') {
     protected static async fromSql(row: Row): Promise<Message> {
         return Message.new({
             id: row.id,
+            sessionId: row.session_id,
+            engineId: row.engine_id,
+            toolCallId: row.tool_call_id,
+            model: row.model,
             role: row.role as Role,
             content: row.content,
             thought: row.thought,
-            model: row.model,
             name: row.name,
             toolCalls: JSON.parse(row.tool_calls),
-            sessionId: row.session_id,
-            toolCallId: row.tool_call_id,
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         });
@@ -72,14 +75,15 @@ export default class Message extends Base<Row>('messages') {
 
     protected async toSql(): Promise<ToSqlRow<Row>> {
         return {
+            session_id: this.sessionId as number,
+            engine_id: this.engineId,
+            tool_call_id: this.toolCallId,
+            model: this.model,
             role: this.role,
             content: this.content,
             thought: this.thought,
-            model: this.model,
             name: this.name,
             tool_calls: JSON.stringify(this.toolCalls),
-            session_id: this.sessionId as number,
-            tool_call_id: this.toolCallId,
         };
     }
 }

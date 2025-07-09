@@ -54,13 +54,11 @@
 
     async function setModel(_model: Model) {
         if (isEdit) {
-            await Promise.all(
-                steps.map(async step => {
-                    step.engineId = Number(_model.engineId);
-                    step.model = String(_model.id);
-                    await step.save();
-                })
-            );
+            await steps.awaitAll(async step => {
+                step.engineId = Number(_model.engineId);
+                step.model = String(_model.id);
+                await step.save();
+            });
         }
 
         model = _model;
@@ -70,7 +68,7 @@
         if (isEdit) {
             await app.save();
             await task.save();
-            await Promise.all(steps.map(async step => await step.save()));
+            await steps.awaitAll(async step => await step.save());
             await trigger.save();
         }
     }
@@ -81,21 +79,19 @@
         task.appId = app.id;
         task = await task.save();
 
-        await Promise.all(
-            steps.map(async step => {
-                step.appId = app.id;
-                await step.save();
-            })
-        );
+        await steps.awaitAll(async step => {
+            step.appId = app.id;
+            step.engineId = Number(model.engineId);
+            step.model = String(model.id);
+            await step.save();
+        });
 
         trigger.appId = app.id;
         await trigger.save();
 
-        await Promise.all(
-            mcpServers.map(async server => {
-                await app.addMcpServer(server);
-            })
-        );
+        await mcpServers.awaitAll(async server => {
+            await app.addMcpServer(server);
+        });
 
         goto(`/tasks/${task.id}`);
     }
