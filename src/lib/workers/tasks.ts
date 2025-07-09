@@ -24,7 +24,6 @@ function enqueue() {
  * Determine the top of the next hour.
  */
 function delay() {
-    //return moment.utc().startOf('minute').add(1, 'minute').diff(moment.utc(), 'milliseconds');
     return moment.utc().startOf('hour').add(1, 'hour').diff(moment.utc(), 'milliseconds');
 }
 

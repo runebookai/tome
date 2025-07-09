@@ -1,9 +1,11 @@
-import { dispatch } from './dispatch';
-
+import { dispatch } from '$lib/dispatch';
+import { info } from '$lib/logger';
 import { App, AppRun, AppStep, Model, Session } from '$lib/models';
 
 // eslint-disable-next-line
 export async function execute(app: App, input: any = undefined): Promise<AppRun> {
+    info(`executing app: ${app.name}`);
+
     const session = await Session.create({
         appId: app.id,
         ephemeral: true,

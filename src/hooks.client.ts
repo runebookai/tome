@@ -1,4 +1,7 @@
+// Javascript stdlib extensions
 import '$lib/ext';
+// Commands invokable from web workers
+import '$lib/workers/commands';
 
 import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 import { goto } from '$app/navigation';
