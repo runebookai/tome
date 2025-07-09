@@ -117,6 +117,26 @@ Array.prototype.last = function <T>(this: T[]): T {
 };
 
 /**
+ * Map over an array with an async function and await them all.
+ *
+ * ```
+ * const items = [1, 2, 3];
+ *
+ * await items.awaitAll(async i => await asyncthing(i));
+ *
+ * // is equivalent to
+ *
+ * await Promise.all(items.map(async i => await asyncthing(i)));
+ * ```
+ */
+Array.prototype.awaitAll = async function <T>(
+    this: T[],
+    fn: (arg0: T) => Promise<any>
+): Promise<Awaited<T>[]> {
+    return await Promise.all(this.map(fn));
+};
+
+/**
  * Truncate the text, suffixed by an ellipsis.
  */
 String.prototype.ellipsize = function (length: number = 25) {

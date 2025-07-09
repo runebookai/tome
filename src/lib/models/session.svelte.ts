@@ -86,23 +86,15 @@ export default class Session extends Base<Row>('sessions') {
     }
 
     async start() {
-        await Promise.all(this.mcpServers.map(async server => await server.start(this)));
+        await this.mcpServers.awaitAll(async s => await s.start(this));
     }
 
     async stop() {
-        await Promise.all(this.mcpServers.map(async server => await server.stop(this)));
+        await this.mcpServers.awaitAll(async s => await s.stop(this));
     }
 
     async tools(): Promise<Tool[]> {
-        if (!this.id || !this.config?.model) {
-            return [];
-        }
-
-        if (!Model.find(this.config.model)?.supportsTools) {
-            return [];
-        }
-
-        return await getMCPTools(this.id);
+        return this.id ? await getMCPTools(this.id) : [];
     }
 
     hasUserMessages(): boolean {

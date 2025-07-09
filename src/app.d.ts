@@ -29,6 +29,7 @@ declare global {
 
     interface Array<T> {
         compact(): Array<Exclude<T, undefined>>;
+        awaitAll<K>(fn: (arg0: T) => Promise<K>): Promise<Awaited<K>[]>;
     }
 
     interface String {
