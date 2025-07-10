@@ -6,23 +6,13 @@ import type { Tool } from '$lib/engines/types';
 import { getMCPTools } from '$lib/mcp';
 import { App, McpServer, Message, Model, Setting } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import { DEFAULT_SUMMARY, summarize } from '$lib/summarize';
 
 /**
  * Generic context for the LLM.
  */
 export const SYSTEM_PROMPT =
     'You are Tome, created by Runebook, which is an software company located in Oakland, CA. You are a helpful assistant.';
-
-/**
- * Prompt to retrieve a summary of the conversation so far.
- */
-export const SUMMARY_PROMPT =
-    'Summarize all previous messages in a concise and comprehensive manner. The summary can be 3 words or less. Only respond with the summary and nothing else. Remember, the length of the summary can be 3 words or less.';
-
-/**
- * Default summary before summarization via LLM.
- */
-export const DEFAULT_SUMMARY = 'Untitled';
 
 /**
  * The first message a User sees in a chat.
@@ -75,7 +65,6 @@ export default class Session extends Base<Row>('sessions') {
     }
 
     get messages(): Message[] {
-        if (!this.appId) return [];
         return Message.where({ sessionId: this.id });
     }
 
@@ -127,39 +116,6 @@ export default class Session extends Base<Row>('sessions') {
             s => s !== server.name
         );
         return await this.save();
-    }
-
-    async summarize() {
-        if (!this.id || !this.config.model || !this.config.engineId) {
-            return;
-        }
-
-        if (!this.hasUserMessages() || this.summary !== DEFAULT_SUMMARY) {
-            return;
-        }
-
-        const engine = Engine.find(this.config.engineId);
-        const model = engine.models.find(m => m.name == this.config.model);
-
-        if (!engine || !engine.client || !model) {
-            return;
-        }
-
-        const message: Message = await engine.client.chat(model, [
-            ...this.messages,
-            {
-                role: 'user',
-                content: SUMMARY_PROMPT,
-            } as Message,
-        ]);
-
-        // Some smaller models add extra explanation after a ";"
-        this.summary = message.content.split(';')[0];
-
-        // They also sometimes put the extra crap before "Summary: "
-        this.summary = this.summary.split(/[Ss]ummary: /).pop() as string;
-
-        this.save();
     }
 
     protected async afterCreate(): Promise<void> {

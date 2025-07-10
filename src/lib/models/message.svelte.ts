@@ -1,8 +1,9 @@
 import moment from 'moment';
 
 import type { Role, ToolCall } from '$lib/engines/types';
-import { Session, type ToSqlRow } from '$lib/models';
-import Base from '$lib/models/base.svelte';
+import { Session } from '$lib/models';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import { summarize } from '$lib/summarize';
 
 interface Row {
     id: number;
@@ -33,16 +34,6 @@ export default class Message extends Base<Row>('messages') {
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
-    get defaults() {
-        return {
-            role: 'user',
-            content: '',
-            model: '',
-            name: '',
-            toolCalls: [],
-        };
-    }
-
     get response(): Message | undefined {
         return Message.findBy({ toolCallId: this.toolCalls[0].id });
     }
@@ -53,7 +44,7 @@ export default class Message extends Base<Row>('messages') {
 
     protected async afterCreate() {
         const session = Session.find(this.sessionId as number);
-        await session.summarize();
+        await summarize(session);
     }
 
     protected static async fromSql(row: Row): Promise<Message> {
