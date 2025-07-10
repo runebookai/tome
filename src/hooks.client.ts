@@ -2,6 +2,8 @@
 import '$lib/ext';
 // Commands invokable from web workers
 import '$lib/workers/commands';
+// Event Handlers
+import '$events';
 
 import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 import { goto } from '$app/navigation';

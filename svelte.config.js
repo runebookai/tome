@@ -9,6 +9,7 @@ const config = {
         alias: {
             '$components': './src/components',
             '$routes': './src/routes',
+            '$events': './src/events',
         },
         prerender: {
             'entries': [

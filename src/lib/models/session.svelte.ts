@@ -1,12 +1,10 @@
 import moment from 'moment';
 
-import Engine from './engine.svelte';
-
 import type { Tool } from '$lib/engines/types';
-import { getMCPTools } from '$lib/mcp';
+import { getMcpTools } from '$lib/mcp';
 import { App, McpServer, Message, Model, Setting } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
-import { DEFAULT_SUMMARY, summarize } from '$lib/summarize';
+import { DEFAULT_SUMMARY } from '$lib/summarize';
 
 /**
  * Generic context for the LLM.
@@ -83,7 +81,7 @@ export default class Session extends Base<Row>('sessions') {
     }
 
     async tools(): Promise<Tool[]> {
-        return this.id ? await getMCPTools(this.id) : [];
+        return this.id ? await getMcpTools(this.id) : [];
     }
 
     hasUserMessages(): boolean {
