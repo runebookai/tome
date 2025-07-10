@@ -283,6 +283,44 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
             description: "add_app_steps_triggers",
             sql: r#"
 ------------------------------------------------------------------------------------------------
+-- View that generates a UUID on each query
+------------------------------------------------------------------------------------------------
+
+CREATE VIEW IF NOT EXISTS uuidgen AS
+SELECT lower(
+	hex(randomblob(4)) || '-' ||
+	hex(randomblob(2)) || '-' ||
+	'4' || substr(hex(randomblob(2)), 2) || '-' ||
+	substr('89ab', abs(random()) % 4 + 1, 1) || substr(hex(randomblob(2)), 2) || '-' ||
+	hex(randomblob(6))
+) AS uuid;
+
+------------------------------------------------------------------------------------------------
+-- Ensure every tool_call has an `id`
+------------------------------------------------------------------------------------------------
+
+UPDATE messages
+SET tool_calls = json_insert(tool_calls, '$[0].id', (SELECT uuid FROM uuidgen))
+WHERE json_array_length(tool_calls) > 0;
+
+------------------------------------------------------------------------------------------------
+-- Ensure every tool call response message references the tool call id
+------------------------------------------------------------------------------------------------
+
+UPDATE messages AS m
+SET tool_call_id = (
+    SELECT json_extract(tool_calls, '$[0].id')
+    FROM messages
+    WHERE messages.id = (SELECT max(id) FROM messages WHERE m.id > id)
+);
+
+------------------------------------------------------------------------------------------------
+-- Ensure the database has a value for each of the previously file-based config values
+------------------------------------------------------------------------------------------------
+
+INSERT INTO config (key, value) VALUES ('welcome-agreed', true) ON CONFLICT(key) DO NOTHING;
+
+------------------------------------------------------------------------------------------------
 -- ALTER the `apps_mcp_servers` table to include ON DELETE CASCADE
 ------------------------------------------------------------------------------------------------
 

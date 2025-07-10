@@ -11,7 +11,6 @@ import { goto } from '$app/navigation';
 import { setupDeeplinks } from '$lib/deeplinks';
 import { error } from '$lib/logger';
 import { info } from '$lib/logger';
-import { migrate } from '$lib/migrations';
 import { resync } from '$lib/models';
 import Config from '$lib/models/config.svelte';
 import Engine from '$lib/models/engine.svelte';
@@ -29,9 +28,6 @@ export const init: ClientInit = async () => {
 
     await resync();
     info('[green]✔ database synced');
-
-    await migrate();
-    info('[green]✔ database migrated');
 
     spawn(Scheduler);
     info('[green]✔ scheduler started');
