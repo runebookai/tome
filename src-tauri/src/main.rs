@@ -3,6 +3,7 @@
 #![warn(unused_extern_crates)]
 
 mod commands;
+mod daemon;
 mod deeplink;
 mod http;
 mod mcp;
@@ -18,6 +19,7 @@ use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_window_state::{AppHandleExt, StateFlags, WindowExt};
 
+use crate::daemon::watch;
 use crate::migrations::migrations;
 use crate::state::State;
 use crate::window::configure_window;
@@ -75,6 +77,11 @@ fn main() {
 
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(mcp::bootstrap(handle));
+
+            // TODO: @Matte this is just here for easy manual noodle testing, delete it when you're ready
+            tauri::async_runtime::spawn(async {
+                watch("/somepath/").await.unwrap();
+            });
 
             Ok(())
         })
