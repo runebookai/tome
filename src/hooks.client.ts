@@ -8,6 +8,7 @@ import '$events';
 import type { ClientInit, HandleClientError } from '@sveltejs/kit';
 import { goto } from '$app/navigation';
 
+import * as apps from '$lib/apps';
 import { setupDeeplinks } from '$lib/deeplinks';
 import { error } from '$lib/logger';
 import { info } from '$lib/logger';
@@ -31,6 +32,8 @@ export const init: ClientInit = async () => {
 
     spawn(Scheduler);
     info('[green]✔ scheduler started');
+
+    await apps.watch();
 
     await startup.addCheck(StartupCheck.Agreement, async () => Config.agreedToWelcome);
     await startup.addCheck(StartupCheck.UpdateAvailable, async () => await isUpToDate());

@@ -6,11 +6,14 @@ import App from './app.svelte';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 type AmbientEvent = 'scheduled' | 'filesystem';
-type AmbientAction = 'tick' | 'file_created' | 'file_updated';
-type AmbientConfig = object | undefined;
+type AmbientAction = 'tick' | 'created' | 'updated';
 
 export interface ScheduledConfig {
     period: string;
+}
+
+export interface FilesystemConfig {
+    path: string;
 }
 
 interface Row {
@@ -26,7 +29,7 @@ export default class Trigger extends Base<Row>('triggers') {
     appId?: number = $state();
     event: AmbientEvent = $state('scheduled');
     action: AmbientAction = $state('tick');
-    config: AmbientConfig = $state({});
+    config: object = $state({});
 
     static get scheduled() {
         return Trigger.where({

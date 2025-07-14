@@ -14,7 +14,7 @@ pub struct RunningSession {
     pub tools: HashMap<ToolName, McpServerName>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct State {
     pub sessions: Mutex<HashMap<SessionId, RunningSession>>,
 }
