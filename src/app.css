@@ -15,11 +15,13 @@
     --border-color-medium: #0c0c0c;
     --border-color-dark: #0b0b0b;
 
+    --background-color-xlight: #292929;
     --background-color-light: #191919;
     --background-color-medium: #0c0c0c;
     --background-color-dark: #0b0b0b;
 
     --text-color-light: rgba(255, 255, 255, 0.75);
+    --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #333333;
 
@@ -29,6 +31,10 @@
 
     --height-content: calc(100% - var(--height-titlebar));
     --width-content-minus-nav: calc(100dvw - var(--width-nav));
+}
+
+@utility noscrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
 }
 
 @font-face {
@@ -80,6 +86,7 @@ html[data-theme="light"] {
     --background-color-dark: #e0e0e0;
 
     --text-color-light: #222222;
+    --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #bbbbbb;
 }
@@ -91,6 +98,7 @@ html[data-theme="dark"] {
     --color-green: #c3e88d;
     --color-yellow: #ffc777;
 
+    --border-color-xxlight: #333333;
     --border-color-xlight: #292929;
     --border-color-light: #191919;
     --border-color-medium: #0c0c0c;
@@ -101,6 +109,7 @@ html[data-theme="dark"] {
     --background-color-dark: #0b0b0b;
 
     --text-color-light: rgba(255, 255, 255, 0.75);
+    --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #333333;
 }

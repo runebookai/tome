@@ -13,6 +13,10 @@ export default class Model extends BareModel() {
     metadata: Metadata = $state({});
     engineId?: number = $state();
 
+    get engine() {
+        return Engine.find(Number(this.engineId));
+    }
+
     static async sync() {
         this.reset(Engine.all().flatMap(e => e.models));
         info(`[green]✔ models synced`);

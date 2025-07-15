@@ -13,8 +13,12 @@ export default class AppStep extends Base<Row>('app_steps') {
     id?: number = $state();
     appId?: number = $state();
     engineId: number = $state(Number(Model.default().engineId));
-    model: string = $state(String(Model.default().id));
+    modelId: string = $state(String(Model.default().id));
     prompt: string = $state('');
+
+    get model() {
+        return Model.findBy({ engineId: this.engineId, id: this.modelId });
+    }
 
     get app() {
         return App.find(Number(this.appId));
@@ -29,7 +33,7 @@ export default class AppStep extends Base<Row>('app_steps') {
             id: row.id,
             appId: row.app_id,
             engineId: row.engine_id,
-            model: row.model,
+            modelId: row.model,
             prompt: row.prompt,
         });
     }
@@ -38,7 +42,7 @@ export default class AppStep extends Base<Row>('app_steps') {
         return {
             app_id: Number(this.appId),
             engine_id: this.engineId,
-            model: this.model,
+            model: this.modelId,
             prompt: this.prompt,
         };
     }

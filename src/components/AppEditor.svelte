@@ -1,17 +1,18 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
-
     import Button from './Button.svelte';
+    import ButtonToggle from './ButtonToggle.svelte';
+    import List from './List.svelte';
+    import McpServerList from './McpServerList.svelte';
     import ModelMenu from './ModelMenu.svelte';
+    import ModelSelect from './ModelSelect.svelte';
+    import Select from './Select.svelte';
+    import Svg from './Svg.svelte';
+    import Toggle from './Toggle.svelte';
 
     import Flex from '$components/Flex.svelte';
-    import Input from '$components/Input.svelte';
-    import List from '$components/List.svelte';
-    import PeriodInput from '$components/PeriodInput.svelte';
     import Textarea from '$components/Textarea.svelte';
-    import Toggle from '$components/Toggle.svelte';
-    import { App, AppStep, Engine, McpServer, Model, Trigger } from '$lib/models';
-    import type { ScheduledConfig } from '$lib/models/trigger.svelte';
+    import { App, AppStep, McpServer, Model, Trigger } from '$lib/models';
+    import type { FilesystemConfig, ScheduledConfig } from '$lib/models/trigger.svelte';
 
     interface Props {
         app: App;
@@ -19,146 +20,217 @@
         trigger: Trigger;
     }
 
-    let { app, steps, trigger }: Props = $props();
-
-    const engines = $derived(Engine.all());
-    const isEdit = $derived(app.isPersisted());
+    let { app, trigger }: Props = $props();
+    let steps = $state(app.steps);
+    let interval: 'hourly' | 'daily' = $state('hourly');
 
     let mcpServers: McpServer[] = $state([]);
-    let model: Model = $state(Model.find(steps[0].model) || Model.default());
+    let model: Model = $state(app.steps[0].model || Model.default());
 
-    async function addMcpServer(mcpServer: McpServer) {
-        if (isEdit) {
-            app.addMcpServer(mcpServer);
-        } else {
-            mcpServers.push(mcpServer);
-        }
+    const hourOptions = Array.from({ length: 24 }, (_, i) => {
+        const hour = i % 12 === 0 ? 12 : i % 12;
+        const ampm = i < 12 ? 'AM' : 'PM';
+        return { label: `${hour}:00 ${ampm}`, value: `0 ${i} * * *` };
+    });
+
+    function setModel(step: AppStep, model: Model) {
+        step.engineId = model.engineId as number;
+        step.modelId = model.id as string;
     }
 
-    async function removeMcpServer(mcpServer: McpServer) {
-        if (isEdit) {
-            app.removeMcpServer(mcpServer);
-        } else {
-            mcpServers = mcpServers.filter(mcp => mcp !== mcpServer);
-        }
+    function addStep() {
+        steps.push(AppStep.new({ appId: app.id }));
     }
 
-    function hasMcpServer(mcpServer: McpServer) {
-        if (isEdit) {
-            return app.hasMcpServer(mcpServer);
-        } else {
-            return mcpServers.includes(mcpServer);
-        }
+    function hasMcpServer(server: McpServer) {
+        return false;
     }
 
-    async function setModel(_model: Model) {
-        if (isEdit) {
-            await steps.awaitAll(async step => {
-                step.engineId = Number(_model.engineId);
-                step.model = String(_model.id);
-                await step.save();
-            });
-        }
+    function addMcpServer(server: McpServer) {}
 
-        model = _model;
+    function removeMcpServer(server: McpServer) {}
+
+    function removeStep(step: AppStep) {
+        steps = steps.filter(s => s !== step);
     }
 
-    async function autosave() {
-        if (isEdit) {
-            await app.save();
-            await steps.awaitAll(async step => await step.save());
-            await trigger.save();
-        }
-    }
-
-    async function save() {
-        app = await app.save();
-
-        await steps.awaitAll(async step => {
-            step.appId = app.id;
-            step.engineId = Number(model.engineId);
-            step.model = String(model.id);
-            await step.save();
-        });
-
-        trigger.appId = app.id;
-        await trigger.save();
-
-        await mcpServers.awaitAll(async server => {
-            await app.addMcpServer(server);
-        });
-
-        goto(`/apps/${app.id}`);
-    }
+    function save() {}
 </script>
 
-{#snippet McpServerView(mcpServer: McpServer)}
-    <Flex class="px-3 py-2">
-        <Toggle
-            label={mcpServer.name}
-            value={hasMcpServer(mcpServer) ? 'on' : 'off'}
-            onEnable={async () => await addMcpServer(mcpServer)}
-            onDisable={async () => await removeMcpServer(mcpServer)}
-        />
-    </Flex>
-{/snippet}
+<section class="w-full overflow-y-auto p-8">
+    <Flex class="border-light text-medium w-full flex-col items-start rounded-md border">
+        <Flex id="name" class="border-b-light w-full border-b p-4">
+            <label for="name" class="flex w-[150px] items-center text-sm">
+                <Svg name="Apps" class="mr-3 h-5 w-5" />
+                Name
+            </label>
 
-<Flex class="w-full flex-col items-start p-8">
-    <Input
-        bind:value={app.name}
-        label="Name"
-        required
-        name="name"
-        class="w-full"
-        onchange={autosave}
-        placeholder="Untitled"
-    />
+            <input
+                type="text"
+                name="name"
+                placeholder="Name of the app"
+                class="text-light outline-0"
+            />
+        </Flex>
 
-    <Flex class="border-light w-full flex-col items-start rounded-md border p-4">
-        <h2 class="text-medium mb-4 ml-2 text-sm">Prompt(s)</h2>
+        <Flex id="trigger" class="border-b-light w-full border-b p-4">
+            <label for="name" class="flex w-[150px] items-center text-sm">
+                <Svg name="Trigger" class="mr-3 h-5 w-5" />
+                Trigger
+            </label>
 
-        <Flex class="w-full flex-col items-center">
-            {#each steps as step, i (i)}
-                <Textarea
-                    bind:value={step.prompt}
-                    label={false}
-                    name="prompt"
-                    class="w-full"
-                    onchange={autosave}
-                    placeholder="Tell me a random fact from MTG lore..."
-                />
+            <Button
+                onclick={() => (trigger.event = 'scheduled')}
+                class={`border-xlight mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
+            >
+                Scheduled
+            </Button>
 
-                <div class="border-xlight h-2 w-0 border"></div>
-                <button
-                    class="border-xlight flex h-8 w-8 content-center items-center justify-center rounded-full border font-mono"
-                >
-                    +
-                </button>
-            {/each}
+            <Button
+                onclick={() => (trigger.event = 'filesystem')}
+                class={`border-xlight mr-4 ${trigger.event == 'filesystem' ? 'text-light' : ''}`}
+            >
+                Filesystem
+            </Button>
+        </Flex>
+
+        {#if trigger.event == 'scheduled'}
+            <Flex id="interval" class="border-b-light h-20 w-full border-b p-4">
+                <label for="name" class="flex w-[150px] items-center text-sm">
+                    <Svg name="Tasks" class="mr-3 h-5 w-5" />
+                    Interval
+                </label>
+
+                <ButtonToggle values={['hourly', 'daily']} bind:value={interval} class="h-full" />
+
+                {#if interval == 'daily'}
+                    <p class="mx-4">at</p>
+                    <Select
+                        class="z-50"
+                        options={hourOptions}
+                        value={(trigger.config as ScheduledConfig).period}
+                    />
+                {/if}
+            </Flex>
+        {:else if trigger.event == 'filesystem'}
+            <Flex id="directory" class="border-b-light w-full items-start border-b p-4 pt-6">
+                <label for="directory" class="flex w-[150px] items-center text-sm">
+                    <Svg name="Folders" class="mr-3 h-4.5 w-4.5" />
+                    Directory
+                </label>
+
+                <Flex class="border-b-light grow flex-col items-start">
+                    <!-- prettier strips the leading "(" -->
+                    <!-- prettier-ignore -->
+                    <input 
+                        class="outline-0 grow font-mono text-light mb-4"
+                        placeholder="/path/to/watch-for-changes"
+                        type="text" bind:value={(trigger.config as FilesystemConfig).path}
+                    />
+
+                    <Flex class="gap-4">
+                        <Flex>
+                            <input
+                                bind:group={trigger.action}
+                                class="text-medium"
+                                id="created"
+                                value="created"
+                                type="radio"
+                            />
+                            <label class="ml-2" for="created">File Created</label>
+                        </Flex>
+
+                        <Flex>
+                            <input
+                                bind:group={trigger.action}
+                                id="updated"
+                                value="updated"
+                                type="radio"
+                            />
+                            <label class="ml-2" for="updated">File Updated</label>
+                        </Flex>
+
+                        <Flex>
+                            <input
+                                bind:group={trigger.action}
+                                id="deleted"
+                                value="deleted"
+                                type="radio"
+                            />
+                            <label class="ml-2" for="deleted">File Deleted</label>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            </Flex>
+        {/if}
+
+        <Flex id="prompts" class="border-b-light w-full items-start border-b p-4">
+            <label for="prompts" class="flex w-[150px] items-center text-sm">
+                <Svg name="Chat" class="mr-3 h-5 w-5" />
+                Prompts
+            </label>
+
+            <Flex class="grow flex-col items-start">
+                {#each steps as step, i (i)}
+                    <Flex
+                        class="border-xlight relative mb-8 w-full
+                        flex-col items-start rounded-md border"
+                    >
+                        <Flex
+                            class="border-b-xlight w-full items-center
+                            justify-between border-b"
+                        >
+                            <ModelSelect
+                                class="ml-1 h-8 w-56 rounded-none border-0
+                                border-r"
+                                selected={step.model}
+                                onselect={async model => setModel(step, model)}
+                            />
+
+                            <Button onclick={() => removeStep(step)} class="border-0 px-3">
+                                <Svg name="Delete" class="h-4 w-4" />
+                            </Button>
+                        </Flex>
+
+                        <Textarea
+                            label={false}
+                            bind:value={step.prompt}
+                            placeholder="Add a prompt"
+                            class="text-light bg-medium border-0 p-2 px-4"
+                        />
+
+                        <button
+                            onclick={addStep}
+                            class={`border-xlight bg-dark text-medium absolute
+                            -bottom-4 left-[calc(50%-96px)] flex h-8 w-8
+                            flex-col content-center items-center rounded-full
+                            border font-mono leading-7.5 font-bold hover:cursor-pointer
+                            ${i !== steps.length - 1 ? 'hidden' : ''}`}
+                        >
+                            +
+                        </button>
+
+                        {#if i !== steps.length - 1}
+                            <div
+                                class="bg-light absolute -bottom-8 left-[calc(50%-83px)] h-8 w-[2px]"
+                            ></div>
+                        {/if}
+                    </Flex>
+                {/each}
+            </Flex>
+        </Flex>
+
+        <Flex id="mcp" class="w-full items-start p-4">
+            <label class="flex w-[150px] items-center text-sm">
+                <Svg name="MCP" class="mr-3 h-5 w-5" />
+                MCP
+            </label>
+
+            <Flex class="grow">
+                <McpServerList {hasMcpServer} {addMcpServer} {removeMcpServer} />
+            </Flex>
         </Flex>
     </Flex>
 
-    <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">Frequency</h2>
-    <!-- prettier-ignore -->
-    <PeriodInput
-        bind:value={(trigger.config as ScheduledConfig).period}
-        label={false}
-        name="period"
-        class="ml-3 w-full"
-        onchange={autosave}
-        placeholder="task period"
-    />
-
-    <h2 class="text-medium mt-8 mb-4 ml-2 text-xl">MCP Servers</h2>
-    <List
-        items={McpServer.all()}
-        itemView={McpServerView}
-        filterable
-        filterProp="name"
-        class="border-light rounded-md border"
-    />
-
-    {#if !isEdit}
-        <Button onclick={save} class="border-purple text-purple mt-8">Save</Button>
-    {/if}
-</Flex>
+    <Button class="text-purple border-purple mt-8" onclick={save}>Save</Button>
+</section>

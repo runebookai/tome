@@ -1,17 +1,25 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import type { SvelteHTMLElements } from 'svelte/elements';
+    import { twMerge } from 'tailwind-merge';
 
     import Flex from '$components/Flex.svelte';
     import closables from '$lib/closables';
     import { Engine, Model } from '$lib/models';
 
     interface Props {
-        engines: Engine[];
+        engines?: Engine[];
         selected?: Model;
         onselect?: (model: Model) => Promise<void>;
+        class?: SvelteHTMLElements['div']['class'];
     }
 
-    let { engines, onselect, selected }: Props = $props();
+    let {
+        engines = Engine.all(),
+        onselect,
+        selected = Model.default(),
+        class: cls = '',
+    }: Props = $props();
     let isOpen = $state(false);
     let ref: ReturnType<typeof Flex>;
 
@@ -34,7 +42,10 @@
     });
 </script>
 
-<Flex bind:this={ref} class="bg-medium relative h-16 w-full hover:cursor-pointer">
+<Flex
+    bind:this={ref}
+    class={twMerge('bg-medium relative h-16 w-full hover:cursor-pointer', cls?.toString())}
+>
     <Flex
         onclick={e => toggle(e)}
         class="border-light absolute top-0 left-0 w-full justify-between

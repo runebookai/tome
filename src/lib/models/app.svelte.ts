@@ -61,7 +61,8 @@ export default class App extends Base<Row>('apps') {
     }
 
     get steps(): AppStep[] {
-        return AppStep.where({ appId: this.id }).sortBy('id');
+        let steps = AppStep.where({ appId: this.id }).sortBy('id');
+        return steps.length > 0 ? steps : [AppStep.new({ appId: this.id })];
     }
 
     get trigger(): Trigger | undefined {

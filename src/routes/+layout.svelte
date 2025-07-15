@@ -22,7 +22,7 @@
 
     const metaKeyShortcuts: Record<string, string> = {
         '1': '/chat/latest',
-        '2': '/tasks',
+        '2': '/apps',
         '3': '/mcp-servers',
         '4': '/models',
         ',': '/settings',
