@@ -22,8 +22,8 @@
         <Svg name="Chat" />
     </Link>
 
-    <Link href="/tasks" aria-label="tasks" activeClass="text-purple">
-        <Svg name="Tasks" />
+    <Link href="/apps" aria-label="apps" activeClass="text-purple">
+        <Svg name="Apps" />
     </Link>
 
     <Link

@@ -5,6 +5,28 @@ import { info } from '$lib/logger';
 import { App, AppRun, AppStep, Model, Session, Trigger } from '$lib/models';
 import type { FilesystemConfig } from '$lib/models/trigger.svelte';
 
+/**
+ * Watch all events for all Apps
+ */
+export async function watch() {
+    await watchFilesystem();
+}
+/**
+ * Start all watchers for Filesystem apps.
+ */
+export async function watchFilesystem() {
+    await Trigger.where({ event: 'filesystem' }).awaitAll(async trigger => {
+        const config = trigger.config as FilesystemConfig;
+
+        if (!config || !config.path) {
+            return;
+        }
+
+        await invoke('watch', { path: config.path });
+        info(`[green]✔ watch: [reset]${config.path}`);
+    });
+}
+
 // eslint-disable-next-line
 export async function execute(app: App, input: any = undefined): Promise<AppRun> {
     info(`executing app: ${app.name}`);
@@ -33,28 +55,6 @@ export async function execute(app: App, input: any = undefined): Promise<AppRun>
         .catch(e => run.fail(e.toString()));
 
     return run;
-}
-/**
- * Watch all events for all Apps
- */
-export async function watch() {
-    await watchFilesystem();
-}
-
-/**
- * Start all watchers for Filesystem apps.
- */
-export async function watchFilesystem() {
-    await Trigger.where({ event: 'filesystem' }).awaitAll(async trigger => {
-        const config = trigger.config as FilesystemConfig;
-
-        if (!config || !config.path) {
-            return;
-        }
-
-        await invoke('watch', { path: config.path });
-        info(`[green]✔ watch: [reset]${config.path}`);
-    });
 }
 
 async function asyncExecute(app: App, session: Session) {

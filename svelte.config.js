@@ -28,6 +28,11 @@ const config = {
                 "/tasks/[task_id]",
                 "/tasks/[task_id]/edit",
                 "/tasks/[task_id]/runs/[run_id]",
+                "/apps",
+                "/apps/new",
+                "/apps/[app_id]",
+                "/apps/[app_id]/edit",
+                "/apps/[app_id]/runs/[run_id]",
             ],
             'handleHttpError': "warn"
         }

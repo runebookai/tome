@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { execute } from '$lib/apps';
-import { AppMcpServer, AppRun, AppStep, McpServer, Session, Trigger } from '$lib/models';
+import { AppMcpServer, AppRun, AppStep, McpServer, Trigger } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 const CHAT_APP_ID = 1;
@@ -61,7 +61,7 @@ export default class App extends Base<Row>('apps') {
     }
 
     get steps(): AppStep[] {
-        return AppStep.where({ appId: this.id }).sortBy('id').reverse();
+        return AppStep.where({ appId: this.id }).sortBy('id');
     }
 
     get trigger(): Trigger | undefined {
