@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
@@ -66,15 +65,13 @@
 
 {#snippet AppView(app: App)}
     <Menu items={items(app)}>
-        <Deleteable ondelete={() => destroy(app)}>
-            <Link
-                href={`/apps/${app.id}`}
-                class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
-                activeClass="text-purple border-l border-l-purple"
-            >
-                {app.name}
-            </Link>
-        </Deleteable>
+        <Link
+            href={`/apps/${app.id}`}
+            class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
+            activeClass="text-purple border-l border-l-purple"
+        >
+            {app.name}
+        </Link>
     </Menu>
 {/snippet}
 

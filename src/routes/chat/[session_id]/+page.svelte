@@ -9,7 +9,6 @@
     import Link from '$components/Link.svelte';
     import List from '$components/List.svelte';
     import Menu, { type MenuItem } from '$components/Menu.svelte';
-    import ModelMenu from '$components/ModelMenu.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
