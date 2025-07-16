@@ -87,8 +87,8 @@
         >
             {#if run}
                 {#each run.session.messages as message (message.id)}
-                    <Message {message} />
                     <div use:scrollToBottom class="hidden"></div>
+                    <Message {message} />
                 {/each}
             {/if}
         </Flex>

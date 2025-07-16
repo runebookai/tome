@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::mcp::server::McpServer;
+use crate::{daemon::Watchers, mcp::server::McpServer};
 
 use tokio::sync::Mutex;
 
@@ -17,4 +17,5 @@ pub struct RunningSession {
 #[derive(Debug)]
 pub struct State {
     pub sessions: Mutex<HashMap<SessionId, RunningSession>>,
+    pub watchers: Mutex<Watchers>,
 }

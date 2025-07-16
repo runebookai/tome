@@ -13,7 +13,7 @@
     import App from '$lib/models/app.svelte';
 
     const { children } = $props();
-    const apps: App[] = $derived(App.all());
+    const apps: App[] = $derived(App.nonReserved());
 
     function items(app: App): MenuItem[] {
         return [

@@ -93,9 +93,12 @@ pub async fn rename_mcp_server(
 }
 
 #[tauri::command]
-pub async fn watch(path: String) -> Result<(), String> {
-    tauri::async_runtime::spawn(async {
-        daemon::watch(path).await.unwrap();
-    });
+pub async fn watch(path: String, id: i64, state: tauri::State<'_, State>) -> Result<(), String> {
+    daemon::watch(path, id, state.clone()).await.unwrap();
     Ok(())
+}
+
+#[tauri::command]
+pub async fn unwatch_all(state: tauri::State<'_, State>) -> Result<(), String> {
+    ok_or_err!(daemon::unwatch_all(state).await)
 }

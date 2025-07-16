@@ -2,10 +2,15 @@ export interface MCPInstallEvent {
     config: string;
 }
 
+export interface FilesystemEvent<T> {
+    id: number;
+    data: T;
+}
+
 export interface FileCreatedEvent {
-    path: string;
+    paths: string;
 }
 
 export interface FileUpdatedEvent {
-    path: string;
+    paths: string;
 }

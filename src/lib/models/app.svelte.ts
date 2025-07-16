@@ -56,6 +56,12 @@ export default class App extends Base<Row>('apps') {
         return App.find(TASK_APP_ID);
     }
 
+    // TODO: make `all()` return this by default and make it so you need
+    // explicitly get the reserved apps.
+    static nonReserved() {
+        return this.all().filter(a => ![CHAT_APP_ID, TASK_APP_ID].includes(a.id as number));
+    }
+
     get mcpServers(): McpServer[] {
         return AppMcpServer.where({ appId: this.id }).map(m => m.mcpServer);
     }
@@ -77,8 +83,7 @@ export default class App extends Base<Row>('apps') {
         return this.runs[0];
     }
 
-    // eslint-disable-next-line
-    async execute(input: any = undefined): Promise<AppRun> {
+    async execute(input?: object): Promise<AppRun> {
         return await execute(this, input);
     }
 

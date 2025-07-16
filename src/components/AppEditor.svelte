@@ -1,13 +1,12 @@
 <script lang="ts">
-    import Button from './Button.svelte';
-    import ButtonToggle from './ButtonToggle.svelte';
-    import McpServerList from './McpServerList.svelte';
-    import ModelSelect from './ModelSelect.svelte';
-    import Select from './Select.svelte';
-    import Svg from './Svg.svelte';
-    import Tooltip from './Tooltip.svelte';
-
+    import Section from '$components/AppEditor/Section.svelte';
+    import Button from '$components/Button.svelte';
+    import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
+    import McpServerList from '$components/McpServerList.svelte';
+    import ModelSelect from '$components/ModelSelect.svelte';
+    import Select from '$components/Select.svelte';
+    import Svg from '$components/Svg.svelte';
     import Textarea from '$components/Textarea.svelte';
     import { App, AppStep, McpServer, Model, Trigger } from '$lib/models';
     import type { FilesystemConfig, ScheduledConfig } from '$lib/models/trigger.svelte';
@@ -90,14 +89,7 @@
 
 <section class="w-full overflow-y-auto p-8">
     <Flex class="border-light text-medium w-full flex-col items-start rounded-md border">
-        <Flex id="name" class="border-b-light w-full border-b p-4">
-            <Tooltip title="Name" tooltip="The name of the App">
-                <label for="name" class="flex w-[150px] items-center text-sm">
-                    <Svg name="Apps" class="mr-3 h-5 w-5" />
-                    Name
-                </label>
-            </Tooltip>
-
+        <Section icon="Apps" title="Apps" tooltip="The name of the App">
             <input
                 type="text"
                 name="name"
@@ -105,16 +97,9 @@
                 class="text-light outline-0"
                 bind:value={app.name}
             />
-        </Flex>
+        </Section>
 
-        <Flex id="trigger" class="border-b-light w-full border-b p-4">
-            <Tooltip title="Trigger" tooltip="When this App will run">
-                <label for="name" class="flex w-[150px] items-center text-sm">
-                    <Svg name="Trigger" class="mr-3 h-5 w-5" />
-                    Trigger
-                </label>
-            </Tooltip>
-
+        <Section icon="Trigger" title="Trigger" tooltip="What triggers the App to execute">
             <Button
                 onclick={() => setEvent('scheduled')}
                 class={`border-light mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
@@ -128,21 +113,15 @@
             >
                 Filesystem
             </Button>
-        </Flex>
+        </Section>
 
         {#if trigger.event == 'scheduled'}
-            <Flex id="interval" class="border-b-light h-20 w-full border-b p-4">
-                <Tooltip
-                    title="Interval"
-                    tooltip="How often should this App
-                    execute."
-                >
-                    <label for="name" class="flex w-[150px] items-center text-sm">
-                        <Svg name="Tasks" class="mr-3 h-5 w-5" />
-                        Interval
-                    </label>
-                </Tooltip>
-
+            <Section
+                icon="Tasks"
+                title="Interval"
+                tooltip="How often should the App execute"
+                class="h-20"
+            >
                 <ButtonToggle
                     onchange={setInterval}
                     values={['hourly', 'daily']}
@@ -153,32 +132,22 @@
                 {#if interval == 'daily'}
                     <p class="mx-4">at</p>
 
-                    <!-- prettier strips the leading "(" -->
-                    <!-- prettier-ignore -->
                     <Select
                         class="z-50"
                         options={hourOptions}
                         bind:value={scheduledConfig.period}
                     />
                 {/if}
-            </Flex>
+            </Section>
         {:else if trigger.event == 'filesystem'}
-            <Flex id="directory" class="border-b-light w-full items-start border-b p-4 pt-6">
-                <Tooltip
-                    title="Directory"
-                    tooltip="The directory Tome will monitor for file events. Must be an absolute path."
-                >
-                    <label for="directory" class="flex w-[150px] items-center text-sm">
-                        <Svg name="Folders" class="mr-3 h-4.5 w-4.5" />
-                        Directory
-                    </label>
-                </Tooltip>
-
+            <Section
+                icon="Folders"
+                title="Directory"
+                tooltip="The directory Tome will monitor for file events. Must be an absolute path."
+            >
                 <Flex class="border-b-light grow flex-col items-start">
-                    <!-- prettier strips the leading "(" -->
-                    <!-- prettier-ignore -->
-                    <input 
-                        class="outline-0 grow font-mono text-light mb-4"
+                    <input
+                        class="text-light mb-4 grow font-mono outline-0"
                         placeholder="/path/to/watch-for-changes"
                         type="text"
                         bind:value={filesystemConfig.path}
@@ -217,21 +186,14 @@
                         </Flex>
                     </Flex>
                 </Flex>
-            </Flex>
+            </Section>
         {/if}
 
-        <Flex id="prompts" class="border-b-light w-full items-start border-b p-4">
-            <Tooltip
-                title="Prompts"
-                tooltip="Prompts are passed to the LLM, in
-                order. History is maintained and passed each time."
-            >
-                <label for="prompts" class="flex w-[150px] items-center text-sm">
-                    <Svg name="Chat" class="mr-3 h-5 w-5" />
-                    Prompts
-                </label>
-            </Tooltip>
-
+        <Section
+            icon="Chat"
+            title="Prompts"
+            tooltip="Prompts are passed to the LLM, in order. History is maintained and passed each time."
+        >
             <Flex class="grow flex-col items-start">
                 {#each steps as step, i (i)}
                     <Flex
@@ -280,23 +242,17 @@
                     </Flex>
                 {/each}
             </Flex>
-        </Flex>
+        </Section>
 
-        <Flex id="mcp" class="w-full items-start p-4">
-            <Tooltip
-                title="MCP"
-                tooltip="The collection of MCP servers to enable when this App executes"
-            >
-                <label class="flex w-[150px] items-center text-sm">
-                    <Svg name="MCP" class="mr-3 h-5 w-5" />
-                    MCP
-                </label>
-            </Tooltip>
-
+        <Section
+            icon="MCP"
+            title="MCP"
+            tooltip="The collection of MCP servers to enable when this App executes"
+        >
             <Flex class="grow">
                 <McpServerList {hasMcpServer} {addMcpServer} {removeMcpServer} />
             </Flex>
-        </Flex>
+        </Section>
     </Flex>
 
     <Button class="text-purple border-purple mt-8" onclick={save}>Save</Button>

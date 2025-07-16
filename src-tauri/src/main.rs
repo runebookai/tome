@@ -61,6 +61,7 @@ fn main() {
 
             app.manage(State {
                 sessions: Default::default(),
+                watchers: Default::default(),
             });
 
             configure_window(&window);
@@ -93,6 +94,7 @@ fn main() {
             // Misc
             commands::restart,
             commands::watch,
+            commands::unwatch_all,
         ])
         .build(tauri::generate_context!())
         .expect("error running Tome");

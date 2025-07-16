@@ -9,21 +9,22 @@ import type { FilesystemConfig } from '$lib/models/trigger.svelte';
  * Watch all events for all Apps
  */
 export async function watch() {
-    await watchFilesystem();
+    await initializeBackendWatchers();
 }
 /**
  * Start all watchers for Filesystem apps.
  */
-export async function watchFilesystem() {
+export async function initializeBackendWatchers() {
     await Trigger.where({ event: 'filesystem' }).awaitAll(async trigger => {
         const config = trigger.config as FilesystemConfig;
+        const path = config.path;
 
-        if (!config || !config.path) {
+        if (!config || !path) {
             return;
         }
 
-        await invoke('watch', { path: config.path });
-        info(`[green]✔ watch: [reset]${config.path}`);
+        await invoke('watch', { path, id: trigger.id });
+        info(`[green]✔ watch: [reset]${path}`);
     });
 }
 
@@ -37,7 +38,7 @@ export async function watchFilesystem() {
  * @param app App to run
  * @param [input=undefined] Input data formatted as a message for an LLM
  */
-export async function execute(app: App, input: string | undefined = undefined): Promise<AppRun> {
+export async function execute(app: App, input?: object): Promise<AppRun> {
     info(`executing app: ${app.name}`);
 
     const session = await Session.create({
@@ -53,7 +54,7 @@ export async function execute(app: App, input: string | undefined = undefined): 
     if (input) {
         session.addMessage({
             role: 'system',
-            content: `Use the following information as context for future queries:\n\n${input}`,
+            content: `Use the following JSON as context for future queries:\n\n\`\`\`${JSON.stringify(input)}\`\`\``,
         });
     }
 
