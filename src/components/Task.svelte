@@ -26,7 +26,7 @@
     const isEdit = $derived(task.isPersisted());
 
     let mcpServers: McpServer[] = $state([]);
-    let model: Model = $state(Model.find(steps[0].model) || Model.default());
+    let model: Model = $state(steps[0].model || Model.default());
 
     async function addMcpServer(mcpServer: McpServer) {
         if (isEdit) {
@@ -56,7 +56,7 @@
         if (isEdit) {
             await steps.awaitAll(async step => {
                 step.engineId = Number(_model.engineId);
-                step.model = String(_model.id);
+                step.modelId = String(_model.id);
                 await step.save();
             });
         }
@@ -82,7 +82,7 @@
         await steps.awaitAll(async step => {
             step.appId = app.id;
             step.engineId = Number(model.engineId);
-            step.model = String(model.id);
+            step.modelId = String(model.id);
             await step.save();
         });
 
