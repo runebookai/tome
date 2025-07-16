@@ -10,43 +10,43 @@
     import Menu from '$components/Menu.svelte';
     import Scrollable from '$components/Scrollable.svelte';
     import Titlebar from '$components/Titlebar.svelte';
-    import Task from '$lib/models/task.svelte';
+    import App from '$lib/models/app.svelte';
 
     const { children } = $props();
-    const tasks: Task[] = $derived(Task.all());
+    const apps: App[] = $derived(App.all());
 
-    function items(task: Task): MenuItem[] {
+    function items(app: App): MenuItem[] {
         return [
             {
                 label: 'Run',
-                onclick: async () => await run(task),
+                onclick: async () => await run(app),
             },
             {
                 label: 'Edit',
-                onclick: async () => await edit(task),
+                onclick: async () => await edit(app),
             },
             {
                 label: 'Delete',
                 style: 'text-red hover:bg-red hover:text-white',
-                onclick: async () => await destroy(task),
+                onclick: async () => await destroy(app),
             },
         ];
     }
 
-    async function destroy(task: Task) {
-        await task.delete();
-        await goto(`/tasks`);
+    async function destroy(app: App) {
+        await app.delete();
+        await goto(`/apps`);
     }
 
-    async function edit(task: Task) {
-        await goto(`/tasks/${task.id}/edit`);
+    async function edit(app: App) {
+        await goto(`/apps/${app.id}/edit`);
     }
 
-    async function run(task: Task) {
-        const run = await task.app.execute();
+    async function run(app: App) {
+        const run = await app.execute();
 
         if (run) {
-            await goto(`/tasks/${task.id}/runs/${run.id}`);
+            await goto(`/apps/${app.id}/runs/${run.id}`);
         }
     }
 </script>
@@ -56,7 +56,7 @@
         <Flex
             class=" border-r-light h-full w-[300px] items-center justify-between border-r px-8 pr-4"
         >
-            <h1 class="font-[500]">Tasks</h1>
+            <h1 class="font-[500]">Apps</h1>
             <a href="/apps/new" class="border-light h-8 w-8 rounded-md border hover:cursor-pointer">
                 <p class="h-8 w-8 text-center !leading-[22px] font-[10px]">+</p>
             </a>
@@ -64,15 +64,15 @@
     </Titlebar>
 {/snippet}
 
-{#snippet TaskView(task: Task)}
-    <Menu items={items(task)}>
-        <Deleteable ondelete={() => destroy(task)}>
+{#snippet AppView(app: App)}
+    <Menu items={items(app)}>
+        <Deleteable ondelete={() => destroy(app)}>
             <Link
-                href={`/apps/${task.id}`}
+                href={`/apps/${app.id}`}
                 class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
                 activeClass="text-purple border-l border-l-purple"
             >
-                {task.app.name}
+                {app.name}
             </Link>
         </Deleteable>
     </Menu>
@@ -81,7 +81,7 @@
 <Layout {titlebar}>
     <Flex class="h-full items-start">
         <Flex class="border-r-light h-full w-[300px] flex-col items-start border-r">
-            <List items={tasks} itemView={TaskView} />
+            <List items={apps} itemView={AppView} />
         </Flex>
 
         <Flex class="h-full w-[calc(100%-300px)] items-start">

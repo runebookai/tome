@@ -1,13 +1,10 @@
 <script lang="ts">
     import Button from './Button.svelte';
     import ButtonToggle from './ButtonToggle.svelte';
-    import List from './List.svelte';
     import McpServerList from './McpServerList.svelte';
-    import ModelMenu from './ModelMenu.svelte';
     import ModelSelect from './ModelSelect.svelte';
     import Select from './Select.svelte';
     import Svg from './Svg.svelte';
-    import Toggle from './Toggle.svelte';
 
     import Flex from '$components/Flex.svelte';
     import Textarea from '$components/Textarea.svelte';
@@ -16,16 +13,22 @@
 
     interface Props {
         app: App;
-        steps: AppStep[];
-        trigger: Trigger;
     }
 
-    let { app, trigger }: Props = $props();
-    let steps = $state(app.steps);
+    let { app }: Props = $props();
+
+    let trigger: Trigger = $state(app.trigger);
+    let steps: AppStep[] = $state(app.steps);
+    let mcpServers: McpServer[] = $state(app.mcpServers);
     let interval: 'hourly' | 'daily' = $state('hourly');
 
-    let mcpServers: McpServer[] = $state([]);
-    let model: Model = $state(app.steps[0].model || Model.default());
+    let scheduledConfig: ScheduledConfig = $state({
+        period: (trigger.config as ScheduledConfig).period,
+    });
+
+    let filesystemConfig: FilesystemConfig = $state({
+        path: (trigger.config as FilesystemConfig).path,
+    });
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => {
         const hour = i % 12 === 0 ? 12 : i % 12;
@@ -38,23 +41,50 @@
         step.modelId = model.id as string;
     }
 
+    function setInterval(interval: string) {
+        scheduledConfig.period = interval == 'hourly' ? '0 * * * *' : '0 12 * * *';
+    }
+
     function addStep() {
         steps.push(AppStep.new({ appId: app.id }));
     }
-
-    function hasMcpServer(server: McpServer) {
-        return false;
-    }
-
-    function addMcpServer(server: McpServer) {}
-
-    function removeMcpServer(server: McpServer) {}
 
     function removeStep(step: AppStep) {
         steps = steps.filter(s => s !== step);
     }
 
-    function save() {}
+    function hasMcpServer(server: McpServer) {
+        return mcpServers.includes(server);
+    }
+
+    function addMcpServer(server: McpServer) {
+        mcpServers.push(server);
+    }
+
+    function removeMcpServer(server: McpServer) {
+        mcpServers = mcpServers.filter(s => s !== server);
+    }
+
+    function setEvent(event: Trigger['event']) {
+        trigger.event = event;
+        trigger.config = event == 'scheduled' ? scheduledConfig : filesystemConfig;
+    }
+
+    async function save() {
+        app = await app.save();
+
+        trigger.appId = app.id;
+        await trigger.save();
+
+        await steps.awaitAll(async step => {
+            step.appId = app.id;
+            await step.save();
+        });
+
+        await mcpServers.awaitAll(async server => {
+            await app.addMcpServer(server);
+        });
+    }
 </script>
 
 <section class="w-full overflow-y-auto p-8">
@@ -70,6 +100,7 @@
                 name="name"
                 placeholder="Name of the app"
                 class="text-light outline-0"
+                bind:value={app.name}
             />
         </Flex>
 
@@ -80,15 +111,15 @@
             </label>
 
             <Button
-                onclick={() => (trigger.event = 'scheduled')}
-                class={`border-xlight mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
+                onclick={() => setEvent('scheduled')}
+                class={`border-light mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
             >
                 Scheduled
             </Button>
 
             <Button
-                onclick={() => (trigger.event = 'filesystem')}
-                class={`border-xlight mr-4 ${trigger.event == 'filesystem' ? 'text-light' : ''}`}
+                onclick={() => setEvent('filesystem')}
+                class={`border-light mr-4 ${trigger.event == 'filesystem' ? 'text-light' : ''}`}
             >
                 Filesystem
             </Button>
@@ -101,14 +132,22 @@
                     Interval
                 </label>
 
-                <ButtonToggle values={['hourly', 'daily']} bind:value={interval} class="h-full" />
+                <ButtonToggle
+                    onchange={setInterval}
+                    values={['hourly', 'daily']}
+                    bind:value={interval}
+                    class="h-full"
+                />
 
                 {#if interval == 'daily'}
                     <p class="mx-4">at</p>
+
+                    <!-- prettier strips the leading "(" -->
+                    <!-- prettier-ignore -->
                     <Select
                         class="z-50"
                         options={hourOptions}
-                        value={(trigger.config as ScheduledConfig).period}
+                        bind:value={scheduledConfig.period}
                     />
                 {/if}
             </Flex>
@@ -125,7 +164,8 @@
                     <input 
                         class="outline-0 grow font-mono text-light mb-4"
                         placeholder="/path/to/watch-for-changes"
-                        type="text" bind:value={(trigger.config as FilesystemConfig).path}
+                        type="text"
+                        bind:value={filesystemConfig.path}
                     />
 
                     <Flex class="gap-4">
@@ -173,11 +213,11 @@
             <Flex class="grow flex-col items-start">
                 {#each steps as step, i (i)}
                     <Flex
-                        class="border-xlight relative mb-8 w-full
+                        class="border-light relative mb-8 w-full
                         flex-col items-start rounded-md border"
                     >
                         <Flex
-                            class="border-b-xlight w-full items-center
+                            class="border-b-light w-full items-center
                             justify-between border-b"
                         >
                             <ModelSelect

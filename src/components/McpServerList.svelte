@@ -24,5 +24,5 @@
     itemView={McpServerView}
     filterable
     filterProp="name"
-    class="border-xlight rounded-md border"
+    class="border-light rounded-md border"
 />

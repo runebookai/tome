@@ -3,6 +3,7 @@
     import type { SvelteHTMLElements } from 'svelte/elements';
 
     import Scrollable from './Scrollable.svelte';
+    import Svg from './Svg.svelte';
 
     import Flex from '$components/Flex.svelte';
     import closables from '$lib/closables';
@@ -19,19 +20,11 @@
         class?: SvelteHTMLElements['div']['class'];
     }
 
-    let {
-        options,
-        value = $bindable(options[0].value),
-        onselect,
-        class: cls = '',
-    }: Props = $props();
+    let { options, value = $bindable(), onselect, class: cls = '' }: Props = $props();
+    let selected = $derived(options.find(o => o.value == value));
 
     let ref: ReturnType<typeof Flex>;
     let isOpen: boolean = $state(false);
-
-    function selected() {
-        return options.find(o => o.value == value) || options[0];
-    }
 
     function close() {
         isOpen = false;
@@ -54,12 +47,12 @@
 
 <Flex bind:this={ref} class={`relative h-full min-w-72 ${cls?.toString()}`}>
     <Flex
-        class={`border-xlight z-50 h-full w-full justify-between rounded-md 
+        class={`border-light z-50 h-full w-full justify-between rounded-md 
         border px-4 text-sm hover:cursor-pointer ${isOpen ? 'rounded-b-none' : ''}`}
         onclick={toggle}
     >
-        <p>{selected().label}</p>
-        <p>⏷</p>
+        <p>{selected?.label}</p>
+        <Svg name="Arrows" class="h-4 w-4" />
     </Flex>
 
     {#if isOpen}

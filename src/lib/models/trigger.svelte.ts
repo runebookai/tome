@@ -29,7 +29,7 @@ export default class Trigger extends Base<Row>('triggers') {
     appId?: number = $state();
     event: AmbientEvent = $state('scheduled');
     action: AmbientAction = $state('tick');
-    config: object = $state({});
+    config: object = $state({ period: '0 * * * *' });
 
     static get scheduled() {
         return Trigger.where({

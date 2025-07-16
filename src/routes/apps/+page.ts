@@ -5,13 +5,8 @@ import type { PageLoad } from './$types';
 import { App } from '$lib/models';
 
 export const load: PageLoad = async (): Promise<void> => {
-    //const task = App.first();
-
-    //if (task) {
-    //    await goto(`/apps/${task.id}`);
-    //} else {
-    await goto(`/apps/new`);
-    //}
+    const app = App.first();
+    await goto(app ? `/apps/${app.id}` : '/apps/new');
 };
 
 export const prerender = true;

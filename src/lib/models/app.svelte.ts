@@ -61,12 +61,12 @@ export default class App extends Base<Row>('apps') {
     }
 
     get steps(): AppStep[] {
-        let steps = AppStep.where({ appId: this.id }).sortBy('id');
+        const steps = AppStep.where({ appId: this.id }).sortBy('id');
         return steps.length > 0 ? steps : [AppStep.new({ appId: this.id })];
     }
 
-    get trigger(): Trigger | undefined {
-        return Trigger.findBy({ appId: this.id });
+    get trigger(): Trigger {
+        return Trigger.findBy({ appId: this.id }) || Trigger.new({ appId: this.id });
     }
 
     get runs(): AppRun[] {
@@ -82,18 +82,21 @@ export default class App extends Base<Row>('apps') {
         return await execute(this, input);
     }
 
-    async addMcpServer(server: McpServer) {
-        const assoc = AppMcpServer.findByOrNew({ appId: this.id, mcpServerId: server.id });
-        await assoc.save();
-    }
-
-    async removeMcpServer(server: McpServer) {
-        const assoc = AppMcpServer.findBy({ appId: this.id, mcpServerId: server.id });
-        await assoc?.delete();
+    async addStep(step: AppStep) {
+        step.appId = this.id;
+        await step.save();
     }
 
     hasMcpServer(server: McpServer) {
         return AppMcpServer.exists({ appId: this.id, mcpServerId: server.id });
+    }
+
+    async addMcpServer(server: McpServer) {
+        await AppMcpServer.findByOrNew({ appId: this.id, mcpServerId: server.id }).save();
+    }
+
+    async removeMcpServer(server: McpServer) {
+        await AppMcpServer.findBy({ appId: this.id, mcpServerId: server.id })?.delete();
     }
 
     protected static async fromSql(row: Row): Promise<App> {

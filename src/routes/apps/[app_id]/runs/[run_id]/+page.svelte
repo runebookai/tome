@@ -11,10 +11,10 @@
     import Spinner from '$components/Spinner.svelte';
     import Svg from '$components/Svg.svelte';
     import { AppRun } from '$lib/models';
+    import App from '$lib/models/app.svelte';
     import { State } from '$lib/models/app-run.svelte';
-    import Task from '$lib/models/task.svelte';
 
-    const task: Task = $derived(Task.find(Number(page.params.task_id)));
+    const app: App = $derived(App.find(Number(page.params.app_id)));
     const run: AppRun = $derived(AppRun.find(Number(page.params.run_id)));
 
     // svelte-ignore non_reactive_update
@@ -28,7 +28,7 @@
 
     async function cancel(run: AppRun) {
         await run.fail('Cancelled');
-        goto(`/tasks/${task.id}`);
+        goto(`/apps/${app.id}`);
     }
 
     function menuItems(run: AppRun) {
@@ -58,7 +58,7 @@
     <Menu items={menuItems(run)}>
         <Flex class="w-full pr-8">
             <Link
-                href={`/tasks/${task.id}/runs/${run.id}`}
+                href={`/apps/${app.id}/runs/${run.id}`}
                 class="text-medium flex grow flex-row items-center px-7 py-2"
                 activeClass="text-purple border-l border-l-purple"
             >
@@ -78,7 +78,7 @@
     </Menu>
 {/snippet}
 
-{#key page.params.task_id}
+{#key page.params.app_id}
     <Flex class="h-full w-full flex-col items-start">
         <Flex
             bind:ref={content}
@@ -95,7 +95,7 @@
 
         <Flex class="border-t-light h-2/5 w-full flex-col items-start border-t">
             <h3 class="bg-medium w-full py-2 pl-8 font-medium uppercase">History</h3>
-            <List items={task?.runs} itemView={RunListItem} class="border-t-light border-t" />
+            <List items={app?.runs} itemView={RunListItem} class="border-t-light border-t" />
         </Flex>
     </Flex>
 {/key}
