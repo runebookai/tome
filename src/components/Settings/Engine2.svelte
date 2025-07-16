@@ -4,6 +4,7 @@
     import Box from '$components/Box.svelte';
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
+    import Icon from '$components/Icon.svelte';
     import Input from '$components/Input.svelte';
     import Svg from '$components/Svg.svelte';
     import { Engine } from '$lib/models';
@@ -31,6 +32,11 @@
     let nameCss = $state('');
     let urlCss = $state('');
 
+    const icon = capitalCase(engine.type == 'openai-compat' ? 'openai' : engine.type);
+    const hasApiKey = engine.type !== 'ollama';
+    const isImmutableUrl = ['openai', 'gemini'].includes(engine.type);
+    const isDeletable = !NON_DELETEABLE_ENGINES.includes(engine.type);
+
     async function validateDefaultEngine() {
         let valid = true;
 
@@ -49,16 +55,16 @@
         let valid = true;
 
         if (engine.name == '') {
-            nameCss = '!placeholder-red';
+            nameCss = '!border-red';
             valid = false;
         }
 
         if (engine.options.url == '') {
-            urlCss = 'border-red/25';
+            urlCss = 'border-red';
             valid = false;
         }
 
-        if (!(await validateConnected())) {
+        if (valid && !(await validateConnected())) {
             connectionError = true;
             valid = false;
         }
@@ -110,77 +116,83 @@
 </script>
 
 <Box
-    class={`bg-medium group w-full flex-col items-start gap-2 ${connectionError ? '!border-red' : ''}`}
+    class={`bg-medium text-medium w-full flex-col items-start p-0 ${connectionError ? '!border-red' : ''}`}
 >
-    <Flex class="w-full justify-between">
-        <Flex class="mb-2 items-center">
-            {#if NON_DELETEABLE_ENGINES.includes(engine.type)}
-                <Svg name={capitalCase(engine.type)} class="text-light ml-2 h-4 w-4" />
-            {/if}
+    <Flex class="text-light border-b-light w-full border-b p-2">
+        {#if engine.isPersisted()}
+            <Flex class="w-full">
+                <Icon name={icon} class="m-2 mr-4" />
+                {engine.name}
+
+                {#if isDeletable}
+                    <button
+                        onclick={() => ondelete(engine)}
+                        class="mr-4 ml-auto hover:cursor-pointer"
+                    >
+                        <Icon name="Delete" class="text-dark h-4 w-4" />
+                    </button>
+                {/if}
+            </Flex>
+        {:else}
+            <p class="text-medium m-2 flex w-[100px] items-center text-sm">
+                Name
+                <span class="text-red">*</span>
+            </p>
 
             <Input
                 label={false}
                 bind:value={engine.name}
-                placeholder="Name"
-                disabled={NON_DELETEABLE_ENGINES.includes(engine.type)}
+                placeholder="Engine name"
                 onchange={autosave}
-                class={`h-auto w-full border-transparent p-0 pl-2 ${nameCss}`}
+                class={nameCss}
             />
-
-            {#if connectionError}
-                <Flex class="text-red w-full">
-                    <Svg name="Warning" class="mr-2 h-4 w-4" />
-                    <p class="w-full">Connection Error</p>
-                </Flex>
-            {/if}
-        </Flex>
-
-        {#if !NON_DELETEABLE_ENGINES.includes(engine.type)}
-            <button
-                onclick={() => ondelete(engine)}
-                class="hover:text-red mr-2 hidden transition group-hover:block hover:cursor-pointer"
-            >
-                <Svg name="Delete" class="h-3 w-3" />
-            </button>
         {/if}
     </Flex>
 
-    <Flex class={`border-light pb-2', w-full flex-col items-start rounded-md border ${urlCss}`}>
-        <label for="new-engine-url" class="text-medium m-0 block h-6 p-0 pl-4 text-[10px]">
-            URL <span class="text-red">*</span>
-        </label>
+    <Flex class="w-full p-2">
+        <p class="m-2 flex w-[100px] items-center text-sm">
+            URL
+            <span class="text-red">*</span>
+        </p>
+
         <Input
             label={false}
-            placeholder="https://..."
-            name="new-engine-url"
             bind:value={engine.options.url}
-            disabled={IMMUTABLE_URLS.includes(engine.type)}
+            placeholder="http://localhost:1234"
+            class="text-light {urlCss}"
+            disabled={isImmutableUrl}
             onchange={autosave}
-            class="m-0 ml-4 w-full border-0 p-0 pb-2"
         />
     </Flex>
 
-    {#if engine.type !== 'ollama'}
-        <Flex
-            class="border-light w-full flex-col items-start
-        overflow-x-hidden rounded-md border pr-2 pb-2"
-        >
-            <label for="new-engine-api-key" class="text-medium m-0 block h-6 p-0 pl-4 text-[10px]">
-                API Key
-            </label>
+    {#if hasApiKey}
+        <Flex class="border-t-light w-full border-t p-2">
+            <p class="m-2 flex w-[100px] items-center text-sm">API Key</p>
+
             <Input
                 type="password"
                 label={false}
-                placeholder="..."
-                name="new-engine-api-key"
                 bind:value={engine.options.apiKey}
+                placeholder="•••••••••••••••••••••••••••••••••••••••••••••••••••••••"
+                class="text-light"
                 onchange={autosave}
-                class="m-0 ml-4 overflow-x-hidden border-0 p-0 pr-8"
             />
         </Flex>
     {/if}
 
     {#if explicitSave}
-        <Button onclick={save} class="border-light mt-2">Save</Button>
+        <Flex class="border-t-light w-full border-t">
+            <Button onclick={save} class="border-xlight text-light m-2 mr-4">Save</Button>
+            <button onclick={() => ondelete(engine)} class="text-sm hover:cursor-pointer">
+                cancel
+            </button>
+
+            {#if connectionError}
+                <Flex class="text-red mr-4 ml-auto text-sm">
+                    <Svg name="Error" class="text-red mr-2 h-4 w-4" />
+                    Connection Error
+                </Flex>
+            {/if}
+        </Flex>
     {/if}
 </Box>

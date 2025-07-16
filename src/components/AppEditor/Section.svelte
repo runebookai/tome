@@ -3,7 +3,7 @@
     import { twMerge } from 'tailwind-merge';
 
     import Flex from '$components/Flex.svelte';
-    import Svg from '$components/Svg.svelte';
+    import Icon from '$components/Icon.svelte';
     import Tooltip from '$components/Tooltip.svelte';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -18,7 +18,7 @@
 <Flex id="name" class={twMerge('border-b-light w-full items-start border-b p-4', cls?.toString())}>
     <Tooltip {title} {tooltip}>
         <p class="m-2 flex w-[150px] items-center text-sm">
-            <Svg name={icon} class="mr-3 h-5 w-5" />
+            <Icon name={icon} class="mr-3" />
             {title}
         </p>
     </Tooltip>

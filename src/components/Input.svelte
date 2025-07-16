@@ -26,7 +26,10 @@
 </script>
 
 <Flex
-    class={twMerge('border-light w-full flex-col items-start rounded-md border', cls?.toString())}
+    class={twMerge(
+        'border-light h-12 w-full flex-col items-start rounded-md border px-4',
+        cls?.toString()
+    )}
 >
     {#if label}
         <label class="text-medium mt-4 mb-1 ml-4 text-sm" for={name}>

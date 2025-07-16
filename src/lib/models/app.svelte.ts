@@ -39,7 +39,7 @@ export enum Interface {
 
 export default class App extends Base<Row>('apps') {
     id?: number = $state();
-    name: string = $state('Unknown');
+    name: string = $state('');
     description: string = $state('');
     readme: string = $state('');
     image: string = $state('');

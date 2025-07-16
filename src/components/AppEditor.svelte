@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Input from './Input.svelte';
+
     import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
@@ -89,9 +91,9 @@
 
 <section class="w-full overflow-y-auto p-8">
     <Flex class="border-light text-medium w-full flex-col items-start rounded-md border">
-        <Section icon="Apps" title="Apps" tooltip="The name of the App">
-            <input
-                type="text"
+        <Section icon="Apps" title="Name" tooltip="The name of the App" class="items-center">
+            <Input
+                label={false}
                 name="name"
                 placeholder="Name of the app"
                 class="text-light outline-0"
@@ -99,7 +101,12 @@
             />
         </Section>
 
-        <Section icon="Trigger" title="Trigger" tooltip="What triggers the App to execute">
+        <Section
+            icon="Trigger"
+            title="Trigger"
+            tooltip="What triggers the App to execute"
+            class="items-center"
+        >
             <Button
                 onclick={() => setEvent('scheduled')}
                 class={`border-light mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
@@ -120,7 +127,7 @@
                 icon="Tasks"
                 title="Interval"
                 tooltip="How often should the App execute"
-                class="h-20"
+                class="h-20 items-center"
             >
                 <ButtonToggle
                     onchange={setInterval}
