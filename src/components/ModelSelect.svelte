@@ -37,7 +37,7 @@
     }
 
     function icon(engine: Engine) {
-        return capitalCase(engine.type);
+        return capitalCase(engine.type == 'openai-compat' ? 'openai' : engine.type);
     }
 
     async function select(model: Model) {
@@ -51,13 +51,13 @@
     });
 </script>
 
-<Flex class="relative">
+<Flex class="relative w-full">
     <Flex
         bind:this={ref}
         onclick={toggle}
         class={twMerge(
-            `bg-medium border-light h-16 justify-between rounded-md
-            border text-sm hover:cursor-pointer`,
+            `border-light h-16 w-full rounded-md border text-sm
+            hover:cursor-pointer ${isOpen ? 'rounded-b-none border-b-0' : ''}`,
             cls?.toString()
         )}
     >
@@ -66,14 +66,14 @@
             <p>{selected.name}</p>
         </Flex>
 
-        <Svg name="Arrows" class="text-medium mr-3 h-3 w-4" />
+        <Svg name="Arrows" class="text-medium mr-3 ml-auto h-3 w-4" />
     </Flex>
 
     {#if isOpen}
         <Flex
-            class="bg-medium border-light noscrollbar absolute top-full z-50
-            max-h-96 w-full flex-col items-start overflow-y-auto rounded-b-md
-            border border-t-0 text-sm"
+            class="bg-medium noscrollbar border-light absolute top-full
+            z-50 h-96 max-h-96 w-full flex-col items-start
+            overflow-y-auto rounded-md rounded-t-none border border-t-0 text-sm"
         >
             {#each engines as engine (engine.id)}
                 {#if engine.models.length}

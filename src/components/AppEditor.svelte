@@ -212,8 +212,7 @@
                             justify-between border-b"
                         >
                             <ModelSelect
-                                class="ml-1 h-8 w-56 rounded-none border-0
-                                border-r"
+                                class="ml-1 h-8 w-56 rounded-none border-0 border-r"
                                 selected={step.model}
                                 onselect={async model => setModel(step, model)}
                             />

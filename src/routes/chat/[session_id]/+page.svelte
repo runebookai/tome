@@ -4,13 +4,13 @@
     import { page } from '$app/state';
 
     import Chat from '$components/Chat.svelte';
-    import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
     import List from '$components/List.svelte';
     import Menu, { type MenuItem } from '$components/Menu.svelte';
     import ModelMenu from '$components/ModelMenu.svelte';
+    import ModelSelect from '$components/ModelSelect.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
     import { App } from '$lib/models';
@@ -152,7 +152,12 @@
 
             <Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
                 {#key session.config.model}
-                    <ModelMenu {engines} selected={model} onselect={modelDidUpdate} />
+                    <ModelSelect
+                        {engines}
+                        selected={model}
+                        onselect={modelDidUpdate}
+                        class="h-10 w-full"
+                    />
                 {/key}
 
                 {#if !hasModels}
