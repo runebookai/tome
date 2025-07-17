@@ -35,10 +35,6 @@ export default class Engine extends Base<Row>('engines') {
         await Model.sync();
     }
 
-    static fromModelId(id: string): Engine | undefined {
-        return this.findBy({ type: id.split(':')[0] as EngineType });
-    }
-
     get client(): Client | undefined {
         const Client = {
             ollama: Ollama,
@@ -56,7 +52,7 @@ export default class Engine extends Base<Row>('engines') {
         }
     }
 
-    protected async afterUpdate() {
+    protected async afterSave(): Promise<void> {
         await Model.sync();
     }
 
