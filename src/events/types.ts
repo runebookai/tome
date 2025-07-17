@@ -1,10 +1,14 @@
-export interface MCPInstallEvent {
-    config: string;
-}
+import type { Event as TauriEvent } from '@tauri-apps/api/event';
+
+export type Event<T> = TauriEvent<FilesystemEvent<T>>;
 
 export interface FilesystemEvent<T> {
     id: number;
     data: T;
+}
+
+export interface MCPInstallEvent {
+    config: string;
 }
 
 export interface FileCreatedEvent {
