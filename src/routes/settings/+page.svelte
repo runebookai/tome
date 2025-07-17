@@ -8,8 +8,7 @@
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import * as color from '$lib/colorscheme';
-    import Engine from '$lib/models/engine.svelte';
-    import Setting from '$lib/models/setting.svelte';
+    import { Engine, Setting } from '$lib/models';
 
     const engines: Engine[] = $derived(Engine.all());
 

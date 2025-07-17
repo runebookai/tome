@@ -23,6 +23,8 @@ export async function dispatch(session: Session, model: Model, prompt?: string):
         await session.addMessage({
             role: 'user',
             content: prompt,
+            engineId: model.engineId,
+            model: model.id,
         });
     }
 
@@ -55,12 +57,16 @@ export async function dispatch(session: Session, model: Model, prompt?: string):
             await session.addMessage({
                 role: 'assistant',
                 content: '',
+                engineId: model.engineId,
+                model: model.id,
                 toolCalls: [call],
             });
 
             await session.addMessage({
                 role: 'tool',
                 content,
+                engineId: model.engineId,
+                model: model.id,
                 toolCallId: call.id,
             });
 
@@ -68,6 +74,7 @@ export async function dispatch(session: Session, model: Model, prompt?: string):
         }
     }
 
+    message.engineId = model.engineId;
     message.model = String(model.id);
     message.sessionId = session.id;
     await message.save();

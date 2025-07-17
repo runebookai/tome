@@ -50,7 +50,7 @@
     {/if}
 
     {#if filterable}
-        <Flex class="border-b-light w-full border-b px-4">
+        <Flex class="border-b-light w-full items-center border-b px-4">
             <Svg name="Search" class="text-dark h-4 w-4" />
             <Input
                 label={false}
@@ -58,7 +58,7 @@
                 placeholder="Filter..."
                 bind:value={filterTerm}
                 onkeyup={filter}
-                class="w-full border-0"
+                class="h-10 w-full border-0 text-sm"
             />
         </Flex>
     {/if}

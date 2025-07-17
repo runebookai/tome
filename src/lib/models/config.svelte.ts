@@ -1,5 +1,3 @@
-import { BaseDirectory, exists, readTextFile } from '@tauri-apps/plugin-fs';
-
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 interface Row {
@@ -31,26 +29,6 @@ export default class Config extends Base<Row>('config') {
 
     @getset('default-model')
     static defaultModel: string;
-
-    static async migrate() {
-        const filename = 'tome.conf.json';
-        const opt = { baseDir: BaseDirectory.AppData };
-
-        if (!(await exists(filename, opt))) {
-            return;
-        }
-
-        try {
-            Object.entries(JSON.parse(await readTextFile(filename, opt))).forEach(([k, value]) => {
-                const key = k as ConfigKey;
-                if (!this.exists({ key })) {
-                    this.create({ key, value });
-                }
-            });
-        } catch {
-            return;
-        }
-    }
 
     protected static async fromSql(row: Row): Promise<Config> {
         return Config.new({

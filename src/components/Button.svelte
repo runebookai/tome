@@ -30,7 +30,7 @@
 </script>
 
 {#if waiting && spinner}
-    <Spinner />
+    <Spinner class="h-[16px] w-[16px]" />
 {:else}
     <button
         class={twMerge('rounded-md border p-2 px-6 text-sm hover:cursor-pointer', cls?.toString())}

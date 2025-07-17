@@ -28,6 +28,13 @@ export default function BareModel() {
             return repo as InstanceType<T>[];
         }
 
+        static exists<T extends typeof BareModel>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): boolean {
+            return this.findBy(params) !== undefined;
+        }
+
         static find<T extends typeof BareModel>(this: T, id: string): InstanceType<T> | undefined {
             return repo.findBy('id', id) as InstanceType<T>;
         }
