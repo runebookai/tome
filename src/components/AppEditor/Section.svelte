@@ -16,7 +16,7 @@
 </script>
 
 <Flex id="name" class={twMerge('border-b-light w-full items-start border-b p-4', cls?.toString())}>
-    <Tooltip {title} {tooltip}>
+    <Tooltip {title} text={tooltip}>
         <p class="m-2 flex w-[150px] items-center text-sm">
             <Icon name={icon} class="mr-3" />
             {title}

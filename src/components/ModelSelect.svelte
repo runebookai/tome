@@ -61,7 +61,7 @@
             cls?.toString()
         )}
     >
-        <Flex class="px-6">
+        <Flex class="px-4">
             <Svg name={icon(selected.engine)} class="mr-2 h-4 w-4" />
             <p>{selected.name}</p>
         </Flex>
@@ -79,7 +79,7 @@
                 {#if engine.models.length}
                     <Flex
                         class="text-medium border-light w-full border-t
-                        px-6 py-2 pt-4 text-xs font-medium uppercase"
+                        px-4 py-2 pt-4 text-xs font-medium uppercase"
                     >
                         <Svg name={icon(engine)} class="mr-2 h-4 w-4" />
                         <p>{engine.name}</p>

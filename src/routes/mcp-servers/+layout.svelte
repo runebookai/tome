@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
@@ -82,35 +81,33 @@
 
 {#snippet McpServerView(server: McpServer)}
     <Menu items={items(server)}>
-        <Deleteable ondelete={() => destroy(server)}>
-            {#if isRenaming && renamingServer?.id === server.id}
-                <form
-                    class="w-full py-3 pl-8"
-                    onsubmit={e => {
-                        e.preventDefault();
-                        handleRename();
-                    }}
-                >
-                    <!-- svelte-ignore a11y_autofocus -->
-                    <input
-                        type="text"
-                        bind:value={newName}
-                        class="w-full bg-transparent text-sm outline-none"
-                        onblur={handleRename}
-                        onkeydown={e => e.stopPropagation()}
-                        autofocus
-                    />
-                </form>
-            {:else}
-                <Link
-                    href={`/mcp-servers/${server.id}`}
-                    class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
-                    activeClass="text-purple border-l border-l-purple"
-                >
-                    {server.name}
-                </Link>
-            {/if}
-        </Deleteable>
+        {#if isRenaming && renamingServer?.id === server.id}
+            <form
+                class="w-full py-3 pl-8"
+                onsubmit={e => {
+                    e.preventDefault();
+                    handleRename();
+                }}
+            >
+                <!-- svelte-ignore a11y_autofocus -->
+                <input
+                    type="text"
+                    bind:value={newName}
+                    class="w-full bg-transparent text-sm outline-none"
+                    onblur={handleRename}
+                    onkeydown={e => e.stopPropagation()}
+                    autofocus
+                />
+            </form>
+        {:else}
+            <Link
+                href={`/mcp-servers/${server.id}`}
+                class="w-full py-3 pl-8 text-sm hover:cursor-pointer"
+                activeClass="text-purple border-l border-l-purple"
+            >
+                {server.name}
+            </Link>
+        {/if}
     </Menu>
 {/snippet}
 

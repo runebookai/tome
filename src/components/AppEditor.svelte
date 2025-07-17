@@ -211,14 +211,20 @@
                             class="border-b-light w-full items-center
                             justify-between border-b"
                         >
-                            <ModelSelect
-                                class="ml-1 h-8 w-56 rounded-none border-0 border-r"
-                                selected={step.model}
-                                onselect={async model => setModel(step, model)}
-                            />
+                            <div class="w-64">
+                                <ModelSelect
+                                    class="h-8 rounded-none border-0 border-r"
+                                    selected={step.model}
+                                    onselect={async model => setModel(step, model)}
+                                />
+                            </div>
 
-                            <Button onclick={() => removeStep(step)} class="border-0 px-3">
-                                <Svg name="Delete" class="h-4 w-4" />
+                            <Button
+                                onclick={() => removeStep(step)}
+                                class="border-l-light hover:text-red h-8 border-0
+                                border-l px-3 transition-colors"
+                            >
+                                <Svg name="X" class="h-2 w-2" />
                             </Button>
                         </Flex>
 

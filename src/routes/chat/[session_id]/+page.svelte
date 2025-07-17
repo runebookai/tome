@@ -138,7 +138,10 @@
 
 <Layout {titlebar}>
     <Flex class="h-full items-start">
-        <Flex class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r">
+        <Flex
+            class="border-light bg-medium h-content w-[300px]
+            flex-col overflow-auto border-r"
+        >
             <List items={sessions} itemView={SessionItem} />
         </Flex>
 
@@ -155,7 +158,7 @@
                         {engines}
                         selected={model}
                         onselect={modelDidUpdate}
-                        class="h-10 w-full"
+                        class="h-12 w-full"
                     />
                 {/key}
 

@@ -5,12 +5,10 @@
     import Scrollable from '$components/Scrollable.svelte';
     import CustomPromptView from '$components/Settings/CustomPrompt.svelte';
     import EngineView from '$components/Settings/Engine.svelte';
-    import Engine2 from '$components/Settings/Engine2.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import * as color from '$lib/colorscheme';
-    import Engine from '$lib/models/engine.svelte';
-    import Setting from '$lib/models/setting.svelte';
+    import { Engine, Setting } from '$lib/models';
 
     const engines: Engine[] = $derived(Engine.all());
 
@@ -95,7 +93,7 @@
 
                 <Flex class="w-full flex-col items-start gap-2">
                     {#if adding}
-                        <Engine2
+                        <EngineView
                             ondelete={() => (adding = false)}
                             {onsave}
                             bind:saving
@@ -104,7 +102,7 @@
                     {/if}
 
                     {#each engines as engine, i (engine.id)}
-                        <Engine2 bind:saving bind:engine={engines[i]} {ondelete} />
+                        <EngineView bind:saving bind:engine={engines[i]} {ondelete} />
                     {/each}
                 </Flex>
             </Flex>

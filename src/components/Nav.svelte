@@ -2,6 +2,8 @@
     import type { SvelteHTMLElements } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
 
+    import Tooltip from './Tooltip.svelte';
+
     import Link from '$components/Link.svelte';
     import Svg from '$components/Svg.svelte';
 
@@ -14,36 +16,47 @@
         cls?.toString()
     )}
 >
-    <!--
-    This link MUST NOT preload data on hover, since it redirects when it does.
-    Which means we'd navigate on hover instead of click.
-    -->
-    <Link href="/chat/latest" aria-label="chat" prefix="/chat" activeClass="text-purple">
-        <Svg name="Chat" />
-    </Link>
+    <Tooltip title="Chat">
+        <Link href="/chat/latest" aria-label="chat" prefix="/chat" activeClass="text-purple">
+            <Svg name="Chat" />
+        </Link>
+    </Tooltip>
 
-    <Link href="/apps" aria-label="apps" activeClass="text-purple">
-        <Svg name="Apps" />
-    </Link>
+    <Tooltip title="Apps">
+        <Link href="/apps" aria-label="apps" activeClass="text-purple">
+            <Svg name="Apps" />
+        </Link>
+    </Tooltip>
 
-    <Link
-        href="/mcp-servers"
-        aria-label="mcp-servers"
-        prefix="/mcp-servers"
-        activeClass="text-purple"
-    >
-        <Svg name="MCP" />
-    </Link>
+    <Tooltip title="MCP">
+        <Link
+            href="/mcp-servers"
+            aria-label="mcp-servers"
+            prefix="/mcp-servers"
+            activeClass="text-purple"
+        >
+            <Svg name="MCP" />
+        </Link>
+    </Tooltip>
 
-    <Link href="/models" aria-label="models" activeClass="text-purple">
-        <Svg name="Models" />
-    </Link>
+    <Tooltip title="Models">
+        <Link href="/models" aria-label="models" activeClass="text-purple">
+            <Svg name="Models" />
+        </Link>
+    </Tooltip>
 
     <div class="grow"></div>
 
-    <Link href="/settings" aria-label="settings" activeClass="text-purple" class="text-dark pb-8">
-        <Svg name="Settings" />
-    </Link>
+    <Tooltip title="Settings">
+        <Link
+            href="/settings"
+            aria-label="settings"
+            activeClass="text-purple"
+            class="text-dark pb-8"
+        >
+            <Svg name="Settings" />
+        </Link>
+    </Tooltip>
 </nav>
 
 <style>
