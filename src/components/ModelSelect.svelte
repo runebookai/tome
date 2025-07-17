@@ -90,8 +90,8 @@
                             <button
                                 onclick={async () => await select(model)}
                                 class="hover:bg-light text-light-lite hover:text-light
-                            mx-2 w-[calc(100%-14px)] rounded-sm p-2 px-4
-                            text-left last:mb-2 hover:cursor-pointer"
+                                mx-2 w-[calc(100%-14px)] rounded-sm p-2 px-4
+                                text-left last:mb-2 hover:cursor-pointer"
                             >
                                 {model.name}
                             </button>

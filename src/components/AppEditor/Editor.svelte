@@ -1,10 +1,9 @@
 <script lang="ts">
-    import Input from './Input.svelte';
-
     import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
+    import Input from '$components/Input.svelte';
     import McpServerList from '$components/McpServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Select from '$components/Select.svelte';
@@ -139,11 +138,13 @@
                 {#if interval == 'daily'}
                     <p class="mx-4">at</p>
 
-                    <Select
-                        class="z-50"
-                        options={hourOptions}
-                        bind:value={scheduledConfig.period}
-                    />
+                    <div class="w-56">
+                        <Select
+                            class="z-50"
+                            options={hourOptions}
+                            bind:value={scheduledConfig.period}
+                        />
+                    </div>
                 {/if}
             </Section>
         {:else if trigger.event == 'filesystem'}

@@ -1,27 +1,38 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { SvelteHTMLElements } from 'svelte/elements';
-
-    import Scrollable from './Scrollable.svelte';
-    import Svg from './Svg.svelte';
+    import { twMerge } from 'tailwind-merge';
 
     import Flex from '$components/Flex.svelte';
+    import Group from '$components/Select/Group.svelte';
+    import type { Option, OptionGroup } from '$components/Select/types';
+    import Svg from '$components/Svg.svelte';
     import closables from '$lib/closables';
 
-    interface Option {
-        label: string;
-        value: string;
-    }
-
     interface Props {
-        options: Option[];
+        options: OptionGroup[] | Option[];
         value: string;
-        onselect?: (value: string) => unknown;
+        grouped?: boolean;
+        onselect?: (option: Option) => unknown;
         class?: SvelteHTMLElements['div']['class'];
     }
 
-    let { options, value = $bindable(), onselect, class: cls = '' }: Props = $props();
-    let selected = $derived(options.find(o => o.value == value));
+    let {
+        options,
+        grouped = false,
+        value = $bindable(),
+        onselect,
+        class: cls = '',
+    }: Props = $props();
+
+    let selected = $derived.by(() => {
+        return grouped
+            ? (options as OptionGroup[])
+                  .mapBy('options')
+                  .flat()
+                  .find(o => o.value == value)
+            : (options as Option[]).find(o => o.value == value);
+    });
 
     let ref: ReturnType<typeof Flex>;
     let isOpen: boolean = $state(false);
@@ -35,9 +46,9 @@
         isOpen = isOpen ? false : true;
     }
 
-    function select(val: string) {
-        value = val;
-        onselect?.(val);
+    function select(option: Option) {
+        value = option.value;
+        onselect?.(option);
     }
 
     onMount(() => {
@@ -45,32 +56,35 @@
     });
 </script>
 
-<Flex bind:this={ref} class={`relative h-full min-w-72 ${cls?.toString()}`}>
+<Flex class="relative w-full">
     <Flex
-        class={`border-light z-50 h-full w-full justify-between rounded-md 
-        border px-4 text-sm hover:cursor-pointer ${isOpen ? 'rounded-b-none' : ''}`}
+        bind:this={ref}
         onclick={toggle}
+        class={twMerge(
+            'border-light h-12 w-full rounded-md border text-sm',
+            `hover:cursor-pointer ${isOpen ? 'rounded-b-none border-b-0' : ''}`,
+            cls?.toString()
+        )}
     >
-        <p>{selected?.label}</p>
-        <Svg name="Arrows" class="h-4 w-4" />
+        {#if selected}
+            <Flex class="px-4">
+                {#if selected.icon}
+                    <Svg name={selected.icon} class="mr-2 h-4 w-4" />
+                {/if}
+                <p>{selected.label}</p>
+            </Flex>
+        {/if}
+
+        <Svg name="Arrows" class="text-medium mr-3 ml-auto h-3 w-4" />
     </Flex>
 
     {#if isOpen}
-        <Flex
-            class={`border-xlight bg-dark absolute top-[100%] left-0 w-full flex-col items-start
-            rounded-md border ${isOpen ? 'rounded-t-none border-t-0' : ''}`}
-        >
-            <Scrollable class="noscrollbar !h-72">
-                {#each options as option (option.value)}
-                    <button
-                        onclick={() => select(option.value)}
-                        class="border-b-xlight hover:bg-light w-full border-b px-4 py-3
-                    text-left text-sm last:border-b-0 hover:cursor-pointer"
-                    >
-                        {option.label}
-                    </button>
-                {/each}
-            </Scrollable>
-        </Flex>
+        {#if grouped}
+            {#each options as group (group.label)}
+                <Group onselect={select} group={group as OptionGroup} />
+            {/each}
+        {:else}
+            <Group onselect={select} group={{ options: options as Option[] }} />
+        {/if}
     {/if}
 </Flex>
