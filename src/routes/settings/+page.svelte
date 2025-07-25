@@ -80,7 +80,6 @@
                       View Logs
                     </Button>
                   </section>
-
                 </Flex>
               </Flex>
 
