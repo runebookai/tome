@@ -4,7 +4,7 @@
 
 ### New Features
 
-- Added support for ![iMCP](https://github.com/mattt/iMCP) (macos only)
+- Added support for [iMCP](https://github.com/mattt/iMCP) (macos only)
 
 ### Misc
 
