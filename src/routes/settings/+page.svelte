@@ -10,6 +10,8 @@
     import * as color from '$lib/colorscheme';
     import Engine from '$lib/models/engine.svelte';
     import Setting from '$lib/models/setting.svelte';
+    import { openPath } from '@tauri-apps/plugin-opener';
+    import { appLogDir } from '@tauri-apps/api/path';
 
     const engines: Engine[] = $derived(Engine.all());
 
@@ -31,6 +33,12 @@
     function onsave(_: Engine) {
         adding = false;
     }
+
+    async function viewLogs() {
+        var logDir = await appLogDir();
+        logDir += "/Tome.log"
+        await openPath(logDir);
+    }
 </script>
 
 {#snippet titlebar()}
@@ -49,22 +57,31 @@
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
-                    <h2 class="font-semibold uppercase">Color Scheme</h2>
-                    <p class="text-medium font-light">Set the color scheme of Tome</p>
+                  <h2 class="font-semibold uppercase">Color Scheme</h2>
+                  <p class="text-medium font-light">Set the color scheme of Tome</p>
                 </section>
 
-                <Flex class="w-full flex-col items-start gap-2">
-                    <select
-                        class="border-light bg-medium text-light mt-2 rounded-md border p-2"
-                        bind:value={scheme}
-                        onchange={onColorSchemeChange}
+                <Flex class="w-full items-center gap-4">
+                  <select
+                    class="border-light bg-medium text-light mt-2 rounded-md border p-2"
+                    bind:value={scheme}
+                    onchange={onColorSchemeChange}
+                  >
+                    <option value="system">System</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+
+                  <section class="ml-auto">
+                    <Button
+                      onclick={viewLogs}
+                      class="ml-auto border-purple text-purple mt-2"
                     >
-                        <option value="system">System</option>
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                    </select>
+                      View Logs
+                    </Button>
+                  </section>
                 </Flex>
-            </Flex>
+              </Flex>
 
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">

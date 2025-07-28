@@ -121,6 +121,22 @@
                     "permissions": [
                         "core:window:allow-start-dragging"
                     ]
+                },
+                {
+                    "identifier": "main-capability",
+                    "windows": [
+                        "*"
+                    ],
+                    "permissions": [
+                        {
+                            "identifier": "opener:allow-open-path",
+                            "allow": [
+                                {
+                                    "path": "$HOME/**/*.log"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }
