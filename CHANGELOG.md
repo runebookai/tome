@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.3 - 2025-07-28
+
+### New Features
+
+- Added support for ![iMCP](https://github.com/mattt/iMCP) (macos only)
+
+### Misc
+
+- Added a View Logs button to the settings page
+
 ## 0.9.2 - 2025-07-07
 
 ### Fixes
