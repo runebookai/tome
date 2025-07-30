@@ -20,9 +20,13 @@ pub async fn get_metadata(
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
+    transport_type: Option<String>,
+    transport_config: Option<serde_json::Value>,
     app: AppHandle,
 ) -> Result<String, String> {
-    ok_or_err!(mcp::peer_info(command, args, env, app).await)
+    let transport_type = transport_type.unwrap_or_else(|| "stdio".to_string());
+    let transport_config = transport_config.unwrap_or_else(|| serde_json::json!({}));
+    ok_or_err!(mcp::peer_info(command, args, env, transport_type, transport_config, app).await)
 }
 
 #[tauri::command]
@@ -31,10 +35,14 @@ pub async fn start_mcp_server(
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
+    transport_type: Option<String>,
+    transport_config: Option<serde_json::Value>,
     app: AppHandle,
 ) -> Result<(), String> {
     println!("-> start_mcp_server({}, {})", session_id, command);
-    ok_or_err!(mcp::start(session_id, command, args, env, app).await)
+    let transport_type = transport_type.unwrap_or_else(|| "stdio".to_string());
+    let transport_config = transport_config.unwrap_or_else(|| serde_json::json!({}));
+    ok_or_err!(mcp::start(session_id, command, args, env, transport_type, transport_config, app).await)
 }
 
 #[tauri::command]

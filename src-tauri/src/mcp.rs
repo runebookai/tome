@@ -1,5 +1,6 @@
 pub(crate) mod process;
 pub(crate) mod server;
+pub(crate) mod http;
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -117,11 +118,13 @@ pub async fn start(
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
+    transport_type: String,
+    transport_config: serde_json::Value,
     app: AppHandle,
 ) -> Result<()> {
     let handle = app.clone();
     let state = handle.state::<State>();
-    let server = McpServer::start(command, args, env, app).await?;
+    let server = McpServer::start(command, args, env, transport_type, transport_config, app).await?;
 
     let mut sessions = state.sessions.lock().await;
     let mut session = sessions.remove(&session_id).unwrap_or_default();
@@ -211,9 +214,11 @@ pub async fn peer_info(
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
+    transport_type: String,
+    transport_config: serde_json::Value,
     app: AppHandle,
 ) -> Result<String> {
-    let server = McpServer::start(command, args, env, app).await?;
+    let server = McpServer::start(command, args, env, transport_type, transport_config, app).await?;
     let peer_info = server.peer_info();
     server.kill()?;
     Ok(serde_json::to_string(&peer_info)?)
