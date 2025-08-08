@@ -19,6 +19,7 @@ import Engine from '$lib/models/engine.svelte';
 import startup, { StartupCheck } from '$lib/startup';
 import { isUpToDate } from '$lib/updates';
 import { spawn } from '$lib/web-workers';
+import Relay from '$lib/workers/relays?url';
 import Scheduler from '$lib/workers/tasks?url';
 
 // App Initialization
@@ -33,6 +34,9 @@ export const init: ClientInit = async () => {
 
     spawn(Scheduler);
     info('[green]✔ scheduler started');
+
+    spawn(Relay);
+    info('[green]✔ relays started');
 
     await listen();
     await apps.watch();

@@ -6,6 +6,7 @@ import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 const CHAT_APP_ID = 1;
 const TASK_APP_ID = 2;
+const RELAY_APP_ID = 3;
 
 interface Row {
     id: number;
@@ -56,10 +57,14 @@ export default class App extends Base<Row>('apps') {
         return App.find(TASK_APP_ID);
     }
 
+    static get RELAY() {
+        return App.find(RELAY_APP_ID);
+    }
+
     // TODO: make `all()` return this by default and make it so you need
     // explicitly get the reserved apps.
     static nonReserved() {
-        return this.all().filter(a => ![CHAT_APP_ID, TASK_APP_ID].includes(a.id as number));
+        return this.all().filter(a => ![CHAT_APP_ID, TASK_APP_ID, RELAY_APP_ID].includes(a.id as number));
     }
 
     get mcpServers(): McpServer[] {

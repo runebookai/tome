@@ -33,6 +33,10 @@ const config = {
                 "/apps/[app_id]",
                 "/apps/[app_id]/edit",
                 "/apps/[app_id]/runs/[run_id]",
+                "/relays",
+                "/relays/new",
+                "/relays/[relay_id]",
+                "/relays/[relay_id]/edit",
             ],
             'handleHttpError': "warn"
         }

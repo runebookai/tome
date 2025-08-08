@@ -1,3 +1,4 @@
+import { poll, type RelayMessage } from '$lib/relays';
 import { type TaskMessage, triggerScheduledApps } from '$lib/tasks';
 import { command } from '$lib/web-workers';
 
@@ -7,4 +8,8 @@ import { command } from '$lib/web-workers';
 
 command<TaskMessage>(function tick(_: TaskMessage) {
     triggerScheduledApps();
+});
+
+command<RelayMessage>(function relay(_: RelayMessage) {
+    poll();
 });

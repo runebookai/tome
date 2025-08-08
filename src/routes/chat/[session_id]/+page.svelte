@@ -27,7 +27,7 @@
         })
     );
 
-    const sessions: Session[] = $derived(Session.where({ ephemeral: false }));
+    const sessions: Session[] = $derived(Session.where({ ephemeral: false, relay: false }));
     const mcpServers: McpServer[] = $derived(McpServer.all());
     const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);
@@ -120,7 +120,7 @@
 
 {#snippet SessionItem(sess: Session)}
     <Flex
-        class={`text-medium border-b-light w-full justify-between border-b 
+        class={`text-medium border-b-light w-full justify-between border-b
                 border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
     >
         <Menu items={menuItems(sess)}>

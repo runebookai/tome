@@ -28,6 +28,12 @@
         </Link>
     </Tooltip>
 
+    <Tooltip title="Relays">
+        <Link href="/relays" aria-label="relays" activeClass="text-purple">
+            <Svg name="Relays" />
+        </Link>
+    </Tooltip>
+
     <Tooltip title="MCP">
         <Link
             href="/mcp-servers"

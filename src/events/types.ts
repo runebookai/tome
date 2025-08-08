@@ -18,3 +18,7 @@ export interface FileCreatedEvent {
 export interface FileUpdatedEvent {
     paths: string;
 }
+
+export interface RelayEvent {
+    data: string;
+}

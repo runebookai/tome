@@ -31,6 +31,7 @@ interface Row {
     summary: string;
     config: string;
     ephemeral: string;
+    relay: string;
     created: string;
     modified: string;
 }
@@ -41,6 +42,7 @@ export default class Session extends Base<Row>('sessions') {
     summary: string = $state(DEFAULT_SUMMARY);
     config: Partial<Config> = $state({});
     ephemeral: boolean = $state(false);
+    relay: boolean = $state(false);
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
@@ -139,6 +141,7 @@ export default class Session extends Base<Row>('sessions') {
             summary: row.summary,
             config: JSON.parse(row.config),
             ephemeral: row.ephemeral === 'true',
+            relay: row.relay === 'true',
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         });
@@ -150,6 +153,7 @@ export default class Session extends Base<Row>('sessions') {
             summary: this.summary,
             config: JSON.stringify(this.config),
             ephemeral: this.ephemeral ? 'true' : 'false',
+            relay: this.relay ? 'true' : 'false',
         };
     }
 }
