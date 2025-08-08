@@ -68,9 +68,8 @@ export function spawn(path: string): Worker {
 /**
  * Define a function that's made available to Web Workers via `invoke`.
  */
-export function command<T extends object>(fn: InvokeFn<T>) {
-    if (!fn.name) throw 'CommandError: function must have a name';
-    commands[fn.name] = fn;
+export function command<T extends object>(name: string, fn: InvokeFn<T>) {
+    commands[name] = fn;
 }
 
 /**

@@ -5,6 +5,6 @@ import { command } from '$lib/web-workers';
  * Commands that can be invoked from Web Workers
  */
 
-command<TaskMessage>(function tick(_: TaskMessage) {
+command<TaskMessage>('tick', (_: TaskMessage) => {
     triggerScheduledApps();
 });
