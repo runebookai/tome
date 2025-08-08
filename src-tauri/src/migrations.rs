@@ -469,5 +469,29 @@ ALTER TABLE tasks DROP COLUMN model;
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 18,
+            description: "add_relays",
+            sql: r#"
+------------------------------------------------------------------------------------------------
+-- New table, cols, & rows to support Relays
+------------------------------------------------------------------------------------------------
+
+INSERT INTO apps ("name", "description", "interface") VALUES ("Relay", "Relay", "Chat");
+
+ALTER TABLE sessions ADD COLUMN relay BOOLEAN DEFAULT "false";
+
+CREATE TABLE IF NOT EXISTS relays (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    session_id      INTEGER,
+    name            TEXT,
+    config          JSON NOT NULL DEFAULT "{}",
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE
+);
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }
