@@ -278,5 +278,14 @@ CREATE TABLE IF NOT EXISTS tasks_mcp_servers (
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 17,
+            description: "add_mcp_transport_support",
+            sql: r#"
+ALTER TABLE mcp_servers ADD COLUMN transport_type TEXT NOT NULL DEFAULT "stdio";
+ALTER TABLE mcp_servers ADD COLUMN transport_config JSON NOT NULL DEFAULT "{}";
+            "#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

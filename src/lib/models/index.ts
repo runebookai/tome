@@ -15,7 +15,7 @@ export { default as BareModel } from '$lib/models/bare.svelte';
 export { default as Base, type ToSqlRow } from '$lib/models/base.svelte';
 export { default as Config } from '$lib/models/config.svelte';
 export { default as Engine } from '$lib/models/engine.svelte';
-export { default as McpServer } from '$lib/models/mcp-server.svelte';
+export { default as McpServer, type TransportConfig } from '$lib/models/mcp-server.svelte';
 export { default as Message } from '$lib/models/message.svelte';
 export { default as Model } from '$lib/models/model.svelte';
 export { default as Session } from '$lib/models/session.svelte';

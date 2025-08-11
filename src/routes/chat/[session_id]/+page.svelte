@@ -178,16 +178,27 @@
 
                 <div class="mt-4">
                     {#each mcpServers as server (server.id)}
-                        <Flex class="text-light z-0 mb-4 ml-2">
+                        <Flex class="text-light z-0 mb-4 ml-2 flex-col items-start">
                             <Toggle
                                 label={server.name}
-                                value={session.hasMcpServer(server.name) && model?.supportsTools
+                                value={session.hasMcpServer(server.name) && model?.supportsTools && server.isConfigured
                                     ? 'on'
                                     : 'off'}
-                                disabled={!model?.supportsTools}
+                                disabled={!model?.supportsTools || !server.isConfigured}
                                 onEnable={() => startMcpServer(server)}
                                 onDisable={() => stopMcpServer(server)}
                             />
+                            <div class="text-dark ml-8 mt-1 text-xs">
+                                {server.transportType.toUpperCase()}
+                                {#if server.transportType === 'http' && server.transportConfig?.url}
+                                    - {server.transportConfig.url}
+                                {:else if server.transportType === 'stdio' && server.command}
+                                    - {server.command}
+                                {/if}
+                                {#if !server.isConfigured}
+                                    <span class="text-red ml-2">(Not configured)</span>
+                                {/if}
+                            </div>
                         </Flex>
                     {/each}
                 </div>
