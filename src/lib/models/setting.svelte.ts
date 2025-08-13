@@ -10,7 +10,8 @@ export type SettingKey =
     | 'gemini-api-key'
     | 'ollama-url'
     | 'custom-system-prompt'
-    | 'color-scheme';
+    | 'color-scheme'
+    | 'labs-mode';
 
 interface Row {
     id: number;
@@ -41,6 +42,9 @@ export default class Setting extends Base<Row>('settings') {
 
     @getset('color-scheme')
     static ColorScheme: color.ColorScheme;
+
+    @getset('labs-mode')
+    static LabsMode: string;
 
     protected static async afterUpdate() {
         // Resync models in case a Provider key/url was updated.

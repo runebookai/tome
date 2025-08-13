@@ -1,8 +1,7 @@
-import { Model, Relay } from '$lib/models';
-import { error, info, warn } from '$lib/logger';
-
 import { dispatch } from '$lib/dispatch';
 import { fetch } from '$lib/http';
+import { error, info, warn } from '$lib/logger';
+import { Model, Relay } from '$lib/models';
 
 export interface RelayMessage {
     name: 'relay'
@@ -48,7 +47,9 @@ interface TelegramEntity {
  */
 export async function poll(): Promise<void> {
     const TELEGRAM_API = 'https://api.telegram.org/bot';
-    const relays = Relay.all();
+    const relays = Relay.where({active: true});
+
+    info(relays);
 
     relays.forEach(async (relay) => {
         const offset = relay.config.offset?? 0;
@@ -56,7 +57,7 @@ export async function poll(): Promise<void> {
         // Get update
         const resp = await fetch(url);
         const payload  = await resp.json() as TelegramResponse;
-        payload.result.forEach(async (update) => {
+        payload.result?.forEach(async (update) => {
             info(`Update ID: ${update.update_id} :: ${update.message.text}`);
             // Increment offset for future updates
             if (update.update_id >= offset) {

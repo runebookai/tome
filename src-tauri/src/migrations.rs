@@ -486,11 +486,30 @@ CREATE TABLE IF NOT EXISTS relays (
     session_id      INTEGER,
     name            TEXT,
     config          JSON NOT NULL DEFAULT "{}",
+    active          BOOLEAN DEFAULT "true",
     created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    modified    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE
+    modified        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(session_id) REFERENCES sessions(id)
 );
+
+CREATE TRIGGER delete_session_when_relay_deleted
+    AFTER DELETE ON relays
+    FOR EACH ROW
+BEGIN
+    DELETE FROM sessions
+    WHERE  id = OLD.session_id;
+END;
             "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 19,
+            description: "add_labs_mode_setting",
+            sql: r#"
+INSERT INTO settings (display, key, value, type)
+SELECT 'Labs Mode', 'labs-mode', '"false"', 'select'
+WHERE NOT EXISTS (SELECT 1 FROM settings WHERE key = 'labs-mode');
+"#,
             kind: MigrationKind::Up,
         },
     ]

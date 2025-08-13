@@ -8,7 +8,11 @@
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
     import * as color from '$lib/colorscheme';
-    import { Engine, Setting } from '$lib/models';
+    import Engine from '$lib/models/engine.svelte';
+    import Setting from '$lib/models/setting.svelte';
+    import { openPath } from '@tauri-apps/plugin-opener';
+    import { appLogDir } from '@tauri-apps/api/path';
+    import Toggle from '$components/Toggle.svelte';
 
     const engines: Engine[] = $derived(Engine.all());
 
@@ -27,8 +31,18 @@
         await engine.delete();
     }
 
+    async function setLabsMode(value: string) {
+        Setting.LabsMode = value;
+    }
+
     function onsave(_: Engine) {
         adding = false;
+    }
+
+    async function viewLogs() {
+        var logDir = await appLogDir();
+        logDir += "/Tome.log"
+        await openPath(logDir);
     }
 </script>
 
@@ -48,22 +62,31 @@
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
-                    <h2 class="font-semibold uppercase">Color Scheme</h2>
-                    <p class="text-medium font-light">Set the color scheme of Tome</p>
+                  <h2 class="font-semibold uppercase">Color Scheme</h2>
+                  <p class="text-medium font-light">Set the color scheme of Tome</p>
                 </section>
 
-                <Flex class="w-full flex-col items-start gap-2">
-                    <select
-                        class="border-light bg-medium text-light mt-2 rounded-md border p-2"
-                        bind:value={scheme}
-                        onchange={onColorSchemeChange}
+                <Flex class="w-full items-center gap-4">
+                  <select
+                    class="border-light bg-medium text-light mt-2 rounded-md border p-2"
+                    bind:value={scheme}
+                    onchange={onColorSchemeChange}
+                  >
+                    <option value="system">System</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+
+                  <section class="ml-auto">
+                    <Button
+                      onclick={viewLogs}
+                      class="ml-auto border-purple text-purple mt-2"
                     >
-                        <option value="system">System</option>
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                    </select>
+                      View Logs
+                    </Button>
+                  </section>
                 </Flex>
-            </Flex>
+              </Flex>
 
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
@@ -104,6 +127,23 @@
                     {#each engines as engine, i (engine.id)}
                         <EngineView bind:saving bind:engine={engines[i]} {ondelete} />
                     {/each}
+                </Flex>
+            </Flex>
+
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Labs Mode</h2>
+                    <p class="text-medium font-light">
+                        Enable Labs Mode to play around with experimental features.
+                    </p>
+                </section>
+                <Flex class="w-full flex-col items-start gap-2">
+                    <Toggle
+                        label=""
+                        value={Boolean(Setting.LabsMode === 'true') ? 'on' : 'off'}
+                        onEnable={() => setLabsMode("true")}
+                        onDisable={() => setLabsMode("false")}
+                    />
                 </Flex>
             </Flex>
         </Flex>

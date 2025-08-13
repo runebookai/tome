@@ -6,6 +6,7 @@
 
     import Link from '$components/Link.svelte';
     import Svg from '$components/Svg.svelte';
+    import { Setting } from '$lib/models';
 
     const { class: cls }: SvelteHTMLElements['nav'] = $props();
 </script>
@@ -28,11 +29,13 @@
         </Link>
     </Tooltip>
 
-    <Tooltip title="Relays">
-        <Link href="/relays" aria-label="relays" activeClass="text-purple">
-            <Svg name="Relays" />
-        </Link>
-    </Tooltip>
+    {#if Setting.LabsMode === 'true'}
+        <Tooltip title="Relays">
+            <Link href="/relays" aria-label="relays" activeClass="text-purple">
+                <Svg name="Relays" />
+            </Link>
+        </Tooltip>
+    {/if}
 
     <Tooltip title="MCP">
         <Link

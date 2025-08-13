@@ -8,6 +8,7 @@ interface Row {
     session_id: number;
     name: string;
     config: string;
+    active: string;
     created: string;
     modified: string;
 }
@@ -22,6 +23,7 @@ export default class Relay extends Base<Row>('relays') {
     sessionId?: number = $state();
     name: string = $state('');
     config: RelayConfig = $state({});
+    active: boolean = $state(true);
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
@@ -49,6 +51,7 @@ export default class Relay extends Base<Row>('relays') {
             sessionId: row.session_id,
             name: row.name,
             config: JSON.parse(row.config),
+            active: row.active === 'true',
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         });
@@ -59,6 +62,7 @@ export default class Relay extends Base<Row>('relays') {
             session_id: Number(this.sessionId),
             name: this.name,
             config: JSON.stringify(this.config),
+            active: this.active ? 'true' : 'false',
         };
     }
 }

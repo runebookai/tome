@@ -10,6 +10,6 @@ command<TaskMessage>('tick', (_: TaskMessage) => {
     triggerScheduledApps();
 });
 
-command<RelayMessage>(function relay(_: RelayMessage) {
+command<RelayMessage>('relay', (_: RelayMessage) => {
     poll();
 });
