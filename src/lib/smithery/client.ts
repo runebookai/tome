@@ -14,8 +14,9 @@ export class Client extends HttpClient {
     }
 
     async servers(page: number = 1): Promise<CompactServer[]> {
-        return ((await this.get(`/servers?q=is:local&pageSize=24&page=${page}`)) as ServerList)
-            .servers;
+        return (
+            (await this.get(`/servers?q=is:local&pageSize=24&page=${page}`)) as ServerList
+        ).servers.filter(s => Number(s.useCount) > 0);
     }
 
     async server(name: string): Promise<Server> {
@@ -25,6 +26,8 @@ export class Client extends HttpClient {
     async search(query: string): Promise<CompactServer[]> {
         const q = encodeURIComponent(query).replace(/%20/g, '+');
 
-        return ((await this.get(`/servers?q=is:local+${q}`)) as ServerList).servers;
+        return ((await this.get(`/servers?q=is:local+${q}`)) as ServerList).servers.filter(
+            s => Number(s.useCount) > 0
+        );
     }
 }

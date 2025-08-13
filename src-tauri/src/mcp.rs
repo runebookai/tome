@@ -2,6 +2,7 @@ pub(crate) mod process;
 pub(crate) mod server;
 
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 use crate::state::State;
 
@@ -52,13 +53,25 @@ pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command
                 "bunx"
             }
         }
+        os_specific_command if os_specific_command.contains("imcp-server") => {
+            if cfg!(target_os = "macos") {
+                os_specific_command
+            } else {
+                return Err(anyhow!("Are you trying to use iMCP outside of osx? Please tell us about this in our Discord."));
+            }
+        }
         _ => return Err(anyhow!("{} servers not supported.", command)),
     };
 
-    Ok(Command::new(
-        app.path()
-            .resolve(os_specific_command, BaseDirectory::Resource)?,
-    ))
+    // imcp is user-installed, and so doesn't exist in our base dir 🙃
+    if os_specific_command.contains("imcp-server") {
+        Ok(Command::new(PathBuf::from(os_specific_command)))
+    } else {
+        Ok(Command::new(
+            app.path()
+                .resolve(os_specific_command, BaseDirectory::Resource)?,
+        ))
+    }
 }
 
 // Install Python (uv/uvx) and Node (npm/npx), via Hermit.

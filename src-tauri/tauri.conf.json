@@ -59,7 +59,7 @@
     },
     "productName": "Tome",
     "mainBinaryName": "tome",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "identifier": "co.runebook",
     "plugins": {
         "sql": {
@@ -121,6 +121,22 @@
                     ],
                     "permissions": [
                         "core:window:allow-start-dragging"
+                    ]
+                },
+                {
+                    "identifier": "main-capability",
+                    "windows": [
+                        "*"
+                    ],
+                    "permissions": [
+                        {
+                            "identifier": "opener:allow-open-path",
+                            "allow": [
+                                {
+                                    "path": "$HOME/**/*.log"
+                                }
+                            ]
+                        }
                     ]
                 }
             ]
