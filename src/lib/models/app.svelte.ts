@@ -1,7 +1,12 @@
 import moment from 'moment';
 
-import { McpServer, type ToSqlRow } from '$lib/models';
-import Base from '$lib/models/base.svelte';
+import { execute } from '$lib/apps';
+import { AppMcpServer, AppRun, AppStep, McpServer, Trigger } from '$lib/models';
+import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+
+const CHAT_APP_ID = 1;
+const TASK_APP_ID = 2;
+const RELAY_APP_ID = 3;
 
 interface Row {
     id: number;
@@ -35,77 +40,73 @@ export enum Interface {
 
 export default class App extends Base<Row>('apps') {
     id?: number = $state();
-    name: string = $state('Unknown');
+    name: string = $state('');
     description: string = $state('');
     readme: string = $state('');
     image: string = $state('');
     interface: Interface = $state(Interface.Chat);
     nodes: Node[] = $state([]);
-    mcpServers: McpServer[] = $state([]);
     created?: moment.Moment = $state();
     modified?: moment.Moment = $state();
 
-    get defaults() {
-        return {
-            name: 'Unknown',
-            description: '',
-            readme: '',
-            image: '',
-            interface: Interface.Chat,
-            nodes: [],
-            mcpServers: [],
-        };
+    static get CHAT() {
+        return App.find(CHAT_APP_ID);
     }
 
-    get context() {
-        return this.nodes
-            .filter(n => n.type == NodeType.Context)
-            .map(n => n.config.value)
-            .join('\n\n');
+    static get TASK() {
+        return App.find(TASK_APP_ID);
     }
 
-    hasContext(): boolean {
-        return this.nodes.find(n => n.type == NodeType.Context) !== undefined;
+    static get RELAY() {
+        return App.find(RELAY_APP_ID);
     }
 
-    addNode(node: Node) {
-        this.nodes.push(node);
+    // TODO: make `all()` return this by default and make it so you need
+    // explicitly get the reserved apps.
+    static nonReserved() {
+        return this.all().filter(a => ![CHAT_APP_ID, TASK_APP_ID, RELAY_APP_ID].includes(a.id as number));
     }
 
-    removeNode(node: Node) {
-        this.nodes = this.nodes.filter(n => n.uuid !== node.uuid);
+    get mcpServers(): McpServer[] {
+        return AppMcpServer.where({ appId: this.id }).map(m => m.mcpServer);
+    }
+
+    get steps(): AppStep[] {
+        const steps = AppStep.where({ appId: this.id }).sortBy('id');
+        return steps.length > 0 ? steps : [AppStep.new({ appId: this.id })];
+    }
+
+    get trigger(): Trigger {
+        return Trigger.findBy({ appId: this.id }) || Trigger.new({ appId: this.id });
+    }
+
+    get runs(): AppRun[] {
+        return AppRun.where({ appId: this.id }).sortBy('created').reverse();
+    }
+
+    get latestRun(): AppRun {
+        return this.runs[0];
+    }
+
+    async execute(input?: object): Promise<AppRun> {
+        return await execute(this, input);
+    }
+
+    async addStep(step: AppStep) {
+        step.appId = this.id;
+        await step.save();
+    }
+
+    hasMcpServer(server: McpServer) {
+        return AppMcpServer.exists({ appId: this.id, mcpServerId: server.id });
     }
 
     async addMcpServer(server: McpServer) {
-        const result = await (
-            await this.db()
-        ).execute(`INSERT INTO apps_mcp_servers (app_id, mcp_server_id) VALUES ($1, $2)`, [
-            this.id,
-            server.id,
-        ]);
-
-        if (result.rowsAffected == 1) {
-            this.mcpServers.push(server);
-            return;
-        }
-
-        throw 'AddMcpServerError';
+        await AppMcpServer.findByOrNew({ appId: this.id, mcpServerId: server.id }).save();
     }
 
     async removeMcpServer(server: McpServer) {
-        const result = await (
-            await this.db()
-        ).execute('DELETE FROM apps_mcp_servers WHERE app_id = $1 AND mcp_server_id = $2', [
-            this.id,
-            server.id,
-        ]);
-
-        if (result.rowsAffected == 1) {
-            this.mcpServers = this.mcpServers.filter(m => m.id == server.id);
-            return;
-        }
-
-        throw 'RemoveMcpServerError';
+        await AppMcpServer.findBy({ appId: this.id, mcpServerId: server.id })?.delete();
     }
 
     protected static async fromSql(row: Row): Promise<App> {
@@ -113,7 +114,6 @@ export default class App extends Base<Row>('apps') {
             ...row,
             interface: Interface[row.interface as keyof typeof Interface],
             nodes: JSON.parse(row.nodes),
-            mcpServers: await McpServer.forApp(row.id),
             created: moment.utc(row.created),
             modified: moment.utc(row.modified),
         });

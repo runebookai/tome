@@ -1,7 +1,11 @@
 import Database from '@tauri-apps/plugin-sql';
 
-import { DATABASE_URL } from '$lib/const';
 import { info } from '$lib/logger';
+
+/**
+ * Database URL
+ */
+export const DATABASE_URL = 'sqlite:tome.db';
 
 /**
  * Database connection
@@ -119,7 +123,7 @@ export type ToSqlRow<R> = Omit<R, 'id' | 'created' | 'modified'>;
  * }
  * ```
  */
-export default function Model<R extends object>(table: string) {
+export default function Model<Row extends object>(table: string) {
     class ModelClass {
         id?: number;
 
@@ -192,6 +196,16 @@ export default function Model<R extends object>(table: string) {
         }
 
         /**
+         * Find by specific properties or create a new instance.
+         */
+        static async findByOrCreate<T extends typeof ModelClass>(
+            this: T,
+            params: Partial<InstanceType<T>>
+        ): Promise<InstanceType<T>> {
+            return this.findBy(params) || (await this.create(params));
+        }
+
+        /**
          * Find a collection of records by a set of the model's properties.
          */
         static where<T extends typeof ModelClass>(
@@ -227,6 +241,13 @@ export default function Model<R extends object>(table: string) {
         }
 
         /**
+         * Does the record exist in the database yet.
+         */
+        isPersisted(): boolean {
+            return this.id !== undefined;
+        }
+
+        /**
          * Default values for new instance
          */
         get default() {
@@ -248,12 +269,20 @@ export default function Model<R extends object>(table: string) {
         }
 
         /**
+         * Update the instance.
+         */
+        async update(params: Partial<this>) {
+            Object.assign(this, params);
+            return await this.save();
+        }
+
+        /**
          * Update or Create a record.
          *
          * If `params` contains `id`, it will update, otherwise create.
          */
         async save(): Promise<this> {
-            return this.id ? await this.update() : await this.create();
+            return this.id ? await this._update() : await this._create();
         }
 
         /**
@@ -269,7 +298,7 @@ export default function Model<R extends object>(table: string) {
          *
          * Only pass the columns you intend to change.
          */
-        private async update(): Promise<this> {
+        private async _update(): Promise<this> {
             const cls = this.constructor as typeof ModelClass;
 
             let row = await this.toSql();
@@ -311,7 +340,7 @@ export default function Model<R extends object>(table: string) {
          * `id`, `created`, and `modified` values are ALWAYS ignored, since
          * they are garaunteed to be automatically set by the database.
          */
-        private async create(): Promise<this> {
+        private async _create(): Promise<this> {
             const cls = this.constructor as typeof ModelClass;
 
             let row = await this.toSql();
@@ -368,7 +397,7 @@ export default function Model<R extends object>(table: string) {
          */
         protected static async query<T>(sql: string, values: unknown[] = []): Promise<T[]> {
             await connect();
-            const rows = await db.select<R[]>(sql, values);
+            const rows = await db.select<Row[]>(sql, values);
             const promises = rows.map(async row => await this.fromSql(row));
             return (await Promise.all(promises)) as T[];
         }
@@ -379,14 +408,14 @@ export default function Model<R extends object>(table: string) {
          * Transform a database `Row` into an instance.
          */
         // eslint-disable-next-line
-        protected static async fromSql(row: R): Promise<unknown> {
+        protected static async fromSql(row: Row): Promise<unknown> {
             throw 'NotImeplementedError';
         }
 
         /**
          * Transform an instance into a database `Row`
          */
-        protected async toSql(): Promise<ToSqlRow<R>> {
+        protected async toSql(): Promise<ToSqlRow<Row>> {
             throw 'NotImeplementedError';
         }
 
@@ -403,15 +432,15 @@ export default function Model<R extends object>(table: string) {
          *   - afterSave
          */
 
-        protected async beforeSave(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
+        protected async beforeSave(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
             return row;
         }
 
-        protected async beforeCreate(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
+        protected async beforeCreate(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
             return row;
         }
 
-        protected async beforeUpdate(row: ToSqlRow<R>): Promise<ToSqlRow<R>> {
+        protected async beforeUpdate(row: ToSqlRow<Row>): Promise<ToSqlRow<Row>> {
             return row;
         }
 

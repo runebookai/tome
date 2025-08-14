@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use rmcp::model::Tool;
 use tauri::AppHandle;
 
+use crate::daemon;
 use crate::mcp;
 use crate::State;
 
@@ -84,6 +85,20 @@ pub async fn rename_mcp_server(
     new_name: String,
     state: tauri::State<'_, State>,
 ) -> Result<(), String> {
-    println!("-> rename_mcp_server({}, {} -> {})", session_id, old_name, new_name);
+    println!(
+        "-> rename_mcp_server({}, {} -> {})",
+        session_id, old_name, new_name
+    );
     ok_or_err!(mcp::rename_server(session_id, old_name, new_name, state).await)
+}
+
+#[tauri::command]
+pub async fn watch(path: String, id: i64, state: tauri::State<'_, State>) -> Result<(), String> {
+    daemon::watch(path, id, state.clone()).await.unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn unwatch_all(state: tauri::State<'_, State>) -> Result<(), String> {
+    ok_or_err!(daemon::unwatch_all(state).await)
 }

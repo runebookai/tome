@@ -12,7 +12,7 @@
 </script>
 
 <Flex bind:ref class={twMerge('h-content w-full items-start overflow-y-scroll', cls?.toString())}>
-    <div class="w-full">
+    <div class="h-full w-full">
         {@render children?.()}
     </div>
 </Flex>

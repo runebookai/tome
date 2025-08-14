@@ -12,6 +12,7 @@
     import Setting from '$lib/models/setting.svelte';
     import { openPath } from '@tauri-apps/plugin-opener';
     import { appLogDir } from '@tauri-apps/api/path';
+    import Toggle from '$components/Toggle.svelte';
 
     const engines: Engine[] = $derived(Engine.all());
 
@@ -28,6 +29,10 @@
 
     async function ondelete(engine: Engine) {
         await engine.delete();
+    }
+
+    async function setLabsMode(value: string) {
+        Setting.LabsMode = value;
     }
 
     function onsave(_: Engine) {
@@ -122,6 +127,23 @@
                     {#each engines as engine, i (engine.id)}
                         <EngineView bind:saving bind:engine={engines[i]} {ondelete} />
                     {/each}
+                </Flex>
+            </Flex>
+
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Labs Mode</h2>
+                    <p class="text-medium font-light">
+                        Enable Labs Mode to play around with experimental features.
+                    </p>
+                </section>
+                <Flex class="w-full flex-col items-start gap-2">
+                    <Toggle
+                        label=""
+                        value={Boolean(Setting.LabsMode === 'true') ? 'on' : 'off'}
+                        onEnable={() => setLabsMode("true")}
+                        onDisable={() => setLabsMode("false")}
+                    />
                 </Flex>
             </Flex>
         </Flex>

@@ -25,20 +25,23 @@
     let valid = $state(true);
 </script>
 
-<Flex class="w-full flex-col items-start">
+<Flex
+    class={twMerge(
+        'border-light h-12 w-full flex-col items-start rounded-md border px-4',
+        cls?.toString()
+    )}
+>
     {#if label}
-        <label class="text-medium mt-2 mb-1 ml-2 text-sm" for={name}>
+        <label class="text-medium mt-4 mb-1 ml-4 text-sm" for={name}>
             {label}
             {#if required}
                 <span class="text-red">*</span>
             {/if}
         </label>
     {/if}
+
     <input
-        class={twMerge(
-            'border-light w-full rounded-md border p-2 px-4 outline-none',
-            cls?.toString()
-        )}
+        class={twMerge('w-full p-2 outline-none', cls?.toString())}
         class:border-red={!valid}
         onkeyup={() => (valid = validate(value))}
         onblur={() => (valid = validate(value))}

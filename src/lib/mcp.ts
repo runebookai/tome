@@ -24,7 +24,7 @@ export interface McpInputSchema {
 // Retrieve, and transform, tools from the MCP server, into `tools` object we
 // can send to the LLM.
 //
-export async function getMCPTools(sessionId: number): Promise<Tool[]> {
+export async function getMcpTools(sessionId: number): Promise<Tool[]> {
     return (await invoke<McpTool[]>('get_mcp_tools', { sessionId })).map(tool => {
         return {
             type: 'function',

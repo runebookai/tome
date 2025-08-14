@@ -3,17 +3,16 @@
     import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
     import { page } from '$app/state';
 
-    import { CHAT_APP_ID } from '$lib/const';
     import Chat from '$components/Chat.svelte';
-    import Deleteable from '$components/Deleteable.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
     import Link from '$components/Link.svelte';
     import List from '$components/List.svelte';
     import Menu, { type MenuItem } from '$components/Menu.svelte';
-    import ModelMenu from '$components/ModelMenu.svelte';
+    import ModelSelect from '$components/ModelSelect.svelte';
     import Svg from '$components/Svg.svelte';
     import Toggle from '$components/Toggle.svelte';
+    import { App } from '$lib/models';
     import Engine from '$lib/models/engine.svelte';
     import McpServer from '$lib/models/mcp-server.svelte';
     import Message from '$lib/models/message.svelte';
@@ -28,7 +27,7 @@
         })
     );
 
-    const sessions: Session[] = $derived(Session.where({ ephemeral: false }));
+    const sessions: Session[] = $derived(Session.where({ ephemeral: false, relay: false }));
     const mcpServers: McpServer[] = $derived(McpServer.all());
     const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);
@@ -62,7 +61,7 @@
     }
 
     async function addSession() {
-        const session = await Session.create({ appId: CHAT_APP_ID });
+        const session = await Session.create({ appId: App.CHAT.id });
         await goto(`/chat/${session.id}`);
     }
 
@@ -121,7 +120,7 @@
 
 {#snippet SessionItem(sess: Session)}
     <Flex
-        class={`text-medium border-b-light w-full justify-between border-b 
+        class={`text-medium border-b-light w-full justify-between border-b
                 border-l-transparent text-sm ${sess.id == session?.id ? '!border-l-purple border-l' : ''}`}
     >
         <Menu items={menuItems(sess)}>
@@ -139,7 +138,10 @@
 
 <Layout {titlebar}>
     <Flex class="h-full items-start">
-        <Flex class="border-light bg-medium h-content w-[300px] flex-col overflow-auto border-r">
+        <Flex
+            class="border-light bg-medium h-content w-[300px]
+            flex-col overflow-auto border-r"
+        >
             <List items={sessions} itemView={SessionItem} />
         </Flex>
 
@@ -152,7 +154,12 @@
 
             <Flex class="bg-medium border-light h-full w-[300px] flex-col items-start border-l p-4">
                 {#key session.config.model}
-                    <ModelMenu {engines} selected={model} onselect={modelDidUpdate} />
+                    <ModelSelect
+                        {engines}
+                        selected={model}
+                        onselect={modelDidUpdate}
+                        class="h-12 w-full"
+                    />
                 {/key}
 
                 {#if !hasModels}

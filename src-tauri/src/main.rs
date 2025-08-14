@@ -3,6 +3,7 @@
 #![warn(unused_extern_crates)]
 
 mod commands;
+mod daemon;
 mod deeplink;
 mod http;
 mod mcp;
@@ -60,6 +61,7 @@ fn main() {
 
             app.manage(State {
                 sessions: Default::default(),
+                watchers: Default::default(),
             });
 
             configure_window(&window);
@@ -91,6 +93,8 @@ fn main() {
             commands::stop_session,
             // Misc
             commands::restart,
+            commands::watch,
+            commands::unwatch_all,
         ])
         .build(tauri::generate_context!())
         .expect("error running Tome");
@@ -103,7 +107,7 @@ fn main() {
 
             RunEvent::Exit => {
                 // Ensure we kill every child (and child of child, of child, etc.)
-                // MCP server process
+                // MCP server, watcher, etc. process
                 Process::current().kill().unwrap();
             }
 
