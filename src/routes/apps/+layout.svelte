@@ -25,6 +25,10 @@
                 onclick: async () => await edit(app),
             },
             {
+                label: 'Export',
+                onclick: async () => await _export(app),
+            },
+            {
                 label: 'Delete',
                 style: 'text-red hover:bg-red hover:text-white',
                 onclick: async () => await destroy(app),
@@ -39,6 +43,10 @@
 
     async function edit(app: App) {
         await goto(`/apps/${app.id}/edit`);
+    }
+
+    async function _export(app: App) {
+        await goto(`/apps/${app.id}/export`);
     }
 
     async function run(app: App) {

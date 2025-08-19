@@ -1,9 +1,43 @@
 import { invoke } from '@tauri-apps/api/core';
+import uuid4 from 'uuid4';
+
+import Redactable from './redaction.svelte';
 
 import { dispatch } from '$lib/dispatch';
 import { info } from '$lib/logger';
 import { App, AppRun, AppStep, Session, Trigger } from '$lib/models';
 import type { FilesystemConfig } from '$lib/models/trigger.svelte';
+
+interface Value {
+    value: string;
+    redacted: boolean;
+}
+
+export interface SerializedApp {
+    name: string;
+    readme: string;
+    trigger: SerializedTrigger;
+    steps: SerializedAppStep[];
+    mcp_servers: SerializedMcpServer[];
+}
+
+export interface SerializedTrigger {
+    event: string;
+    action: string;
+    config: Record<string, unknown>;
+}
+
+export interface SerializedAppStep {
+    model: string;
+    prompt: string;
+}
+
+export interface SerializedMcpServer {
+    name: string;
+    command: string;
+    args: Array<Redactable>;
+    env: Record<string, Redactable>;
+}
 
 /**
  * Watch all events for all Apps
@@ -26,6 +60,39 @@ export async function initializeBackendWatchers() {
         await invoke('watch', { path, id: trigger.id });
         info(`[green]✔ watch: [reset]${path}`);
     });
+}
+
+function redact(...values: string[]): Redactable[] {
+    return values.map(value => new Redactable(value, uuid4.valid(value)));
+}
+
+/**
+ * Serialize an App into a portable JSON object used to share with other
+ * users.
+ */
+export function serialize(app: App): SerializedApp {
+    return {
+        name: app.name,
+        readme: app.readme,
+
+        trigger: {
+            event: app.trigger.event,
+            action: app.trigger.action,
+            config: { ...app.trigger.config },
+        },
+
+        steps: app.steps.map(step => ({
+            model: step.model?.id as string,
+            prompt: step.prompt,
+        })),
+
+        mcp_servers: app.mcpServers.map(server => ({
+            name: server.name,
+            command: server.command,
+            args: redact(...server.args),
+            env: Object.fromEntries(Object.entries(server.env).map(values => redact(...values))),
+        })),
+    };
 }
 
 /**

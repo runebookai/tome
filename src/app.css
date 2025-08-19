@@ -59,6 +59,10 @@
     border-radius: 6px;
 }
 
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 html,
 body {
     background: var(--background-color-dark);
@@ -144,4 +148,8 @@ body[data-theme='dark'] {
 input::placeholder,
 textarea::placeholder {
     color: var(--text-color-dark);
+}
+
+button:hover {
+    cursor: pointer;
 }
