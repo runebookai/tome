@@ -53,18 +53,18 @@ pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command
                 "bunx"
             }
         }
-        os_specific_command if os_specific_command.contains("imcp-server") => {
+        _ if command.contains("imcp-server") || command.contains("Tinderbox") => {
             if cfg!(target_os = "macos") {
-                os_specific_command
+                command
             } else {
-                return Err(anyhow!("Are you trying to use iMCP outside of osx? Please tell us about this in our Discord."));
+                return Err(anyhow!("Are you trying to use a MacOS application outside of MacOS? Please tell us about this in our Discord."));
             }
         }
         _ => return Err(anyhow!("{} servers not supported.", command)),
     };
 
-    // imcp is user-installed, and so doesn't exist in our base dir 🙃
-    if os_specific_command.contains("imcp-server") {
+    // imcp/tinderbox is user-installed, and so doesn't exist in our base dir 🙃
+    if os_specific_command.contains("imcp-server") || os_specific_command.contains("Tinderbox") {
         Ok(Command::new(PathBuf::from(os_specific_command)))
     } else {
         Ok(Command::new(
