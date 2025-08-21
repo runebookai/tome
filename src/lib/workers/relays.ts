@@ -1,3 +1,4 @@
+import { info } from '$lib/logger';
 import { invoke } from '$lib/web-workers';
 
 /**
@@ -16,4 +17,5 @@ function enqueue() {
     setTimeout(relay, delay);
 }
 
+info('[green]✔ relays started');
 enqueue();

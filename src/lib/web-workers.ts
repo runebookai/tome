@@ -55,8 +55,7 @@ export interface InvokeMessage {
 /**
  * Start a Web Worker.
  */
-export function spawn(path: string): Worker {
-    const worker = new Worker(path, { type: 'module' });
+export function spawn(worker: Worker): Worker {
     worker.onmessage = (message: MessageEvent<InvokeMessage>) => {
         const { name, ...args } = message.data;
         info(`→ invoke('${name}', ${JSON.stringify(args)})`);

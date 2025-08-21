@@ -19,8 +19,8 @@ import Engine from '$lib/models/engine.svelte';
 import startup, { StartupCheck } from '$lib/startup';
 import { isUpToDate } from '$lib/updates';
 import { spawn } from '$lib/web-workers';
-import Relay from '$lib/workers/relays?url';
-import Scheduler from '$lib/workers/tasks?url';
+import Relay from '$lib/workers/relays?worker';
+import Scheduler from '$lib/workers/tasks?worker';
 
 // App Initialization
 export const init: ClientInit = async () => {
@@ -32,11 +32,8 @@ export const init: ClientInit = async () => {
     await resync();
     info('[green]✔ database synced');
 
-    spawn(Scheduler);
-    info('[green]✔ scheduler started');
-
-    spawn(Relay);
-    info('[green]✔ relays started');
+    spawn(new Scheduler());
+    spawn(new Relay());
 
     await listen();
     await apps.watch();

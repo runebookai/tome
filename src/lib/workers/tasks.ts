@@ -27,4 +27,5 @@ function delay() {
     return moment.utc().startOf('hour').add(1, 'hour').diff(moment.utc(), 'milliseconds');
 }
 
+info('[green]✔ scheduler started');
 enqueue();
