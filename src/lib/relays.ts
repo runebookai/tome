@@ -4,13 +4,13 @@ import { error, info, warn } from '$lib/logger';
 import { Model, Relay } from '$lib/models';
 
 export interface RelayMessage {
-    name: 'relay'
+    name: 'relay';
 }
 
 interface TelegramResponse {
     ok: boolean;
     result: TelegramUpdate[];
-};
+}
 
 interface TelegramUpdate {
     update_id: number;
@@ -20,7 +20,7 @@ interface TelegramUpdate {
 interface TelegramMessage {
     message_id: number;
     from: TelegramSender;
-    chat: TelegramChat
+    chat: TelegramChat;
     text: string;
     entities?: TelegramEntity[];
 }
@@ -40,6 +40,15 @@ interface TelegramEntity {
 }
 
 /**
+ * Start all MCP servers for active relays.
+ */
+export async function startActiveRelays() {
+    await Relay.where({ active: true }).awaitAll(async relay => {
+        await relay.session?.start();
+    });
+}
+
+/**
  * Checks all Relays for new messages.
  *
  * This function checks all Relays for new messages and then processes any new
@@ -47,17 +56,17 @@ interface TelegramEntity {
  */
 export async function poll(): Promise<void> {
     const TELEGRAM_API = 'https://api.telegram.org/bot';
-    const relays = Relay.where({active: true});
+    const relays = Relay.where({ active: true });
 
     info(relays);
 
-    relays.forEach(async (relay) => {
-        const offset = relay.config.offset?? 0;
-        const url = `${TELEGRAM_API}${relay.config.api_key}/getUpdates?offset=${offset}`
+    relays.forEach(async relay => {
+        const offset = relay.config.offset ?? 0;
+        const url = `${TELEGRAM_API}${relay.config.api_key}/getUpdates?offset=${offset}`;
         // Get update
         const resp = await fetch(url);
-        const payload  = await resp.json() as TelegramResponse;
-        payload.result?.forEach(async (update) => {
+        const payload = (await resp.json()) as TelegramResponse;
+        payload.result?.forEach(async update => {
             info(`Update ID: ${update.update_id} :: ${update.message.text}`);
             // Increment offset for future updates
             if (update.update_id >= offset) {
@@ -66,9 +75,12 @@ export async function poll(): Promise<void> {
             }
 
             // Check if the message is a bot message or a bot command
-            if (update.message.from.is_bot || update.message.entities?.some(e => e.type == 'bot_command')) {
+            if (
+                update.message.from.is_bot ||
+                update.message.entities?.some(e => e.type == 'bot_command')
+            ) {
                 return;
-            };
+            }
 
             // Forward user messages to the Relay's Session, which will eventually ship them
             // back to the Telegram chat
@@ -90,7 +102,7 @@ async function asyncRelayChat(relay: Relay, update: TelegramUpdate) {
     const modelId = relay.session?.config.model;
     if (!modelId) {
         warn(`No model configured for relay: ${relay.id}`);
-        return
+        return;
     }
     const model = Model.find(modelId);
     if (!model) {
@@ -102,7 +114,7 @@ async function asyncRelayChat(relay: Relay, update: TelegramUpdate) {
     info(`LLM Response: ${llm_response.content}`);
 
     const TELEGRAM_API = 'https://api.telegram.org/bot';
-    const url = `${TELEGRAM_API}${relay.config.api_key}/sendMessage?chat_id=${update.message.chat.id}&text=${encodeURIComponent(llm_response.content)}`
+    const url = `${TELEGRAM_API}${relay.config.api_key}/sendMessage?chat_id=${update.message.chat.id}&text=${encodeURIComponent(llm_response.content)}`;
     const resp = await fetch(url);
     info(`Telegram Response: ${resp.text()}`);
 }
