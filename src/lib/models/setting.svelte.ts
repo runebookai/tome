@@ -1,6 +1,6 @@
 import * as color from '$lib/colorscheme';
-import { Engine } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import Engine from '$lib/models/engine.svelte';
 
 // Custom System Prompt
 export const CUSTOM_SYSTEM_PROMPT = 'custom-system-prompt';
