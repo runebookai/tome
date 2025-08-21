@@ -16,6 +16,7 @@ import { info } from '$lib/logger';
 import { resync } from '$lib/models';
 import Config from '$lib/models/config.svelte';
 import Engine from '$lib/models/engine.svelte';
+import { startActiveRelays } from '$lib/relays';
 import startup, { StartupCheck } from '$lib/startup';
 import { isUpToDate } from '$lib/updates';
 import { spawn } from '$lib/web-workers';
@@ -31,6 +32,8 @@ export const init: ClientInit = async () => {
 
     await resync();
     info('[green]✔ database synced');
+
+    await startActiveRelays();
 
     spawn(new Scheduler());
     spawn(new Relay());
