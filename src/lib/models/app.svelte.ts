@@ -99,6 +99,11 @@ export default class App extends Base<Row>('apps') {
         await step.save();
     }
 
+    async setSteps(steps: AppStep[]) {
+        await AppStep.deleteBy({ appId: this.id });
+        await steps.awaitAll(async step => await this.addStep(step));
+    }
+
     hasMcpServer(server: McpServer) {
         return AppMcpServer.exists({ appId: this.id, mcpServerId: server.id });
     }

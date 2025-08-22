@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+
     import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
@@ -83,6 +85,7 @@
         });
 
         await app.setMcpServers(mcpServers);
+        await goto(`/apps/${app.id}/edit`);
     }
 </script>
 

@@ -55,9 +55,7 @@
         relay.sessionId = session.id;
         relay = await relay.save();
 
-        await mcpServers.awaitAll(async server => {
-            await relay.session?.addMcpServer(server);
-        });
+        await session.setMcpServers(mcpServers);
 
         if (relay.active) {
             status = 'Starting MCP servers';

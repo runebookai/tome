@@ -122,6 +122,11 @@ export default class Session extends Base<Row>('sessions') {
         return await this.save();
     }
 
+    async setMcpServers(servers: McpServer[]) {
+        this.config.enabledMcpServers = servers.map(server => server.name);
+        await this.save();
+    }
+
     protected async afterCreate(): Promise<void> {
         await Message.create({
             sessionId: this.id,
