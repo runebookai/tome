@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.10.0 - 2025-08-22
+
+### New Features
+
+- Introducing Apps
+    - Create Apps with any model, MCP server(s), and prompt(s). Apps can be scheduled or triggered by Filesystem events.
+    - We'll be building out a ton of powerful features around Apps in the coming
+      weeks/months/millennia, so stay tuned.
+    - If you were using Tasks before, they have become Apps using the
+      "scheduled" Trigger.
+- Introducing Relays
+    - Relays allow you to interact with your LLMs and MCP servers through
+      external chat applications. Currently Tome support Telegram.
+- Labs
+    - Experimental features are now going to be available when Tome is in Labs
+      Mode.
+    - To enable this, do so in Settings.
+    - Relays are currently in Labs.
+
+### Improvements
+
+- Redesigned LLM dropdowns in chat and app creation
+- Redesigned "forms" through the app
+- Introduced tooltips for nav and form labels
+
+### Fixes
+
+- Fixes various Light Mode color issues
+    - Toggles
+    - Chat progress dots
+    - Syntax highlighting
+
 ## 0.9.3 - 2025-07-28
 
 ### New Features
