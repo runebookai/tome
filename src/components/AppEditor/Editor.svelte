@@ -82,9 +82,7 @@
             await step.save();
         });
 
-        await mcpServers.awaitAll(async server => {
-            await app.addMcpServer(server);
-        });
+        await app.setMcpServers(mcpServers);
     }
 </script>
 

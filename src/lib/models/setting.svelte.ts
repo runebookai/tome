@@ -44,7 +44,7 @@ export default class Setting extends Base<Row>('settings') {
     static ColorScheme: color.ColorScheme;
 
     @getset('labs-mode')
-    static LabsMode: string;
+    static LabsMode: boolean;
 
     protected static async afterUpdate() {
         // Resync models in case a Provider key/url was updated.

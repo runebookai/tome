@@ -14,6 +14,7 @@
 
     let { relay }: Props = $props();
 
+    let status = $state('');
     let mcpServers: McpServer[] = $state(relay.mcpServers);
     let enabled = $state(relay.active);
     let session = $state(
@@ -46,6 +47,7 @@
     }
 
     async function save() {
+        status = 'Saving';
         session = await session.save();
 
         relay.sessionId = session.id;
@@ -55,7 +57,15 @@
             await relay.session?.addMcpServer(server);
         });
 
-        await session.start();
+        if (relay.active) {
+            status = 'Starting MCP servers';
+            await session.start();
+        } else {
+            status = 'Stopping MCP servers';
+            await session.stop();
+        }
+
+        status = '';
     }
 </script>
 
@@ -129,5 +139,8 @@
         </Section>
     </Flex>
 
-    <Button class="text-purple border-purple mt-8" onclick={save}>Save</Button>
+    <Flex class="mt-8">
+        <Button class="text-purple border-purple" onclick={save}>Save</Button>
+        <p class="text-medium ml-4 text-sm">{status}</p>
+    </Flex>
 </section>
