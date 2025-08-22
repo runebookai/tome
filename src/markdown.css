@@ -65,6 +65,24 @@
     --color-prettylights-syntax-sublimelinter-gutter-mark: #3d444d;
 }
 
+*[data-theme='light'] .markdown-body {
+    --bgColor-muted: #f5f7fa;
+}
+
+*[data-theme='light'] .markdown-body pre {
+    border: 1px solid #e6e6e6;
+}
+
+/* <code> inside a <pre> */
+*[data-theme='light'] .markdown-body pre code {
+    background: transparent;
+}
+
+/* <code> inside any _other_ element */
+*[data-theme='light'] .markdown-body code {
+    background: #e2e2e2;
+}
+
 .markdown-body {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;

@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'highlight.js/styles/tokyo-night-dark.css';
 @import './markdown.css';
 @config '../tailwind.config.cjs';
 
@@ -69,7 +68,9 @@ body {
     color: var(--text-color-light);
 }
 
-html[data-theme="light"] {
+html[data-theme='light'] {
+    @import 'highlight.js/styles/base16/solar-flare-light.css';
+
     --color-purple-dark: #7c5fc0;
     --color-purple: #7c5fc0;
     --color-red: #d7263d;
@@ -89,9 +90,17 @@ html[data-theme="light"] {
     --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #bbbbbb;
+
+    --toggle-gradient: linear-gradient(to bottom, #ccc, #eee);
+    --toggle-color: #fff;
+
+    --loading-light: #999;
+    --loading-dark: #9995;
 }
 
-html[data-theme="dark"] {
+html[data-theme='dark'] {
+    @import 'highlight.js/styles/tokyo-night-dark.css';
+
     --color-purple-dark: #9d7cd8;
     --color-purple: #bb9af7;
     --color-red: #ff757f;
@@ -112,16 +121,22 @@ html[data-theme="dark"] {
     --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #333333;
+
+    --toggle-gradient: linear-gradient(to bottom, #111, #333);
+    --toggle-color: #ccc;
+
+    --loading-light: #fff;
+    --loading-dark: #fff2;
 }
 
-html[data-theme="light"],
-body[data-theme="light"] {
+html[data-theme='light'],
+body[data-theme='light'] {
     background: var(--background-color-medium);
     color: #222;
 }
 
-html[data-theme="dark"],
-body[data-theme="dark"] {
+html[data-theme='dark'],
+body[data-theme='dark'] {
     background: #0b0b0b;
     color: #fff;
 }

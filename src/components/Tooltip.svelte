@@ -1,4 +1,4 @@
-<script module>
+<script lang="ts" module>
     import type { ClassValue } from 'svelte/elements';
 
     export interface TooltipData {

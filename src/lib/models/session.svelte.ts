@@ -74,6 +74,10 @@ export default class Session extends Base<Row>('sessions') {
             .compact();
     }
 
+    get model() {
+        return Model.findBy({ engineId: this.config.engineId, id: this.config.model });
+    }
+
     async start() {
         await this.mcpServers.awaitAll(async s => await s.start(this));
     }
@@ -116,6 +120,11 @@ export default class Session extends Base<Row>('sessions') {
             s => s !== server.name
         );
         return await this.save();
+    }
+
+    async setMcpServers(servers: McpServer[]) {
+        this.config.enabledMcpServers = servers.map(server => server.name);
+        await this.save();
     }
 
     protected async afterCreate(): Promise<void> {

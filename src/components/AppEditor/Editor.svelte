@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+
     import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
@@ -82,9 +84,8 @@
             await step.save();
         });
 
-        await mcpServers.awaitAll(async server => {
-            await app.addMcpServer(server);
-        });
+        await app.setMcpServers(mcpServers);
+        await goto(`/apps/${app.id}/edit`);
     }
 </script>
 
@@ -108,7 +109,9 @@
         >
             <Button
                 onclick={() => setEvent('scheduled')}
-                class={`border-light mr-4 ${trigger.event == 'scheduled' ? 'text-light' : ''}`}
+                class={`border-light mr-4 ${
+                    trigger.event == 'scheduled' ? 'text-light bg-light font-medium' : ''
+                }`}
             >
                 Scheduled
             </Button>
@@ -238,7 +241,7 @@
 
                         <button
                             onclick={addStep}
-                            class={`border-xlight bg-dark text-medium absolute
+                            class={`border-light bg-medium text-medium absolute
                             -bottom-4 left-[calc(50%-96px)] flex h-8 w-8
                             flex-col content-center items-center rounded-full
                             border font-mono leading-7.5 font-bold hover:cursor-pointer

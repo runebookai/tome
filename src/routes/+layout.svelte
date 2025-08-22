@@ -30,6 +30,15 @@
         ',': '/settings',
     };
 
+    const metaKeyShortcutsWithLabs: Record<string, string> = {
+        '1': '/chat/latest',
+        '2': '/apps',
+        '3': '/relays',
+        '4': '/mcp-servers',
+        '5': '/models',
+        ',': '/settings',
+    };
+
     async function onkeydown(e: KeyboardEvent) {
         // manually reload data from database
         if (e.metaKey && e.key == 'r') {
@@ -37,8 +46,14 @@
             await goto('/');
         }
 
-        if (e.metaKey && Object.keys(metaKeyShortcuts).includes(e.key)) {
-            await goto(metaKeyShortcuts[e.key]);
+        if (
+            e.metaKey &&
+            Object.keys({ ...metaKeyShortcuts, ...metaKeyShortcutsWithLabs }).includes(e.key)
+        ) {
+            const keyboardShortcuts = Setting.LabsMode
+                ? metaKeyShortcutsWithLabs
+                : metaKeyShortcuts;
+            await goto(keyboardShortcuts[e.key]);
         }
     }
 

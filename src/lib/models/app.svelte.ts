@@ -64,7 +64,9 @@ export default class App extends Base<Row>('apps') {
     // TODO: make `all()` return this by default and make it so you need
     // explicitly get the reserved apps.
     static nonReserved() {
-        return this.all().filter(a => ![CHAT_APP_ID, TASK_APP_ID, RELAY_APP_ID].includes(a.id as number));
+        return this.all().filter(
+            a => ![CHAT_APP_ID, TASK_APP_ID, RELAY_APP_ID].includes(a.id as number)
+        );
     }
 
     get mcpServers(): McpServer[] {
@@ -97,6 +99,11 @@ export default class App extends Base<Row>('apps') {
         await step.save();
     }
 
+    async setSteps(steps: AppStep[]) {
+        await AppStep.deleteBy({ appId: this.id });
+        await steps.awaitAll(async step => await this.addStep(step));
+    }
+
     hasMcpServer(server: McpServer) {
         return AppMcpServer.exists({ appId: this.id, mcpServerId: server.id });
     }
@@ -107,6 +114,15 @@ export default class App extends Base<Row>('apps') {
 
     async removeMcpServer(server: McpServer) {
         await AppMcpServer.findBy({ appId: this.id, mcpServerId: server.id })?.delete();
+    }
+
+    async setMcpServers(servers: McpServer[]) {
+        await this.clearMcpServers();
+        await servers.awaitAll(async server => await this.addMcpServer(server));
+    }
+
+    async clearMcpServers() {
+        await AppMcpServer.where({ appId: this.id }).awaitAll(async s => await s.delete());
     }
 
     protected static async fromSql(row: Row): Promise<App> {

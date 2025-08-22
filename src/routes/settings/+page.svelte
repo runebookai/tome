@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { appLogDir } from '@tauri-apps/api/path';
+    import { openPath } from '@tauri-apps/plugin-opener';
+
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Layout from '$components/Layouts/Default.svelte';
@@ -7,12 +10,10 @@
     import EngineView from '$components/Settings/Engine.svelte';
     import Svg from '$components/Svg.svelte';
     import Titlebar from '$components/Titlebar.svelte';
+    import Toggle from '$components/Toggle.svelte';
     import * as color from '$lib/colorscheme';
     import Engine from '$lib/models/engine.svelte';
     import Setting from '$lib/models/setting.svelte';
-    import { openPath } from '@tauri-apps/plugin-opener';
-    import { appLogDir } from '@tauri-apps/api/path';
-    import Toggle from '$components/Toggle.svelte';
 
     const engines: Engine[] = $derived(Engine.all());
 
@@ -31,7 +32,7 @@
         await engine.delete();
     }
 
-    async function setLabsMode(value: string) {
+    async function setLabsMode(value: boolean) {
         Setting.LabsMode = value;
     }
 
@@ -41,7 +42,7 @@
 
     async function viewLogs() {
         var logDir = await appLogDir();
-        logDir += "/Tome.log"
+        logDir += '/Tome.log';
         await openPath(logDir);
     }
 </script>
@@ -62,31 +63,28 @@
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
-                  <h2 class="font-semibold uppercase">Color Scheme</h2>
-                  <p class="text-medium font-light">Set the color scheme of Tome</p>
+                    <h2 class="font-semibold uppercase">Color Scheme</h2>
+                    <p class="text-medium font-light">Set the color scheme of Tome</p>
                 </section>
 
                 <Flex class="w-full items-center gap-4">
-                  <select
-                    class="border-light bg-medium text-light mt-2 rounded-md border p-2"
-                    bind:value={scheme}
-                    onchange={onColorSchemeChange}
-                  >
-                    <option value="system">System</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-
-                  <section class="ml-auto">
-                    <Button
-                      onclick={viewLogs}
-                      class="ml-auto border-purple text-purple mt-2"
+                    <select
+                        class="border-light bg-medium text-light mt-2 rounded-md border p-2"
+                        bind:value={scheme}
+                        onchange={onColorSchemeChange}
                     >
-                      View Logs
-                    </Button>
-                  </section>
+                        <option value="system">System</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+
+                    <section class="ml-auto">
+                        <Button onclick={viewLogs} class="border-purple text-purple mt-2 ml-auto">
+                            View Logs
+                        </Button>
+                    </section>
                 </Flex>
-              </Flex>
+            </Flex>
 
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
@@ -140,9 +138,9 @@
                 <Flex class="w-full flex-col items-start gap-2">
                     <Toggle
                         label=""
-                        value={Boolean(Setting.LabsMode === 'true') ? 'on' : 'off'}
-                        onEnable={() => setLabsMode("true")}
-                        onDisable={() => setLabsMode("false")}
+                        value={Setting.LabsMode ? 'on' : 'off'}
+                        onEnable={() => setLabsMode(true)}
+                        onDisable={() => setLabsMode(false)}
                     />
                 </Flex>
             </Flex>

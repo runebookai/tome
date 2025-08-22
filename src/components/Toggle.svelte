@@ -49,6 +49,18 @@
 </Flex>
 
 <style>
+    [data-theme='dark'] {
+        --start: #111;
+        ---end: #333;
+        --dot: #ccc;
+    }
+
+    [data-theme='light'] {
+        --start: #999;
+        --end: #ccc;
+        --dot: #fff;
+    }
+
     .toggle {
         position: relative;
         width: 50px;
@@ -77,7 +89,7 @@
         height: 25px;
         border-radius: 50px;
         cursor: pointer;
-        background: linear-gradient(to bottom, #111, #333);
+        background: var(--toggle-gradient);
         transition: all 0.3s ease;
         z-index: 0;
     }
@@ -94,7 +106,7 @@
         width: 21px;
         height: 21px;
         border-radius: 50%;
-        background-color: #999;
+        background-color: var(--toggle-color);
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
     }
@@ -105,7 +117,7 @@
 
     .check:checked + label:after {
         transform: translateX(25px);
-        background-color: #ccc;
+        background-color: var(--toggle-color);
     }
 
     p.disabled {

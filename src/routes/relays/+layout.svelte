@@ -9,7 +9,6 @@
     import Menu from '$components/Menu.svelte';
     import Scrollable from '$components/Scrollable.svelte';
     import Titlebar from '$components/Titlebar.svelte';
-    import { info } from '$lib/logger';
     import Relay from '$lib/models/relay.svelte';
 
     const { children } = $props();
@@ -45,7 +44,10 @@
             class=" border-r-light h-full w-[300px] items-center justify-between border-r px-8 pr-4"
         >
             <h1 class="font-[500]">Relays</h1>
-            <a href="/relays/new" class="border-light h-8 w-8 rounded-md border hover:cursor-pointer">
+            <a
+                href="/relays/new"
+                class="border-light h-8 w-8 rounded-md border hover:cursor-pointer"
+            >
                 <p class="h-8 w-8 text-center !leading-[22px] font-[10px]">+</p>
             </a>
         </Flex>

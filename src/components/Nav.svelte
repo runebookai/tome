@@ -29,7 +29,7 @@
         </Link>
     </Tooltip>
 
-    {#if Setting.LabsMode === 'true'}
+    {#if Setting.LabsMode}
         <Tooltip title="Relays">
             <Link href="/relays" aria-label="relays" activeClass="text-purple">
                 <Svg name="Relays" />
