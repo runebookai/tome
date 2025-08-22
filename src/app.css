@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'highlight.js/styles/tokyo-night-dark.css';
 @import './markdown.css';
 @config '../tailwind.config.cjs';
 
@@ -70,6 +69,8 @@ body {
 }
 
 html[data-theme="light"] {
+    @import 'highlight.js/styles/base16/solar-flare-light.css';
+
     --color-purple-dark: #7c5fc0;
     --color-purple: #7c5fc0;
     --color-red: #d7263d;
@@ -99,6 +100,8 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
+    @import 'highlight.js/styles/tokyo-night-dark.css';
+
     --color-purple-dark: #9d7cd8;
     --color-purple: #bb9af7;
     --color-red: #ff757f;

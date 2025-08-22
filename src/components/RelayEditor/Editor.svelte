@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
@@ -51,7 +53,7 @@
         session = await session.save();
 
         relay.sessionId = session.id;
-        await relay.save();
+        relay = await relay.save();
 
         await mcpServers.awaitAll(async server => {
             await relay.session?.addMcpServer(server);
@@ -66,6 +68,7 @@
         }
 
         status = '';
+        await goto(`/relays/${relay.id}/edit`);
     }
 </script>
 
@@ -74,7 +77,7 @@
         <Section icon="Relays" title="Name" tooltip="The name of the Relay" class="items-center">
             <Input
                 label={false}
-                name="name"
+                name="Relays"
                 placeholder="Name of the relay"
                 class="text-light outline-0"
                 bind:value={relay.name}
@@ -82,7 +85,7 @@
         </Section>
 
         <Section
-            icon="Chat"
+            icon="Models"
             title="Model"
             tooltip="The model you wish to use with your bot"
             class="items-center"
@@ -97,7 +100,7 @@
         </Section>
 
         <Section
-            icon="Chat"
+            icon="Key"
             title="Telegram Token"
             tooltip="The token for your Telegram bot, given to you by Botfather"
             class="items-center"
