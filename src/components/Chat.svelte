@@ -130,32 +130,32 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background-color: #fff;
+        background-color: var(--loading-light);
         box-shadow:
-            16px 0 #fff,
-            -16px 0 #fff;
+            16px 0 var(--loading-light),
+            -16px 0 var(--loading-light);
         position: relative;
         animation: flash 1s ease-out infinite alternate;
     }
 
     @keyframes flash {
         0% {
-            background-color: #fff2;
+            background-color: var(--loading-dark);
             box-shadow:
-                16px 0 #fff2,
-                -16px 0 #fff;
+                16px 0 var(--loading-dark),
+                -16px 0 var(--loading-light);
         }
         50% {
-            background-color: #fff;
+            background-color: var(--loading-light);
             box-shadow:
-                16px 0 #fff2,
-                -16px 0 #fff2;
+                16px 0 var(--loading-dark),
+                -16px 0 var(--loading-dark);
         }
         100% {
-            background-color: #fff2;
+            background-color: var(--loading-dark);
             box-shadow:
-                16px 0 #fff,
-                -16px 0 #fff2;
+                16px 0 var(--loading-light),
+                -16px 0 var(--loading-dark);
         }
     }
 </style>

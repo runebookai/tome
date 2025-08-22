@@ -92,6 +92,10 @@ html[data-theme="light"] {
 
     --toggle-gradient: linear-gradient(to bottom, #ccc, #eee);
     --toggle-color: #fff;
+
+    --loading-light: #999;
+    --loading-dark: #9995;
+
 }
 
 html[data-theme="dark"] {
@@ -118,6 +122,9 @@ html[data-theme="dark"] {
 
     --toggle-gradient: linear-gradient(to bottom, #111, #333);
     --toggle-color: #ccc;
+
+    --loading-light: #fff;
+    --loading-dark: #fff2;
 }
 
 html[data-theme="light"],
