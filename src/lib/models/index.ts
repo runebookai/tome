@@ -7,7 +7,7 @@ import Engine from '$lib/models/engine.svelte';
 import McpServer from '$lib/models/mcp-server.svelte';
 import Message from '$lib/models/message.svelte';
 import Model from '$lib/models/model.svelte';
-import Relay from "$lib/models/relay.svelte";
+import Relay from '$lib/models/relay.svelte';
 import Session from '$lib/models/session.svelte';
 import Setting from '$lib/models/setting.svelte';
 import Task from '$lib/models/task.svelte';
