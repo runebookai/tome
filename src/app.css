@@ -89,6 +89,9 @@ html[data-theme="light"] {
     --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #bbbbbb;
+
+    --toggle-gradient: linear-gradient(to bottom, #ccc, #eee);
+    --toggle-color: #fff;
 }
 
 html[data-theme="dark"] {
@@ -112,6 +115,9 @@ html[data-theme="dark"] {
     --text-color-light-lite: #999999;
     --text-color-medium: #666666;
     --text-color-dark: #333333;
+
+    --toggle-gradient: linear-gradient(to bottom, #111, #333);
+    --toggle-color: #ccc;
 }
 
 html[data-theme="light"],
