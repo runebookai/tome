@@ -20,18 +20,20 @@
 
     let { app }: Props = $props();
 
-    let trigger: Trigger = $state(app.trigger);
+    // Steps
     let steps: AppStep[] = $state(app.steps);
+
+    // MCP Servers
     let mcpServers: McpServer[] = $state(app.mcpServers);
+
+    // Trigger
+    let trigger: Trigger = $state(app.trigger);
     let interval: 'hourly' | 'daily' = $state('hourly');
+    let hour = $state('0 12 * * *');
+    let action: Trigger['action'] = $state('tick');
 
-    let scheduledConfig: ScheduledConfig = $state({
-        period: (trigger.config as ScheduledConfig).period,
-    });
-
-    let filesystemConfig: FilesystemConfig = $state({
-        path: (trigger.config as FilesystemConfig).path,
-    });
+    let filesystemConfig: FilesystemConfig = $state({ path: '' });
+    let scheduledConfig: ScheduledConfig = $state({ period: '0 * * * *' });
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => {
         const hour = i % 12 === 0 ? 12 : i % 12;
@@ -45,7 +47,28 @@
     }
 
     function setInterval(interval: string) {
-        scheduledConfig.period = interval == 'hourly' ? '0 * * * *' : '0 12 * * *';
+        scheduledConfig.period = interval == 'hourly' ? '0 * * * *' : hour;
+        setConfig();
+    }
+
+    function setEvent(event: Trigger['event']) {
+        trigger.event = event;
+        trigger.action = event == 'scheduled' ? 'tick' : action;
+        setConfig();
+    }
+
+    function setAction(action: Trigger['action']) {
+        trigger.action = action;
+        setConfig();
+    }
+
+    function setPeriod(period: string) {
+        scheduledConfig.period = period;
+        setConfig();
+    }
+
+    function setConfig() {
+        trigger.config = trigger.event == 'scheduled' ? scheduledConfig : filesystemConfig;
     }
 
     function addStep() {
@@ -66,11 +89,6 @@
 
     function removeMcpServer(server: McpServer) {
         mcpServers = mcpServers.filter(s => s !== server);
-    }
-
-    function setEvent(event: Trigger['event']) {
-        trigger.event = event;
-        trigger.config = event == 'scheduled' ? scheduledConfig : filesystemConfig;
     }
 
     async function save() {
@@ -142,10 +160,12 @@
                     <p class="mx-4">at</p>
 
                     <div class="w-56">
+                        <!-- prettier-ignore -->
                         <Select
+                            onselect={() => setPeriod(hour)}
                             class="z-50"
                             options={hourOptions}
-                            bind:value={scheduledConfig.period}
+                            bind:value={hour}
                         />
                     </div>
                 {/if}
@@ -157,6 +177,7 @@
                 tooltip="The directory Tome will monitor for file events. Must be an absolute path."
             >
                 <Flex class="border-b-light grow flex-col items-start">
+                    <!-- prettier-ignore -->
                     <input
                         class="text-light mb-4 grow font-mono outline-0"
                         placeholder="/path/to/watch-for-changes"
@@ -167,7 +188,8 @@
                     <Flex class="gap-4">
                         <Flex>
                             <input
-                                bind:group={trigger.action}
+                                onclick={() => setAction('created')}
+                                bind:group={action}
                                 class="text-medium"
                                 id="created"
                                 value="created"
@@ -178,7 +200,8 @@
 
                         <Flex>
                             <input
-                                bind:group={trigger.action}
+                                onclick={() => setAction('updated')}
+                                bind:group={action}
                                 id="updated"
                                 value="updated"
                                 type="radio"
@@ -188,7 +211,8 @@
 
                         <Flex>
                             <input
-                                bind:group={trigger.action}
+                                onclick={() => setAction('deleted')}
+                                bind:group={action}
                                 id="deleted"
                                 value="deleted"
                                 type="radio"
