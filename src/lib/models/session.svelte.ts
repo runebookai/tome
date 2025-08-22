@@ -74,6 +74,10 @@ export default class Session extends Base<Row>('sessions') {
             .compact();
     }
 
+    get model() {
+        return Model.findBy({ engineId: this.config.engineId, id: this.config.model });
+    }
+
     async start() {
         await this.mcpServers.awaitAll(async s => await s.start(this));
     }

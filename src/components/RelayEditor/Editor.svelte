@@ -1,13 +1,12 @@
 <script lang="ts">
-    import Section from '$components/RelayEditor/Section.svelte';
     import Button from '$components/Button.svelte';
-    import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
     import McpServerList from '$components/McpServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
-    import { Relay, McpServer, Model, Config } from '$lib/models';
+    import Section from '$components/RelayEditor/Section.svelte';
     import Toggle from '$components/Toggle.svelte';
+    import { App, McpServer, Model, Relay, Session } from '$lib/models';
 
     interface Props {
         relay: Relay;
@@ -16,22 +15,22 @@
     let { relay }: Props = $props();
 
     let mcpServers: McpServer[] = $state(relay.mcpServers);
-    let enabled: 'disabled' | 'enabled' = $state(relay.active ? 'enabled' : 'disabled');
+    let enabled = $state(relay.active);
+    let session = $state(
+        relay.session || Session.new({ appId: App.RELAY.id, relay: true, ephemeral: true })
+    );
 
-    function getModel(relay: Relay): Model {
-        const modelId = relay.session?.config.model;
-        return modelId ? Model.find(modelId) || Model.default() : Model.default();
+    async function setModel(model: Model) {
+        session.config.engineId = model.engineId as number;
+        session.config.model = model.id as string;
     }
 
-    function setModel(relay: Relay, model: Model) {
-        if (!relay.session) return;
-
-        relay.session.config.engineId = model.engineId as number;
-        relay.session.config.model = model.id as string;
+    function setEnabled() {
+        relay.active = true;
     }
 
-    function setEnabled(value: string) {
-        relay.active = value === 'enabled';
+    function setDisabled() {
+        relay.active = false;
     }
 
     function hasMcpServer(server: McpServer) {
@@ -47,13 +46,16 @@
     }
 
     async function save() {
+        session = await session.save();
+
+        relay.sessionId = session.id;
         await relay.save();
 
         await mcpServers.awaitAll(async server => {
             await relay.session?.addMcpServer(server);
         });
 
-        await relay.session?.save();
+        await session.start();
     }
 </script>
 
@@ -69,17 +71,27 @@
             />
         </Section>
 
-        <Section icon="Chat" title="Model" tooltip="The model you wish to use with your bot" class="items-center">
+        <Section
+            icon="Chat"
+            title="Model"
+            tooltip="The model you wish to use with your bot"
+            class="items-center"
+        >
             <div class="w-64">
                 <ModelSelect
-                    class="h-8 rounded-none border-0 border-r"
-                    selected={getModel(relay)}
-                    onselect={async model => setModel(relay, model)}
+                    class="border-light h-10 rounded-sm border"
+                    selected={session.model}
+                    onselect={setModel}
                 />
             </div>
         </Section>
 
-        <Section icon="Chat" title="Telegram Token" tooltip="The token for your Telegram bot, given to you by Botfather" class="items-center">
+        <Section
+            icon="Chat"
+            title="Telegram Token"
+            tooltip="The token for your Telegram bot, given to you by Botfather"
+            class="items-center"
+        >
             <Input
                 label={false}
                 name="api_key"
@@ -109,9 +121,9 @@
             <Flex class="px-3 py-2">
                 <Toggle
                     label=""
-                    value={relay.active ? 'on' : 'off'}
-                    onEnable={() => setEnabled('enabled')}
-                    onDisable={() => setEnabled('disabled')}
+                    value={enabled ? 'on' : 'off'}
+                    onEnable={() => setEnabled()}
+                    onDisable={() => setDisabled()}
                 />
             </Flex>
         </Section>
