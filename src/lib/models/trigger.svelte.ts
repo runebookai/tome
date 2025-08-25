@@ -6,7 +6,7 @@ import App from './app.svelte';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 type AmbientEvent = 'scheduled' | 'filesystem';
-type AmbientAction = 'tick' | 'created' | 'updated';
+type AmbientAction = 'tick' | 'created' | 'updated' | 'deleted';
 
 export interface ScheduledConfig {
     period: string;
