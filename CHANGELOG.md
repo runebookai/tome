@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.1 - 2025-08-25
+
+### Fixes
+
+- Fixes issue with certain App (Trigger) fields not saving
+
 ## 0.10.0 - 2025-08-22
 
 ### New Features
