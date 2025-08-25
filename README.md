@@ -32,7 +32,7 @@ Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Do
   - Simply download and install Tome and hook up the LLM of your choice
   - No fiddling with JSON, Docker, python or node
   - Chat with MCP-powered models within minutes
-- 🗓 **NEW! Scheduled Tasks**
+- 🗓 **Scheduled Tasks**
   - Schedule prompts to run hourly or at a specific time every day
   - Support for any model or MCP servers
 - 🤖 **AI Model Support**
@@ -46,6 +46,8 @@ Tome is a desktop app that lets **anyone** harness the magic of LLMs and MCP. Do
 - ✏️ **Customization of context windows and temperature**
 - 🧰 **Native support for tool calls and reasoning models**
   - UI enhancements that clearly delineate tool calls and thinking messages
+- 🧪 **NEW! Labs Feature: Telegram Relay (must enable Labs in settings)**
+  - Chat with Tome via our Telegram Relay, use LLMs and MCPs from anywhere you can send a Telegram message!
 
 ## Demo
 
