@@ -45,7 +45,7 @@ cat src-tauri/tauri.conf.json | jq --indent 4 ".version |= \"$MAJOR.$MINOR.$PATC
 cat package.json | jq --indent 4 ".version |= \"$MAJOR.$MINOR.$PATCH\"" | tee package.json 2>&1 >/dev/null
 
 # Update Cargo.toml
-cat src-tauri/Cargo.toml | sed -E "s/^version = \"[0-9]+.[0-9+].[0-9]+\"$/version = \"$MAJOR.$MINOR.$PATCH\"/" | tee src-tauri/Cargo.toml 2>&1 >/dev/null
+cat src-tauri/Cargo.toml | sed -E "s/^version = \"[0-9]+.[0-9]+.[0-9]+\"$/version = \"$MAJOR.$MINOR.$PATCH\"/" | tee src-tauri/Cargo.toml 2>&1 >/dev/null
 
 # Cargo check to update Cargo.lock
 cd src-tauri && cargo check && cd -
