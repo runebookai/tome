@@ -3,8 +3,8 @@
     import { goto } from '$app/navigation';
 
     import Finished from '$components/App/Transfer/Export/Finished.svelte';
+    import Info from '$components/App/Transfer/Export/Info.svelte';
     import Mcp from '$components/App/Transfer/Export/Mcp.svelte';
-    import Info from '$components/App/Transfer/Info.svelte';
     import Modal from '$components/App/Transfer/Modal.svelte';
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';

@@ -65,6 +65,9 @@ importers:
       shellwords:
         specifier: ^1.0.1
         version: 1.0.1
+      svelte-forms:
+        specifier: ^2.3.1
+        version: 2.3.1
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.0.2
@@ -2416,6 +2419,9 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-forms@2.3.1:
+    resolution: {integrity: sha512-ExX9PM0JgvdOWlHl2ztD7XzLNPOPt9U5hBKV8sUAisMfcYWpPRnyz+6EFmh35BOBGJJmuhTDBGm5/7seLjOTIA==}
 
   svelte@5.21.0:
     resolution: {integrity: sha512-+pUFl4d0cu2KoxTtwjzByneCXbUzsNlGc4zMDDT/r2usp3VowYEGu1mFvbjcxmWTkwoy3tyhOg7fsz5aJo0wHw==}
@@ -4944,6 +4950,10 @@ snapshots:
       postcss-selector-parser: 7.1.0
     optionalDependencies:
       svelte: 5.21.0
+
+  svelte-forms@2.3.1:
+    dependencies:
+      is-promise: 4.0.0
 
   svelte@5.21.0:
     dependencies:

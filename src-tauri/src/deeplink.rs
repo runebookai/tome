@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 use tauri::{Emitter, Url};
 
 use crate::APP_HANDLE;
@@ -8,6 +10,10 @@ pub fn mcp_install(query: &str) {
         .unwrap()
         .emit("mcp/install", query)
         .unwrap();
+}
+
+pub fn import_app(hash: &str) {
+    APP_HANDLE.get().unwrap().emit("apps/import", hash).unwrap();
 }
 
 pub fn handle(urls: Vec<Url>) {
@@ -22,6 +28,9 @@ pub fn handle(urls: Vec<Url>) {
     match path {
         "mcp/install" => {
             mcp_install(url.query().unwrap());
+        }
+        "apps/import" => {
+            import_app(url.fragment().unwrap());
         }
         _ => {
             log::warn!("Unknown runebook function for {:?}", path);

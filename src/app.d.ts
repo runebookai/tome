@@ -99,11 +99,6 @@ declare global {
          * ```
          */
         findBy(key: string, value: any): T | undefined;
-
-        /**
-         * Return the last element in the array
-         */
-        last(): T;
     }
 
     interface Array<T> {
@@ -133,6 +128,26 @@ declare global {
          * ```
          */
         awaitAll<K>(fn: (arg0: T) => Promise<K>): Promise<Awaited<K>[]>;
+
+        /**
+         * Return the last element in the array
+         */
+        last(): T;
+
+        /**
+         * Remove an element from the array.
+         */
+        remove(key: T): Array<T>;
+
+        /**
+         * Is the array empty.
+         */
+        isEmpty(): boolean;
+
+        /**
+         * Does every element in this array also exist in `other`
+         */
+        equals(other: T[]): boolean;
     }
 
     interface String {

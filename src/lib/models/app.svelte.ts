@@ -1,8 +1,9 @@
 import moment from 'moment';
 
-import { execute } from '$lib/apps';
+import { execute, type SerializedApp } from '$lib/apps';
 import { AppMcpServer, AppRun, AppStep, McpServer, Trigger } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import type { AmbientAction, AmbientEvent } from '$lib/models/trigger.svelte';
 
 const CHAT_APP_ID = 1;
 const TASK_APP_ID = 2;
@@ -67,6 +68,13 @@ export default class App extends Base<Row>('apps') {
         return this.all().filter(
             a => ![CHAT_APP_ID, TASK_APP_ID, RELAY_APP_ID].includes(a.id as number)
         );
+    }
+
+    static fromSerialized(app: SerializedApp) {
+        return App.new({
+            name: app.name,
+            readme: app.readme,
+        });
     }
 
     get mcpServers(): McpServer[] {

@@ -3,6 +3,7 @@ pub(crate) mod server;
 
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use crate::state::State;
 
@@ -213,10 +214,18 @@ pub async fn peer_info(
     env: HashMap<String, String>,
     app: AppHandle,
 ) -> Result<String> {
-    let server = McpServer::start(command, args, env, app).await?;
-    let peer_info = server.peer_info();
-    server.kill()?;
-    Ok(serde_json::to_string(&peer_info)?)
+    if let Ok(Ok(server)) = tokio::time::timeout(
+        Duration::from_secs(5),
+        McpServer::start(command, args, env, app),
+    )
+    .await
+    {
+        let peer_info = server.peer_info();
+        server.kill()?;
+        Ok(serde_json::to_string(&peer_info)?)
+    } else {
+        Err(anyhow!("Could not start MCP server"))
+    }
 }
 
 pub async fn rename_server(

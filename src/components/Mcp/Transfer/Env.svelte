@@ -12,7 +12,12 @@
 </script>
 
 {#if Object.keys(server.env).length}
-    <LabeledSection icon="Env" title="ENV" tooltip="Environment variables" class="text-medium">
+    <LabeledSection
+        icon="Env"
+        title="ENV"
+        tooltip="Environment variables"
+        class="text-medium border-none"
+    >
         {@render children?.()}
     </LabeledSection>
 {/if}

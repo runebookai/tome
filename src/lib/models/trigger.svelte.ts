@@ -3,10 +3,11 @@ import moment from 'moment';
 
 import App from './app.svelte';
 
+import type { SerializedTrigger } from '$lib/apps';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
-type AmbientEvent = 'scheduled' | 'filesystem';
-type AmbientAction = 'tick' | 'created' | 'updated' | 'deleted';
+export type AmbientEvent = 'scheduled' | 'filesystem';
+export type AmbientAction = 'tick' | 'created' | 'updated' | 'deleted';
 
 export interface ScheduledConfig {
     period: string;
@@ -43,6 +44,14 @@ export default class Trigger extends Base<Row>('triggers') {
             config: {
                 period: '0 * * * *',
             },
+        });
+    }
+
+    static fromSerialized(trigger: SerializedTrigger) {
+        return Trigger.new({
+            event: trigger.event as AmbientEvent,
+            action: trigger.action as AmbientAction,
+            config: trigger.config,
         });
     }
 

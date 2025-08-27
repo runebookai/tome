@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { HTMLAttributes } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
+
     import Redactable from '$lib/redaction.svelte';
 
     interface Props extends HTMLAttributes<HTMLParagraphElement> {

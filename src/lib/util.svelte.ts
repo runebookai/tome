@@ -42,3 +42,17 @@ export function onkey(key: string, fn: (e: KeyboardEvent) => any) {
         }
     };
 }
+
+/**
+ * Is a value `null`. Exciting, I know.
+ */
+export function isNull(value: unknown): boolean {
+    return value === null;
+}
+
+/**
+ * You guessed it! Is the value NOT null?
+ */
+export function notNull(value: unknown): boolean {
+    return !isNull(value);
+}

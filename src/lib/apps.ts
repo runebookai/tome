@@ -5,13 +5,8 @@ import Redactable from './redaction.svelte';
 
 import { dispatch } from '$lib/dispatch';
 import { info } from '$lib/logger';
-import { App, AppRun, AppStep, Session, Trigger } from '$lib/models';
-import type { FilesystemConfig } from '$lib/models/trigger.svelte';
-
-interface Value {
-    value: string;
-    redacted: boolean;
-}
+import { App, AppRun, AppStep, McpServer, Model, Session, Trigger } from '$lib/models';
+import type { AmbientAction, AmbientEvent, FilesystemConfig } from '$lib/models/trigger.svelte';
 
 export interface SerializedApp {
     name: string;
@@ -64,6 +59,46 @@ export async function initializeBackendWatchers() {
 
 function redact(...values: string[]): Redactable[] {
     return values.map(value => new Redactable(value, uuid4.valid(value)));
+}
+
+export async function install(serializedApp: SerializedApp): Promise<App> {
+    const app = await App.create({
+        name: serializedApp.name,
+        readme: serializedApp.readme,
+    });
+
+    await Trigger.create({
+        appId: app.id,
+        event: serializedApp.trigger.event as AmbientEvent,
+        action: serializedApp.trigger.action as AmbientAction,
+        config: serializedApp.trigger.config,
+    });
+
+    for (const step of serializedApp.steps) {
+        const model = Model.find(step.model);
+
+        await AppStep.create({
+            appId: app?.id,
+            modelId: model?.id,
+            engineId: model?.engineId,
+            prompt: step.prompt,
+        });
+    }
+
+    for (const server of serializedApp.mcp_servers) {
+        app.addMcpServer(
+            await McpServer.create({
+                name: server.name,
+                command: server.command,
+                args: server.args.map(a => a.toString()),
+                env: Object.fromEntries(
+                    Object.entries(server.env).map(([k, v]) => [k.toString(), v.toString()])
+                ),
+            })
+        );
+    }
+
+    return app;
 }
 
 /**

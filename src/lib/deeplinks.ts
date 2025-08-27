@@ -10,10 +10,15 @@ export interface VSCodeMcpInstallConfig {
 
 export enum DeepLinks {
     InstallMcpServer = 'mcp/install',
+    InstallApp = 'apps/import',
 }
 
 export function setupDeeplinks() {
     listen<string>(DeepLinks.InstallMcpServer, async event => {
         goto(`/mcp-servers/install?config=${event.payload}`);
+    });
+
+    listen<string>(DeepLinks.InstallApp, async event => {
+        goto(`/apps/import#${event.payload}`);
     });
 }

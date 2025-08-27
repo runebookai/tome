@@ -52,12 +52,24 @@ Array.prototype.compact = function <T>(this: T[]): Exclude<T, undefined>[] {
     return this.filter(i => i !== undefined) as Exclude<T, undefined>[];
 };
 
+Array.prototype.equals = function <T>(this: T[], other: T[]): boolean {
+    return this.length == other.length && this.every(value => other.includes(value));
+};
+
 Array.prototype.last = function <T>(this: T[]): T {
     return this[this.length - 1];
 };
 
 Array.prototype.mapBy = function <T, K extends keyof T>(this: T[], key: K): T[K][] {
     return this.map(item => item[key] as T[K]);
+};
+
+Array.prototype.remove = function <T>(this: T[], value: T): T[] {
+    return this.splice(this.indexOf(value), 1);
+};
+
+Array.prototype.isEmpty = function <T>(this: T[]): boolean {
+    return this.length == 0;
 };
 
 Array.prototype.awaitAll = async function <T>(

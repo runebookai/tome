@@ -145,6 +145,19 @@ body[data-theme='dark'] {
     color: #fff;
 }
 
+input,
+textarea {
+    outline: 0;
+    transition-property: border;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+}
+
+input:focus,
+textarea:focus {
+    border: 1px solid color-mix(in srgb, var(--color-purple) 40%, transparent);
+}
+
 input::placeholder,
 textarea::placeholder {
     color: var(--text-color-dark);
