@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 
-import { Session, type ToSqlRow } from '$lib/models';
+import { AppMcpServer, Session, type ToSqlRow } from '$lib/models';
 import Base from '$lib/models/base.svelte';
 
 interface Row {
@@ -27,27 +27,28 @@ export default class McpServer extends Base<Row>('mcp_servers') {
     id?: number = $state();
     name: string = $state('Installing...');
     command: string = $state('');
-    metadata?: Metadata = $state({} as Metadata);
+    metadata?: Metadata = $state({
+        protocolVersion: '',
+        capabilities: {
+            tools: {},
+        },
+        serverInfo: {
+            name: undefined,
+            version: '',
+        },
+    });
     args: string[] = $state([]);
     env: Record<string, string> = $state({});
 
-    get defaults() {
-        return {
-            name: 'Installing...',
-            command: '',
-            metadata: {
-                protocolVersion: '',
-                capabilities: {
-                    tools: {},
-                },
-                serverInfo: {
-                    name: undefined,
-                    version: '',
-                },
-            },
-            args: [],
-            env: {},
-        };
+    /**
+     * Servers that are not associated with any Apps.
+     *
+     * Apps get a copy of servers associated with them. So any ones left without
+     * a reference to an App, are the original instances that we use for Chat.
+     */
+    static forChat() {
+        const appServerIds = AppMcpServer.all().mapBy('mcpServerId');
+        return this.all().filter(server => !appServerIds.includes(server.id));
     }
 
     static async forApp(appId: number): Promise<McpServer[]> {
