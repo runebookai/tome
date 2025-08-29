@@ -21,12 +21,18 @@
                 onclick: async () => await run(app),
             },
             {
+                separator: true,
+            },
+            {
                 label: 'Edit',
                 onclick: async () => await edit(app),
             },
             {
                 label: 'Export',
                 onclick: async () => await _export(app),
+            },
+            {
+                separator: true,
             },
             {
                 label: 'Delete',

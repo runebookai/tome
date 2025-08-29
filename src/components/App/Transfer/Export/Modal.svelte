@@ -39,7 +39,7 @@
 </script>
 
 <Modal {close} class="flex flex-col p-0">
-    <Flex class="bg-medium border-light w-full flex-0 border-b p-3 pl-6">
+    <Flex class="bg-dark border-light w-full flex-0 border-b p-3 pl-6">
         <p class="grow text-sm">Export</p>
         <button onclick={close} class="border-light text-medium rounded-sm border p-2">
             <Svg name="X" class="h-2 w-2" />

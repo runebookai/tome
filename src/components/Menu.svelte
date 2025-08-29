@@ -1,10 +1,21 @@
 <script lang="ts" module>
-    export interface MenuItem {
+    interface Separator {
+        separator: boolean;
+        icon?: undefined;
+        label?: undefined;
+        style?: undefined;
+        onclick?: undefined;
+    }
+
+    interface Action {
+        separator?: undefined;
         icon?: string;
         label: string;
         style?: string;
         onclick: () => void;
     }
+
+    export type MenuItem = Separator | Action;
 </script>
 
 <script lang="ts">
@@ -38,7 +49,7 @@
         isOpen = isOpen ? false : true;
     }
 
-    function onclick(item: MenuItem) {
+    function onclick(item: Action) {
         item.onclick();
         isOpen = false;
     }
@@ -67,21 +78,25 @@
         flex-col rounded-lg border py-2 text-base shadow-md shadow-black/10 group-hover:block`}
         >
             {#each items as item, i (i)}
-                <button
-                    onclick={() => onclick(item)}
-                    class={twMerge(
-                        'hover:bg-purple flex w-full flex-row items-center p-8 py-1.5 hover:cursor-pointer',
-                        item.style
-                    )}
-                >
-                    {#if item.icon}
-                        <div class="mr-4 h-4 w-4">
-                            <Svg name={item.icon} />
-                        </div>
-                    {/if}
+                {#if item.separator}
+                    <div class="bg-xlight my-1 h-[1px] w-full"></div>
+                {:else}
+                    <button
+                        onclick={() => onclick(item as Action)}
+                        class={twMerge(
+                            'hover:bg-purple flex w-full flex-row items-center p-8 py-1.5 hover:cursor-pointer',
+                            item.style
+                        )}
+                    >
+                        {#if item.icon}
+                            <div class="mr-4 h-4 w-4">
+                                <Svg name={item.icon} />
+                            </div>
+                        {/if}
 
-                    <p>{item.label}</p>
-                </button>
+                        <p>{item.label}</p>
+                    </button>
+                {/if}
             {/each}
         </Flex>
     </button>
