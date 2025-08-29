@@ -22,7 +22,7 @@
     let mode = $state('info');
     let label = $state('Continue');
 
-    function next(e: Event) {
+    async function next(e: Event) {
         e.stopPropagation();
 
         if (mode == 'info') {
@@ -30,6 +30,8 @@
         } else if (mode == 'mcp') {
             mode = 'finished';
             label = 'Close';
+        } else {
+            await close();
         }
     }
 

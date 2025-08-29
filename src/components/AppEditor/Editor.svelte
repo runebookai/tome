@@ -26,17 +26,8 @@
     // MCP Servers
     let mcpServers: McpServer[] = $state(app.mcpServers.compact());
 
-    const mcpServerCopies = McpServer.forChat().map(server => {
-        return (
-            mcpServers.find(s => s.name == server.name) ??
-            McpServer.new({
-                name: server.name,
-                command: server.command,
-                args: server.args,
-                env: server.env,
-            })
-        );
-    });
+    // Copied instances of all base MCP servers.
+    let mcpServerCopies = $state(copyMcpServers());
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
@@ -52,6 +43,20 @@
         const ampm = i < 12 ? 'AM' : 'PM';
         return { label: `${hour}:00 ${ampm}`, value: `0 ${i} * * *` };
     });
+
+    function copyMcpServers() {
+        return McpServer.forChat().map(server => {
+            return (
+                mcpServers.find(s => s.name == server.name) ??
+                McpServer.new({
+                    name: server.name,
+                    command: server.command,
+                    args: server.args,
+                    env: server.env,
+                })
+            );
+        });
+    }
 
     function setModel(step: AppStep, model: Model) {
         step.engineId = model.engineId as number;
@@ -114,11 +119,31 @@
             await step.save();
         });
 
-        await app.clearMcpServers();
-        await mcpServers.awaitAll(async server => {
-            server = await server.save();
-            await app.addMcpServer(server);
+        await app.mcpServers.awaitAll(async server => {
+            if (!mcpServers.mapBy('name').includes(server.name)) {
+                if (server.id) {
+                    await app.removeMcpServer(server);
+                    await server.delete();
+                }
+            }
         });
+
+        await mcpServers.awaitAll(async server => {
+            const mcp = await server.save();
+
+            // Ensure the instance in `mcpServers` is updated to match to
+            // persisted one in the database, so that subsequent saves act on
+            // the correct record.
+            server.id = mcp.id;
+            server.metadata = mcp.metadata;
+
+            await app.addMcpServer(mcp);
+        });
+
+        // Reset MCP servers to match the new state of the world after we
+        // reconcile them above.
+        mcpServers = app.mcpServers.compact();
+        mcpServerCopies = copyMcpServers();
 
         await goto(`/apps/${app.id}/edit`);
     }

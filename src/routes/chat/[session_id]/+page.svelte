@@ -52,7 +52,7 @@
 
     async function startMcpServer(server: McpServer) {
         await server.start(session);
-        await session.addMcpServer(server);
+        await session?.addMcpServer(server);
     }
 
     async function stopMcpServer(server: McpServer) {

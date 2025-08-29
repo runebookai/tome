@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import uuid4 from 'uuid4';
 
-import Redactable from './redaction.svelte';
+import Redactable, { redact } from './redaction.svelte';
 
 import { dispatch } from '$lib/dispatch';
 import { info } from '$lib/logger';
@@ -55,10 +55,6 @@ export async function initializeBackendWatchers() {
         await invoke('watch', { path, id: trigger.id });
         info(`[green]✔ watch: [reset]${path}`);
     });
-}
-
-function redact(...values: string[]): Redactable[] {
-    return values.map(value => new Redactable(value, uuid4.valid(value)));
 }
 
 export async function install(serializedApp: SerializedApp): Promise<App> {
