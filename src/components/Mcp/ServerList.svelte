@@ -1,26 +1,27 @@
 <script lang="ts">
-    import Flex from '$components/Flex.svelte';
+    import type { HTMLAttributes } from 'svelte/elements';
+
     import List from '$components/List.svelte';
-    import Toggle from '$components/Toggle.svelte';
+    import ServerToggled from '$components/Mcp/ServerToggled.svelte';
     import { McpServer } from '$lib/models';
 
-    const { hasMcpServer, addMcpServer, removeMcpServer } = $props();
+    interface Props extends HTMLAttributes<HTMLDivElement> {
+        servers: McpServer[];
+        enabled: (mcpServer: McpServer) => boolean;
+        onadd: (mcpServer: McpServer) => Promise<unknown> | unknown;
+        onremove: (mcpServer: McpServer) => Promise<unknown> | unknown;
+    }
+
+    const { servers, enabled, onadd, onremove }: Props = $props();
 </script>
 
-{#snippet McpServerView(mcpServer: McpServer)}
-    <Flex class="px-3 py-2">
-        <Toggle
-            label={mcpServer.name}
-            value={hasMcpServer(mcpServer) ? 'on' : 'off'}
-            onEnable={async () => await addMcpServer(mcpServer)}
-            onDisable={async () => await removeMcpServer(mcpServer)}
-        />
-    </Flex>
+{#snippet Server(mcpServer: McpServer)}
+    <ServerToggled {mcpServer} enabled={enabled(mcpServer)} onenable={onadd} ondisable={onremove} />
 {/snippet}
 
 <List
-    items={McpServer.all()}
-    itemView={McpServerView}
+    items={servers}
+    itemView={Server}
     filterable
     filterProp="name"
     class="border-light rounded-md border"

@@ -130,7 +130,10 @@ export default class App extends Base<Row>('apps') {
     }
 
     async clearMcpServers() {
-        await AppMcpServer.where({ appId: this.id }).awaitAll(async s => await s.delete());
+        await AppMcpServer.where({ appId: this.id }).awaitAll(async join => {
+            await McpServer.find(join.mcpServerId as number)?.delete();
+            await join.delete();
+        });
     }
 
     protected static async fromSql(row: Row): Promise<App> {

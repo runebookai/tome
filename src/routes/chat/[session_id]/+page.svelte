@@ -192,8 +192,8 @@
                                     ? 'on'
                                     : 'off'}
                                 disabled={!model?.supportsTools}
-                                onEnable={() => startMcpServer(server)}
-                                onDisable={() => stopMcpServer(server)}
+                                onenable={() => startMcpServer(server)}
+                                ondisable={() => stopMcpServer(server)}
                             />
                         </Flex>
                     {/each}

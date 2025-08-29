@@ -19,7 +19,7 @@
 
     const { children } = $props();
 
-    let mcpServers: McpServer[] = $derived(McpServer.all());
+    let mcpServers: McpServer[] = $derived(McpServer.forChat());
     let registries: Registry[] = [
         {
             name: 'Smithery',

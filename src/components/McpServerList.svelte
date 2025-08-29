@@ -1,5 +1,6 @@
 <script lang="ts">
     import Flex from './Flex.svelte';
+    import ServerToggled from './Mcp/ServerToggled.svelte';
     import Toggle from './Toggle.svelte';
 
     import List from '$components/List.svelte';
@@ -8,20 +9,13 @@
     const { hasMcpServer, addMcpServer, removeMcpServer } = $props();
 </script>
 
-{#snippet McpServerView(mcpServer: McpServer)}
-    <Flex class="px-3 py-2">
-        <Toggle
-            label={mcpServer.name}
-            value={hasMcpServer(mcpServer) ? 'on' : 'off'}
-            onEnable={async () => await addMcpServer(mcpServer)}
-            onDisable={async () => await removeMcpServer(mcpServer)}
-        />
-    </Flex>
+{#snippet Server(mcpServer: McpServer)}
+    <ServerToggled {mcpServer} />
 {/snippet}
 
 <List
     items={McpServer.all()}
-    itemView={McpServerView}
+    itemView={Server}
     filterable
     filterProp="name"
     class="border-light rounded-md border"

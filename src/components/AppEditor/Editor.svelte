@@ -6,7 +6,7 @@
     import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
     import Input from '$components/Input.svelte';
-    import McpServerList from '$components/McpServerList.svelte';
+    import McpServerList from '$components/Mcp/ServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Select from '$components/Select.svelte';
     import Svg from '$components/Svg.svelte';
@@ -24,7 +24,19 @@
     let steps: AppStep[] = $state(app.steps);
 
     // MCP Servers
-    let mcpServers: McpServer[] = $state(app.mcpServers);
+    let mcpServers: McpServer[] = $state(app.mcpServers.compact());
+
+    const mcpServerCopies = McpServer.forChat().map(server => {
+        return (
+            mcpServers.find(s => s.name == server.name) ??
+            McpServer.new({
+                name: server.name,
+                command: server.command,
+                args: server.args,
+                env: server.env,
+            })
+        );
+    });
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
@@ -102,7 +114,12 @@
             await step.save();
         });
 
-        await app.setMcpServers(mcpServers);
+        await app.clearMcpServers();
+        await mcpServers.awaitAll(async server => {
+            server = await server.save();
+            await app.addMcpServer(server);
+        });
+
         await goto(`/apps/${app.id}/edit`);
     }
 </script>
@@ -290,10 +307,17 @@
             tooltip="The collection of MCP servers to enable when this App executes"
         >
             <Flex class="grow">
-                <McpServerList {hasMcpServer} {addMcpServer} {removeMcpServer} />
+                <McpServerList
+                    servers={mcpServerCopies}
+                    enabled={hasMcpServer}
+                    onadd={addMcpServer}
+                    onremove={removeMcpServer}
+                />
             </Flex>
         </Section>
     </Flex>
 
-    <Button class="text-purple border-purple mt-8" onclick={save}>Save</Button>
+    <div class="mt-8">
+        <Button class="text-purple border-purple" onclick={save}>Save</Button>
+    </div>
 </section>
