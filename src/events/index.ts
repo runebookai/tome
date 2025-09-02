@@ -9,4 +9,5 @@ export async function listen() {
     await invoke('unwatch_all');
     await import('./filesystem');
     await import('./mcp');
+    await import('./apps');
 }

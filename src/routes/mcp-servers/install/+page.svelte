@@ -15,7 +15,7 @@
 
     async function install() {
         const server = await McpServer.create(config);
-        goto(`/mcp-servers/${server.name}`);
+        await goto(`/mcp-servers/${server.id}`);
     }
 
     function cancel() {

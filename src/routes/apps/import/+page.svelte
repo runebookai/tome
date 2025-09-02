@@ -4,7 +4,9 @@
     import Modal from '$components/App/Transfer/Import/Modal.svelte';
     import Layout from '$components/Layouts/Default.svelte';
 
-    const serializedApp = JSON.parse(atob(page.url.hash.replace('#', '')));
+    const hash = page.url.searchParams.get('hash') as string;
+    const json = atob(hash);
+    const serializedApp = JSON.parse(json);
 </script>
 
 <Layout>

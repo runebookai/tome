@@ -98,6 +98,11 @@ export default class App extends Base<Row>('apps') {
         return this.runs[0];
     }
 
+    async delete(): Promise<boolean> {
+        await this.clearMcpServers();
+        return await super.delete();
+    }
+
     async execute(input?: object): Promise<AppRun> {
         return await execute(this, input);
     }

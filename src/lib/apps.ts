@@ -1,5 +1,4 @@
 import { invoke } from '@tauri-apps/api/core';
-import uuid4 from 'uuid4';
 
 import Redactable, { redact } from './redaction.svelte';
 
