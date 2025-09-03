@@ -79,7 +79,7 @@
         >
             {#each items as item, i (i)}
                 {#if item.separator}
-                    <div class="bg-xlight my-1 h-[1px] w-full"></div>
+                    <div class="border-xlight my-1 h-0 w-full border-b"></div>
                 {:else}
                     <button
                         onclick={() => onclick(item as Action)}
