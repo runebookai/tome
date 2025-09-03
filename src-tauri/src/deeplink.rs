@@ -3,34 +3,29 @@ use tauri::{Emitter, Url};
 
 use crate::APP_HANDLE;
 
-#[derive(Clone, Debug, Serialize)]
-struct McpEvent {
-    config: String,
-}
-
+// Smithery uses a URL format from VSCode, which is insane. It looks like:
+//
+// `tome:mcp/install?<url-encoded-json>`
+//
+// No "//" after the scheme and no query param key. Thanks Microsoft.
+//
 pub fn mcp_install(query: &str) {
     APP_HANDLE
         .get()
         .unwrap()
-        .emit(
-            "mcp/install",
-            McpEvent {
-                config: query.into(),
-            },
-        )
+        .emit("mcp/install", query)
         .unwrap();
 }
 
-#[derive(Clone, Debug, Serialize)]
-struct ImportEvent {
-    hash: String,
-}
-
-pub fn import_app(hash: &str) {
+// Import deeplinks resemble:
+//
+// `tome://apps/import?app=<url-encoded-json>`
+//
+pub fn import_app(query: &str) {
     APP_HANDLE
         .get()
         .unwrap()
-        .emit("apps/import", ImportEvent { hash: hash.into() })
+        .emit("apps/import", query)
         .unwrap();
 }
 
@@ -59,12 +54,10 @@ pub fn handle(urls: Vec<Url>) {
 
     match action.as_str() {
         "mcp/install" => {
-            log::info!("[DEEPLINK][QUERY] {:?}", url.query());
             mcp_install(url.query().unwrap());
         }
         "apps/import" => {
-            log::info!("[DEEPLINK][FRAGMENT] {:?}", url.fragment());
-            import_app(url.fragment().unwrap());
+            import_app(url.query().unwrap());
         }
         _ => {
             log::warn!("Unknown runebook function for {:?}", action.clone());

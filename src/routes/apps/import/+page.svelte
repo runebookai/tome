@@ -4,12 +4,13 @@
     import Modal from '$components/App/Transfer/Import/Modal.svelte';
     import Layout from '$components/Layouts/Default.svelte';
 
-    const hash = page.url.searchParams.get('hash') as string;
-    const bytes = decodeURIComponent(hash);
-    const json = atob(bytes);
-    const serializedApp = JSON.parse(json);
+    const app = page.url.searchParams.get('app') as string;
+    const json = decodeURIComponent(app);
+    const serializedApp = $state(JSON.parse(json));
 </script>
 
 <Layout>
-    <Modal {serializedApp} />
+    {#key serializedApp}
+        <Modal {serializedApp} />
+    {/key}
 </Layout>

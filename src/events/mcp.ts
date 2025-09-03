@@ -7,6 +7,6 @@ import { info } from '$lib/logger';
 
 listen('mcp/install', async (event: Event<MCPInstallEvent>) => {
     info('→ mcp/install');
-    console.log(event);
-    await goto(`/mcp-servers/install?config=${event.payload.config}`);
+    info(event);
+    await goto(`/mcp-servers/install?config=${event.payload}`);
 });

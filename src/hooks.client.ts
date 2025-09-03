@@ -10,7 +10,6 @@ import { goto } from '$app/navigation';
 
 import { listen } from '$events';
 import * as apps from '$lib/apps';
-import { setupDeeplinks } from '$lib/deeplinks';
 import { error } from '$lib/logger';
 import { info } from '$lib/logger';
 import { resync } from '$lib/models';
@@ -26,9 +25,6 @@ import Scheduler from '$lib/workers/tasks?worker';
 // App Initialization
 export const init: ClientInit = async () => {
     info('initializing');
-
-    setupDeeplinks();
-    info('[green]✔ deeplinks subscribed');
 
     await resync();
     info('[green]✔ database synced');

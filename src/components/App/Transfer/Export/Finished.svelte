@@ -16,9 +16,8 @@
 
     function link() {
         const json = JSON.stringify(serializedApp);
-        const ascii = btoa(json);
-        const hash = encodeURIComponent(ascii);
-        return `tome://apps/import#${hash}`;
+        const hash = encodeURIComponent(json);
+        return `tome://apps/import?app=${hash}`;
     }
 
     function highlighted() {
