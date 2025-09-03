@@ -15,7 +15,10 @@
     const { serializedApp }: Props = $props();
 
     function link() {
-        return `tome://apps/import#${btoa(JSON.stringify(serializedApp))}`;
+        const json = JSON.stringify(serializedApp);
+        const ascii = btoa(json);
+        const hash = encodeURIComponent(ascii);
+        return `tome://apps/import#${hash}`;
     }
 
     function highlighted() {

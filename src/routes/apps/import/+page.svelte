@@ -5,7 +5,8 @@
     import Layout from '$components/Layouts/Default.svelte';
 
     const hash = page.url.searchParams.get('hash') as string;
-    const json = atob(hash);
+    const bytes = decodeURIComponent(hash);
+    const json = atob(bytes);
     const serializedApp = JSON.parse(json);
 </script>
 
