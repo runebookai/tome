@@ -3,33 +3,73 @@
 @config '../tailwind.config.cjs';
 
 @theme {
-    --color-purple-dark: #9d7cd8;
-    --color-purple: #bb9af7;
-    --color-red: #ff757f;
-    --color-green: #c3e88d;
-    --color-yellow: #ffc777;
-
-    --border-color-xlight: #292929;
-    --border-color-light: #191919;
-    --border-color-medium: #0c0c0c;
-    --border-color-dark: #0b0b0b;
-
-    --background-color-xlight: #292929;
-    --background-color-light: #191919;
-    --background-color-medium: #0c0c0c;
-    --background-color-dark: #0b0b0b;
-
-    --text-color-light: rgba(255, 255, 255, 0.75);
-    --text-color-light-lite: #999999;
-    --text-color-medium: #666666;
-    --text-color-dark: #333333;
-
     --height-titlebar: 60px;
 
     --width-nav: 80px;
 
     --height-content: calc(100% - var(--height-titlebar));
     --width-content-minus-nav: calc(100dvw - var(--width-nav));
+
+    --color-purple-dark: #9d7cd8;
+    --color-purple: #bb9af7;
+    --color-red: #ff757f;
+    --color-green: #c3e88d;
+    --color-yellow: #ffc777;
+
+    --border-color-xxlight: #333333;
+    --border-color-xlight: #292929;
+    --border-color-light: #1c1c1c;
+    --border-color-medium: #0c0c0c;
+    --border-color-dark: #0b0b0b;
+
+    --background-color-light: #191919;
+    --background-color-medium: #0c0c0c;
+    --background-color-dark: #090909;
+
+    --text-color-light: rgba(255, 255, 255, 0.75);
+    --text-color-light-lite: #999999;
+    --text-color-medium: #666666;
+    --text-color-dark: #333333;
+
+    --toggle-gradient: linear-gradient(to bottom, #111, #333);
+    --toggle-color: #ccc;
+
+    --loading-light: #fff;
+    --loading-dark: #fff2;
+}
+
+html[data-theme='dark'] {
+    @import 'highlight.js/styles/tokyo-night-dark.css';
+}
+
+html[data-theme='light'] {
+    @import 'highlight.js/styles/base16/solar-flare-light.css';
+
+    --color-purple-dark: #7c5fc0;
+    --color-purple: #7c5fc0;
+    --color-red: #d7263d;
+    --color-green: #4caf50;
+    --color-yellow: #ffd600;
+
+    --border-color-light: #d9d9d9;
+    --border-color-medium: #f5f5f5;
+    --border-color-dark: #ffffff;
+
+    --background-color-light: #ffffff;
+    --background-color-medium: #f5f5f5;
+    --background-color-dark: #e0e0e0;
+
+    --text-color-light: #222222;
+    --text-color-light-lite: #999999;
+    --text-color-medium: #666666;
+    --text-color-dark: #d9d9d9;
+
+
+    --toggle-gradient: linear-gradient(to bottom, #ccc, #eee);
+    --toggle-color: #fff;
+
+    --loading-light: #999;
+    --loading-dark: #9995;
 }
 
 @utility noscrollbar {
@@ -72,66 +112,6 @@ body {
     color: var(--text-color-light);
 }
 
-html[data-theme='light'] {
-    @import 'highlight.js/styles/base16/solar-flare-light.css';
-
-    --color-purple-dark: #7c5fc0;
-    --color-purple: #7c5fc0;
-    --color-red: #d7263d;
-    --color-green: #4caf50;
-    --color-yellow: #ffd600;
-
-    --border-color-light: #f0f0f0;
-    --border-color-light: #e0e0e0;
-    --border-color-medium: #f5f5f5;
-    --border-color-dark: #ffffff;
-
-    --background-color-light: #ffffff;
-    --background-color-medium: #f5f5f5;
-    --background-color-dark: #e0e0e0;
-
-    --text-color-light: #222222;
-    --text-color-light-lite: #999999;
-    --text-color-medium: #666666;
-    --text-color-dark: #bbbbbb;
-
-    --toggle-gradient: linear-gradient(to bottom, #ccc, #eee);
-    --toggle-color: #fff;
-
-    --loading-light: #999;
-    --loading-dark: #9995;
-}
-
-html[data-theme='dark'] {
-    @import 'highlight.js/styles/tokyo-night-dark.css';
-
-    --color-purple-dark: #9d7cd8;
-    --color-purple: #bb9af7;
-    --color-red: #ff757f;
-    --color-green: #c3e88d;
-    --color-yellow: #ffc777;
-
-    --border-color-xxlight: #333333;
-    --border-color-xlight: #292929;
-    --border-color-light: #1c1c1c;
-    --border-color-medium: #0c0c0c;
-    --border-color-dark: #0b0b0b;
-
-    --background-color-light: #191919;
-    --background-color-medium: #0c0c0c;
-    --background-color-dark: #161616;
-
-    --text-color-light: rgba(255, 255, 255, 0.75);
-    --text-color-light-lite: #999999;
-    --text-color-medium: #666666;
-    --text-color-dark: #333333;
-
-    --toggle-gradient: linear-gradient(to bottom, #111, #333);
-    --toggle-color: #ccc;
-
-    --loading-light: #fff;
-    --loading-dark: #fff2;
-}
 
 html[data-theme='light'],
 body[data-theme='light'] {

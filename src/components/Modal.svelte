@@ -32,6 +32,7 @@
     class={twMerge(
         'border-light bg-dark fixed top-[50%] left-[50%] z-50',
         'max-h-3/4 max-w-3/4 min-w-2/5 -translate-[50%] rounded-xl border p-8',
+        'shadow-2xl',
         cls?.toString()
     )}
 >

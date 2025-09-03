@@ -69,6 +69,11 @@
     --bgColor-muted: #f5f7fa;
 }
 
+html[data-theme='light'] .markdown-body hr {
+    background-color: var(--border-color-light);
+    height: 2px;
+}
+
 *[data-theme='light'] .markdown-body pre {
     border: 1px solid #e6e6e6;
 }
@@ -336,17 +341,14 @@
 .markdown-body kbd {
     display: inline-block;
     padding: var(--base-size-4);
-    font: 11px
-        var(
-            --fontStack-monospace,
+    font: 11px var(--fontStack-monospace,
             ui-monospace,
             SFMono-Regular,
             SF Mono,
             Menlo,
             Consolas,
             Liberation Mono,
-            monospace
-        );
+            monospace);
     line-height: 10px;
     color: var(--fgColor-default);
     vertical-align: middle;
@@ -439,32 +441,28 @@
 .markdown-body tt,
 .markdown-body code,
 .markdown-body samp {
-    font-family: var(
-        --fontStack-monospace,
-        ui-monospace,
-        SFMono-Regular,
-        SF Mono,
-        Menlo,
-        Consolas,
-        Liberation Mono,
-        monospace
-    );
+    font-family: var(--fontStack-monospace,
+            ui-monospace,
+            SFMono-Regular,
+            SF Mono,
+            Menlo,
+            Consolas,
+            Liberation Mono,
+            monospace);
     font-size: 12px;
 }
 
 .markdown-body pre {
     margin-top: 0;
     margin-bottom: 0;
-    font-family: var(
-        --fontStack-monospace,
-        ui-monospace,
-        SFMono-Regular,
-        SF Mono,
-        Menlo,
-        Consolas,
-        Liberation Mono,
-        monospace
-    );
+    font-family: var(--fontStack-monospace,
+            ui-monospace,
+            SFMono-Regular,
+            SF Mono,
+            Menlo,
+            Consolas,
+            Liberation Mono,
+            monospace);
     font-size: 12px;
     word-wrap: normal;
 }
@@ -497,11 +495,11 @@
     content: '';
 }
 
-.markdown-body > *:first-child {
+.markdown-body>*:first-child {
     margin-top: 0 !important;
 }
 
-.markdown-body > *:last-child {
+.markdown-body>*:last-child {
     margin-bottom: 0 !important;
 }
 
@@ -537,11 +535,11 @@
     margin-bottom: var(--base-size-16);
 }
 
-.markdown-body blockquote > :first-child {
+.markdown-body blockquote> :first-child {
     margin-top: 0;
 }
 
-.markdown-body blockquote > :last-child {
+.markdown-body blockquote> :last-child {
     margin-bottom: 0;
 }
 
@@ -640,7 +638,7 @@
     list-style-type: decimal;
 }
 
-.markdown-body div > ol:not([type]) {
+.markdown-body div>ol:not([type]) {
     list-style-type: decimal;
 }
 
@@ -652,11 +650,11 @@
     margin-bottom: 0;
 }
 
-.markdown-body li > p {
+.markdown-body li>p {
     margin-top: var(--base-size-16);
 }
 
-.markdown-body li + li {
+.markdown-body li+li {
     margin-top: 0.25em;
 }
 
@@ -687,7 +685,7 @@
     border: 1px solid var(--borderColor-default);
 }
 
-.markdown-body table td > :last-child {
+.markdown-body table td> :last-child {
     margin-bottom: 0;
 }
 
@@ -723,7 +721,7 @@
     overflow: hidden;
 }
 
-.markdown-body span.frame > span {
+.markdown-body span.frame>span {
     display: block;
     float: left;
     width: auto;
@@ -751,7 +749,7 @@
     clear: both;
 }
 
-.markdown-body span.align-center > span {
+.markdown-body span.align-center>span {
     display: block;
     margin: 13px auto 0;
     overflow: hidden;
@@ -769,7 +767,7 @@
     clear: both;
 }
 
-.markdown-body span.align-right > span {
+.markdown-body span.align-right>span {
     display: block;
     margin: 13px 0 0;
     overflow: hidden;
@@ -799,7 +797,7 @@
     overflow: hidden;
 }
 
-.markdown-body span.float-right > span {
+.markdown-body span.float-right>span {
     display: block;
     margin: 13px auto 0;
     overflow: hidden;
@@ -833,7 +831,7 @@
     font-size: 100%;
 }
 
-.markdown-body pre > code {
+.markdown-body pre>code {
     padding: 0;
     margin: 0;
     word-break: normal;
@@ -1116,7 +1114,7 @@
     cursor: pointer;
 }
 
-.markdown-body .task-list-item + .task-list-item {
+.markdown-body .task-list-item+.task-list-item {
     margin-top: var(--base-size-4);
 }
 
@@ -1157,11 +1155,11 @@
     border-left: 0.25em solid var(--borderColor-default);
 }
 
-.markdown-body .markdown-alert > :first-child {
+.markdown-body .markdown-alert> :first-child {
     margin-top: 0;
 }
 
-.markdown-body .markdown-alert > :last-child {
+.markdown-body .markdown-alert> :last-child {
     margin-bottom: 0;
 }
 
@@ -1212,7 +1210,7 @@
     color: var(--fgColor-danger);
 }
 
-.markdown-body > *:first-child > .heading-element:first-child {
+.markdown-body>*:first-child>.heading-element:first-child {
     margin-top: 0 !important;
 }
 

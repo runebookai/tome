@@ -160,20 +160,28 @@
                 </Flex>
             </Flex>
 
-            <Flex class="w-full items-start gap-4">
-                <section class="w-2/5">
-                    <h2 class="font-semibold uppercase">Developer Tools</h2>
-                    <p class="text-medium font-light">Tools useful when developing Tome itself.</p>
-                </section>
+            {#if Setting.LabsMode}
+                <Flex class="w-full items-start gap-4">
+                    <section class="w-2/5">
+                        <h2 class="font-semibold uppercase">Developer Tools</h2>
+                        <p class="text-medium font-light">
+                            Tools useful when developing Tome itself.
+                        </p>
+                    </section>
 
-                <Flex class="w-full flex-col items-start gap-2">
-                    <h3>Deeplinks</h3>
-                    <Flex class="w-full gap-4">
-                        <Button onclick={smitheryInstall}>Smithery Install</Button>
-                        <Button onclick={importApp}>Import App</Button>
+                    <Flex class="w-full flex-col items-start gap-2">
+                        <h3>Deeplinks</h3>
+                        <Flex class="w-full gap-4">
+                            <Button class="text-medium border-xlight" onclick={smitheryInstall}>
+                                Smithery Install
+                            </Button>
+                            <Button class="text-medium border-xlight" onclick={importApp}>
+                                Import App
+                            </Button>
+                        </Flex>
                     </Flex>
                 </Flex>
-            </Flex>
+            {/if}
         </Flex>
     </Scrollable>
 </Layout>

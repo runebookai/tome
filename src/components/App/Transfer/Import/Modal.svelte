@@ -66,7 +66,7 @@
 </script>
 
 <Modal {close} class="border-light flex flex-col border p-0">
-    <Flex class="bg-medium border-light w-full flex-0 rounded-t-md border-b p-3 pl-6">
+    <Flex class="bg-dark border-light w-full flex-0 rounded-t-xl border-b p-3 pl-6">
         <p class="grow text-sm">Import</p>
 
         <button onclick={close} class="border-light text-medium rounded-sm border p-2">
@@ -74,7 +74,7 @@
         </button>
     </Flex>
 
-    <Flex class="bg-dark min-h-0 w-full flex-1 flex-col items-start overflow-y-auto">
+    <Flex class="bg-medium min-h-0 w-full flex-1 flex-col items-start overflow-y-auto">
         {#if screen == 'info'}
             <Info app={serializedApp} />
         {:else if screen == 'mcp'}
@@ -88,7 +88,7 @@
         {/if}
     </Flex>
 
-    <Flex class="bg-dark w-full flex-0 justify-center p-4">
+    <Flex class="bg-dark w-full flex-0 justify-center rounded-b-xl p-4">
         <Button
             onclick={transition}
             disabled={screen == 'mcp' && !mcpServersToVerify.isEmpty()}
