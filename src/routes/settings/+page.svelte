@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { emit } from '@tauri-apps/api/event';
     import { appLogDir } from '@tauri-apps/api/path';
     import { openPath } from '@tauri-apps/plugin-opener';
 
@@ -44,6 +45,20 @@
         var logDir = await appLogDir();
         logDir += '/Tome.log';
         await openPath(logDir);
+    }
+
+    async function smitheryInstall() {
+        await emit(
+            'mcp/install',
+            '%7B%22name%22%3A%22Exa%20Search%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40smithery%2Fcli%40latest%22%2C%22run%22%2C%22exa%22%2C%22--key%22%2C%22a897c0b6-f044-4caa-aedb-39885d0d0362%22%2C%22--profile%22%2C%22western-fish-uL81Ye%22%5D%7D'
+        );
+    }
+
+    async function importApp() {
+        await emit(
+            'apps/import',
+            'app=%7B%22name%22%3A%22hourly%20magic%20card%22%2C%22readme%22%3A%22%22%2C%22trigger%22%3A%7B%22event%22%3A%22scheduled%22%2C%22action%22%3A%22tick%22%2C%22config%22%3A%7B%22period%22%3A%220%20*%20*%20*%20*%22%7D%7D%2C%22steps%22%3A%5B%7B%22model%22%3A%22openai%3Ao4-mini%22%2C%22prompt%22%3A%22go%20snag%20a%20random%20magic%20card%22%7D%5D%2C%22mcp_servers%22%3A%5B%7B%22name%22%3A%22scryfall%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22scryfall-mcp-server%22%5D%2C%22env%22%3A%7B%7D%7D%5D%7D'
+        );
     }
 </script>
 
@@ -139,9 +154,24 @@
                     <Toggle
                         label=""
                         value={Setting.LabsMode ? 'on' : 'off'}
-                        onEnable={() => setLabsMode(true)}
-                        onDisable={() => setLabsMode(false)}
+                        onenable={() => setLabsMode(true)}
+                        ondisable={() => setLabsMode(false)}
                     />
+                </Flex>
+            </Flex>
+
+            <Flex class="w-full items-start gap-4">
+                <section class="w-2/5">
+                    <h2 class="font-semibold uppercase">Developer Tools</h2>
+                    <p class="text-medium font-light">Tools useful when developing Tome itself.</p>
+                </section>
+
+                <Flex class="w-full flex-col items-start gap-2">
+                    <h3>Deeplinks</h3>
+                    <Flex class="w-full gap-4">
+                        <Button onclick={smitheryInstall}>Smithery Install</Button>
+                        <Button onclick={importApp}>Import App</Button>
+                    </Flex>
                 </Flex>
             </Flex>
         </Flex>

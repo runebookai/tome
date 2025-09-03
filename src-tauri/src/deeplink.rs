@@ -54,10 +54,14 @@ pub fn handle(urls: Vec<Url>) {
 
     match action.as_str() {
         "mcp/install" => {
-            mcp_install(url.query().unwrap());
+            if let Some(query) = url.query() {
+                mcp_install(query);
+            }
         }
         "apps/import" => {
-            import_app(url.query().unwrap());
+            if let Some(query) = url.query() {
+                import_app(query);
+            }
         }
         _ => {
             log::warn!("Unknown runebook function for {:?}", action.clone());
