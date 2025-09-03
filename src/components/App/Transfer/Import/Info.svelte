@@ -4,7 +4,10 @@
 
     import Flex from '$components/Flex.svelte';
     import LabeledSection from '$components/Forms/LabeledSection.svelte';
+    import Icon from '$components/Icon.svelte';
+    import Tooltip from '$components/Tooltip.svelte';
     import type { SerializedApp } from '$lib/apps';
+    import { Model } from '$lib/models';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         app: SerializedApp;
@@ -14,6 +17,10 @@
 
     function readableCron(period: string) {
         return cronstrue.toString(period);
+    }
+
+    function modelMissing(id: string) {
+        return !Model.exists({ id });
     }
 </script>
 
@@ -41,9 +48,21 @@
             {#each app.steps as step, i (i)}
                 <Flex class="border-light mb-2 -ml-4 w-full rounded-sm border p-2">
                     <p class="ml-2 grow">{step.prompt}</p>
-                    <p class="bg-light text-medium rounded-sm p-1 px-2 text-xs font-light">
-                        {step.model}
-                    </p>
+
+                    {#if modelMissing(step.model)}
+                        <Tooltip text="You must install this model before importing the app.">
+                            <p
+                                class="bg-light text-red flex items-center rounded-sm p-1 px-2 text-xs font-light"
+                            >
+                                <Icon name="Warning" class="mr-2 h-3 w-3" />
+                                {step.model}
+                            </p>
+                        </Tooltip>
+                    {:else}
+                        <p class="bg-light text-medium rounded-sm p-1 px-2 text-xs font-light">
+                            {step.model}
+                        </p>
+                    {/if}
                 </Flex>
             {/each}
         </Flex>

@@ -10,7 +10,7 @@
     import Flex from '$components/Flex.svelte';
     import Svg from '$components/Svg.svelte';
     import { install, type SerializedApp, type SerializedMcpServer } from '$lib/apps';
-    import { App } from '$lib/models';
+    import { App, Model } from '$lib/models';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         serializedApp: SerializedApp;
@@ -60,6 +60,21 @@
         mcpServersToVerify.remove(server.name);
     }
 
+    function modelsMissing(): boolean {
+        return serializedApp.steps.some(step => modelDoesNotExist(step.model));
+    }
+
+    function modelDoesNotExist(id: string): boolean {
+        return !Model.exists({ id });
+    }
+
+    function isDisabled() {
+        return (
+            (screen == 'mcp' && !mcpServersToVerify.isEmpty()) ||
+            (screen == 'info' && modelsMissing())
+        );
+    }
+
     async function close() {
         history.back();
     }
@@ -91,7 +106,7 @@
     <Flex class="bg-dark w-full flex-0 justify-center rounded-b-xl p-4">
         <Button
             onclick={transition}
-            disabled={screen == 'mcp' && !mcpServersToVerify.isEmpty()}
+            disabled={isDisabled()}
             class="bg-purple text-dark w-full border-none text-xs font-semibold
             uppercase disabled:opacity-25"
         >
