@@ -1,10 +1,10 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
+    import Section from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';
     import McpServerList from '$components/Mcp/ServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
@@ -156,7 +156,7 @@
                 label={false}
                 name="name"
                 placeholder="Name of the app"
-                class="text-light outline-0"
+                class="text-light px-4 py-1 outline-0"
                 bind:value={app.name}
             />
         </Section>

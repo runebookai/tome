@@ -57,7 +57,7 @@
     async function importApp() {
         await emit(
             'apps/import',
-            'app=%7B%22name%22%3A%22hourly%20magic%20card%22%2C%22readme%22%3A%22%22%2C%22trigger%22%3A%7B%22event%22%3A%22scheduled%22%2C%22action%22%3A%22tick%22%2C%22config%22%3A%7B%22period%22%3A%220%20*%20*%20*%20*%22%7D%7D%2C%22steps%22%3A%5B%7B%22model%22%3A%22openai%3Ao4-big%22%2C%22prompt%22%3A%22go%20snag%20a%20random%20magic%20card%22%7D%5D%2C%22mcp_servers%22%3A%5B%7B%22name%22%3A%22scryfall%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22scryfall-mcp-server%22%5D%2C%22env%22%3A%7B%7D%7D%5D%7D'
+            'app=%7B%22name%22%3A%22hourly%20magic%20card%22%2C%22readme%22%3A%22%22%2C%22trigger%22%3A%7B%22event%22%3A%22scheduled%22%2C%22action%22%3A%22tick%22%2C%22config%22%3A%7B%22period%22%3A%220%20*%20*%20*%20*%22%7D%7D%2C%22steps%22%3A%5B%7B%22model%22%3A%22openai%3Ao4-mini%22%2C%22prompt%22%3A%22go%20snag%20a%20random%20magic%20card%22%7D%5D%2C%22mcp_servers%22%3A%5B%7B%22name%22%3A%22scryfall%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22scryfall-mcp-server%22%5D%2C%22env%22%3A%7B%7D%7D%5D%7D'
         );
     }
 </script>
