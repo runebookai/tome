@@ -10,7 +10,6 @@
     }
 
     let {
-        label,
         name,
         class: cls = '',
         required = false,
@@ -28,7 +27,7 @@
 </script>
 
 <input
-    class={twMerge('border-light w-full rounded-md border p-0 px-2 outline-none', cls?.toString())}
+    class={twMerge('border-light w-full rounded-md border px-3 py-1 outline-none', cls?.toString())}
     class:border-red={!valid}
     onkeyup={() => (valid = validate(value))}
     onblur={() => (valid = validate(value))}

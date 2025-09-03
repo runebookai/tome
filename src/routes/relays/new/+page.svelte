@@ -1,8 +1,8 @@
 <script lang="ts">
-    import RelayEditor from '$components/RelayEditor';
+    import Editor from '$components/Relays/Editor.svelte';
     import { Relay } from '$lib/models';
 
     const relay: Relay = Relay.new();
 </script>
 
-<RelayEditor {relay} />
+<Editor {relay} />

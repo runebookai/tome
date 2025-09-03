@@ -3,10 +3,10 @@
 
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
+    import Section from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';
     import McpServerList from '$components/McpServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
-    import Section from '$components/RelayEditor/Section.svelte';
     import Toggle from '$components/Toggle.svelte';
     import { App, McpServer, Model, Relay, Session } from '$lib/models';
 
@@ -133,8 +133,8 @@
                 <Toggle
                     label=""
                     value={enabled ? 'on' : 'off'}
-                    onEnable={() => setEnabled()}
-                    onDisable={() => setDisabled()}
+                    onenable={() => setEnabled()}
+                    ondisable={() => setDisabled()}
                 />
             </Flex>
         </Section>
