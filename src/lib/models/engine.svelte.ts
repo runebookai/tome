@@ -35,6 +35,15 @@ export default class Engine extends Base<Row>('engines') {
         await Model.sync();
     }
 
+    get displayName() {
+        return {
+            ollama: 'Ollama',
+            openai: 'OpenAI',
+            gemini: 'Gemini',
+            'openai-compat': 'OpenAI-Compatible Engine',
+        }[this.type];
+    }
+
     get client(): Client | undefined {
         const Client = {
             ollama: Ollama,
@@ -53,7 +62,7 @@ export default class Engine extends Base<Row>('engines') {
     }
 
     protected async afterSave(): Promise<void> {
-        await Model.sync();
+        await Engine.sync();
     }
 
     protected static async fromSql(row: Row): Promise<Engine> {

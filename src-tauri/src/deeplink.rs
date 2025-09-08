@@ -1,4 +1,3 @@
-use serde::Serialize;
 use tauri::{Emitter, Url};
 
 use crate::APP_HANDLE;

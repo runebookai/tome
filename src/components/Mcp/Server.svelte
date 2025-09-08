@@ -2,9 +2,7 @@
     import { constantCase } from 'change-case';
     import type { HTMLAttributes } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
-    import { goto } from '$app/navigation';
 
-    import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import LabeledSection from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';

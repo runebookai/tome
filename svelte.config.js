@@ -15,6 +15,13 @@ const config = {
             'entries': [
                 "/",
                 "/error",
+                "/onboarding",
+                "/onboarding/mcp",
+                "/onboarding/models",
+                "/onboarding/models/gemini",
+                "/onboarding/models/ollama",
+                "/onboarding/models/openai",
+                "/onboarding/models/other",
                 "/chat/[session_id]",
                 "/mcp-servers",
                 "/mcp-servers/new",

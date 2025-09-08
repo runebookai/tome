@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { McpServer } from '$lib/models';
-    import McpServerPage from '$components/Mcp/Page.svelte';
     import { goto } from '$app/navigation';
+
+    import McpServerPage from '$components/Mcp/Page.svelte';
+    import { McpServer } from '$lib/models';
 
     const server: McpServer = $state(McpServer.new());
 

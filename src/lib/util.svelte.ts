@@ -14,7 +14,7 @@
 export function debounce(fn: (...args: any[]) => any, timeout = 250) {
     let timer: number | undefined;
 
-    return (...args: any[]) => {
+    return async (...args: any[]) => {
         clearTimeout(timer);
 
         timer = setTimeout(() => {

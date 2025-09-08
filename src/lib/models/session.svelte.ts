@@ -50,8 +50,8 @@ export default class Session extends Base<Row>('sessions') {
         const model = Model.default();
         return {
             config: {
-                model: model.id,
-                engineId: model.engineId,
+                model: model?.id,
+                engineId: model?.engineId,
                 contextWindow: 4096,
                 temperature: 0.8,
                 enabledMcpServers: [],

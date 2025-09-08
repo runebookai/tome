@@ -13,8 +13,6 @@ import * as apps from '$lib/apps';
 import { error } from '$lib/logger';
 import { info } from '$lib/logger';
 import { resync } from '$lib/models';
-import Config from '$lib/models/config.svelte';
-import Engine from '$lib/models/engine.svelte';
 import { startActiveRelays } from '$lib/relays';
 import startup, { StartupCheck } from '$lib/startup';
 import { isUpToDate } from '$lib/updates';
@@ -37,12 +35,7 @@ export const init: ClientInit = async () => {
     await listen();
     await apps.watch();
 
-    await startup.addCheck(StartupCheck.Agreement, async () => Config.agreedToWelcome);
     await startup.addCheck(StartupCheck.UpdateAvailable, async () => await isUpToDate());
-    await startup.addCheck(
-        StartupCheck.NoModels,
-        async () => Engine.all().flatMap(e => e.models).length > 0
-    );
 };
 
 export const handleError: HandleClientError = async ({ error: err }) => {
