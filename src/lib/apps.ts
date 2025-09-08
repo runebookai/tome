@@ -1,9 +1,37 @@
 import { invoke } from '@tauri-apps/api/core';
 
+import Redactable, { redact } from './redaction.svelte';
+
 import { dispatch } from '$lib/dispatch';
 import { info } from '$lib/logger';
-import { App, AppRun, AppStep, Session, Trigger } from '$lib/models';
-import type { FilesystemConfig } from '$lib/models/trigger.svelte';
+import { App, AppRun, AppStep, McpServer, Model, Session, Trigger } from '$lib/models';
+import type { AmbientAction, AmbientEvent, FilesystemConfig } from '$lib/models/trigger.svelte';
+
+export interface SerializedApp {
+    name: string;
+    readme: string;
+    trigger: SerializedTrigger;
+    steps: SerializedAppStep[];
+    mcp_servers: SerializedMcpServer[];
+}
+
+export interface SerializedTrigger {
+    event: string;
+    action: string;
+    config: Record<string, unknown>;
+}
+
+export interface SerializedAppStep {
+    model: string;
+    prompt: string;
+}
+
+export interface SerializedMcpServer {
+    name: string;
+    command: string;
+    args: Array<Redactable>;
+    env: Record<string, Redactable>;
+}
 
 /**
  * Watch all events for all Apps
@@ -26,6 +54,75 @@ export async function initializeBackendWatchers() {
         await invoke('watch', { path, id: trigger.id });
         info(`[green]✔ watch: [reset]${path}`);
     });
+}
+
+export async function install(serializedApp: SerializedApp): Promise<App> {
+    const app = await App.create({
+        name: serializedApp.name,
+        readme: serializedApp.readme,
+    });
+
+    await Trigger.create({
+        appId: app.id,
+        event: serializedApp.trigger.event as AmbientEvent,
+        action: serializedApp.trigger.action as AmbientAction,
+        config: serializedApp.trigger.config,
+    });
+
+    for (const step of serializedApp.steps) {
+        const model = Model.find(step.model);
+
+        await AppStep.create({
+            appId: app?.id,
+            modelId: model?.id,
+            engineId: model?.engineId,
+            prompt: step.prompt,
+        });
+    }
+
+    for (const server of serializedApp.mcp_servers) {
+        app.addMcpServer(
+            await McpServer.create({
+                name: server.name,
+                command: server.command,
+                args: server.args.map(a => a.toString()),
+                env: Object.fromEntries(
+                    Object.entries(server.env).map(([k, v]) => [k.toString(), v.toString()])
+                ),
+            })
+        );
+    }
+
+    return app;
+}
+
+/**
+ * Serialize an App into a portable JSON object used to share with other
+ * users.
+ */
+export function serialize(app: App): SerializedApp {
+    return {
+        name: app.name,
+        readme: app.readme,
+
+        trigger: {
+            event: app.trigger.event,
+            action: app.trigger.action,
+            config: { ...app.trigger.config },
+        },
+
+        steps: app.steps.map(step => ({
+            model: step.model?.id as string,
+            prompt: step.prompt,
+        })),
+
+        mcp_servers: app.mcpServers.map(server => ({
+            name: server.name,
+            command: server.command,
+            args: redact(...server.args),
+            env: Object.fromEntries(Object.entries(server.env).map(values => redact(...values))),
+        })),
+    };
 }
 
 /**

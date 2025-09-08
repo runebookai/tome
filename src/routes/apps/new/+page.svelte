@@ -1,8 +1,8 @@
 <script lang="ts">
-    import AppEditor from '$components/AppEditor';
+    import Editor from '$components/App/Editor.svelte';
     import { App } from '$lib/models';
 
     const app: App = App.new();
 </script>
 
-<AppEditor {app} />
+<Editor {app} />

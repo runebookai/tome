@@ -1,12 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
 
-    import Section from '$components/AppEditor/Section.svelte';
     import Button from '$components/Button.svelte';
     import ButtonToggle from '$components/ButtonToggle.svelte';
     import Flex from '$components/Flex.svelte';
+    import Section from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';
-    import McpServerList from '$components/McpServerList.svelte';
+    import McpServerList from '$components/Mcp/ServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Select from '$components/Select.svelte';
     import Svg from '$components/Svg.svelte';
@@ -24,7 +24,10 @@
     let steps: AppStep[] = $state(app.steps);
 
     // MCP Servers
-    let mcpServers: McpServer[] = $state(app.mcpServers);
+    let mcpServers: McpServer[] = $state(app.mcpServers.compact());
+
+    // Copied instances of all base MCP servers.
+    let mcpServerCopies = $state(copyMcpServers());
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
@@ -40,6 +43,20 @@
         const ampm = i < 12 ? 'AM' : 'PM';
         return { label: `${hour}:00 ${ampm}`, value: `0 ${i} * * *` };
     });
+
+    function copyMcpServers() {
+        return McpServer.forChat().map(server => {
+            return (
+                mcpServers.find(s => s.name == server.name) ??
+                McpServer.new({
+                    name: server.name,
+                    command: server.command,
+                    args: server.args,
+                    env: server.env,
+                })
+            );
+        });
+    }
 
     function setModel(step: AppStep, model: Model) {
         step.engineId = model.engineId as number;
@@ -102,7 +119,32 @@
             await step.save();
         });
 
-        await app.setMcpServers(mcpServers);
+        await app.mcpServers.awaitAll(async server => {
+            if (!mcpServers.mapBy('name').includes(server.name)) {
+                if (server.id) {
+                    await app.removeMcpServer(server);
+                    await server.delete();
+                }
+            }
+        });
+
+        await mcpServers.awaitAll(async server => {
+            const mcp = await server.save();
+
+            // Ensure the instance in `mcpServers` is updated to match to
+            // persisted one in the database, so that subsequent saves act on
+            // the correct record.
+            server.id = mcp.id;
+            server.metadata = mcp.metadata;
+
+            await app.addMcpServer(mcp);
+        });
+
+        // Reset MCP servers to match the new state of the world after we
+        // reconcile them above.
+        mcpServers = app.mcpServers.compact();
+        mcpServerCopies = copyMcpServers();
+
         await goto(`/apps/${app.id}/edit`);
     }
 </script>
@@ -114,7 +156,7 @@
                 label={false}
                 name="name"
                 placeholder="Name of the app"
-                class="text-light outline-0"
+                class="text-light px-4 py-1 outline-0"
                 bind:value={app.name}
             />
         </Section>
@@ -290,10 +332,17 @@
             tooltip="The collection of MCP servers to enable when this App executes"
         >
             <Flex class="grow">
-                <McpServerList {hasMcpServer} {addMcpServer} {removeMcpServer} />
+                <McpServerList
+                    servers={mcpServerCopies}
+                    enabled={hasMcpServer}
+                    onadd={addMcpServer}
+                    onremove={removeMcpServer}
+                />
             </Flex>
         </Section>
     </Flex>
 
-    <Button class="text-purple border-purple mt-8" onclick={save}>Save</Button>
+    <div class="mt-8">
+        <Button class="text-purple border-purple" onclick={save}>Save</Button>
+    </div>
 </section>

@@ -21,8 +21,18 @@
                 onclick: async () => await run(app),
             },
             {
+                separator: true,
+            },
+            {
                 label: 'Edit',
                 onclick: async () => await edit(app),
+            },
+            {
+                label: 'Export',
+                onclick: async () => await _export(app),
+            },
+            {
+                separator: true,
             },
             {
                 label: 'Delete',
@@ -39,6 +49,10 @@
 
     async function edit(app: App) {
         await goto(`/apps/${app.id}/edit`);
+    }
+
+    async function _export(app: App) {
+        await goto(`/apps/${app.id}/export`);
     }
 
     async function run(app: App) {

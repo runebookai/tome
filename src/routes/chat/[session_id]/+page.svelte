@@ -28,7 +28,7 @@
     );
 
     const sessions: Session[] = $derived(Session.where({ ephemeral: false, relay: false }));
-    const mcpServers: McpServer[] = $derived(McpServer.all());
+    const mcpServers: McpServer[] = $derived(McpServer.forChat());
     const engines: Engine[] = $derived(Engine.all());
     const hasModels = $derived(engines.flatMap(e => e.models).length > 0);
 
@@ -52,7 +52,7 @@
 
     async function startMcpServer(server: McpServer) {
         await server.start(session);
-        await session.addMcpServer(server);
+        await session?.addMcpServer(server);
     }
 
     async function stopMcpServer(server: McpServer) {
@@ -192,8 +192,8 @@
                                     ? 'on'
                                     : 'off'}
                                 disabled={!model?.supportsTools}
-                                onEnable={() => startMcpServer(server)}
-                                onDisable={() => stopMcpServer(server)}
+                                onenable={() => startMcpServer(server)}
+                                ondisable={() => stopMcpServer(server)}
                             />
                         </Flex>
                     {/each}

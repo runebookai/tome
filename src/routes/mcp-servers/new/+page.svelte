@@ -1,8 +1,14 @@
 <script lang="ts">
-    import McpServerView from '$components/McpServer.svelte';
+    import { goto } from '$app/navigation';
+
+    import McpServerPage from '$components/Mcp/Page.svelte';
     import { McpServer } from '$lib/models';
 
     const server: McpServer = $state(McpServer.new());
+
+    async function onsave(server: McpServer) {
+        await goto(`/mcp-servers/${server.id}`);
+    }
 </script>
 
-<McpServerView {server} />
+<McpServerPage {server} {onsave} />

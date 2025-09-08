@@ -10,6 +10,10 @@ export default function BareModel() {
             Object.assign(this, params);
         }
 
+        static count<T extends typeof BareModel>(this: T) {
+            return repo.length;
+        }
+
         static new<T extends typeof BareModel>(this: T, params: Partial<InstanceType<T>> = {}) {
             const inst = new this({}, true);
             Object.assign(inst, params);

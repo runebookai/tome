@@ -1,8 +1,9 @@
 import moment from 'moment';
 
-import { execute } from '$lib/apps';
+import { execute, type SerializedApp } from '$lib/apps';
 import { AppMcpServer, AppRun, AppStep, McpServer, Trigger } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
+import type { AmbientAction, AmbientEvent } from '$lib/models/trigger.svelte';
 
 const CHAT_APP_ID = 1;
 const TASK_APP_ID = 2;
@@ -69,6 +70,13 @@ export default class App extends Base<Row>('apps') {
         );
     }
 
+    static fromSerialized(app: SerializedApp) {
+        return App.new({
+            name: app.name,
+            readme: app.readme,
+        });
+    }
+
     get mcpServers(): McpServer[] {
         return AppMcpServer.where({ appId: this.id }).map(m => m.mcpServer);
     }
@@ -88,6 +96,11 @@ export default class App extends Base<Row>('apps') {
 
     get latestRun(): AppRun {
         return this.runs[0];
+    }
+
+    async delete(): Promise<boolean> {
+        await this.clearMcpServers();
+        return await super.delete();
     }
 
     async execute(input?: object): Promise<AppRun> {
@@ -122,7 +135,10 @@ export default class App extends Base<Row>('apps') {
     }
 
     async clearMcpServers() {
-        await AppMcpServer.where({ appId: this.id }).awaitAll(async s => await s.delete());
+        await AppMcpServer.where({ appId: this.id }).awaitAll(async join => {
+            await McpServer.find(join.mcpServerId as number)?.delete();
+            await join.delete();
+        });
     }
 
     protected static async fromSql(row: Row): Promise<App> {

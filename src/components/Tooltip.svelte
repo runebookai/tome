@@ -4,7 +4,7 @@
     export interface TooltipData {
         x: number;
         y: number;
-        title: string;
+        title?: string;
         text?: string;
         css?: ClassValue | null;
     }
@@ -28,7 +28,7 @@
     import type { HTMLAttributes } from 'svelte/elements';
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
-        title: string;
+        title?: string;
         text?: string;
     }
 

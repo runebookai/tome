@@ -22,3 +22,7 @@ export interface FileUpdatedEvent {
 export interface RelayEvent {
     data: string;
 }
+
+export interface AppInstallEvent {
+    hash: string;
+}

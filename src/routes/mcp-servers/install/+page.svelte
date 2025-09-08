@@ -7,19 +7,18 @@
     import Layout from '$components/Layouts/Default.svelte';
     import Modal from '$components/Modal.svelte';
     import Svg from '$components/Svg.svelte';
-    import type { VSCodeMcpInstallConfig } from '$lib/deeplinks';
     import { McpServer } from '$lib/models';
 
     const payload = page.url.searchParams.get('config') as string;
-    const config: VSCodeMcpInstallConfig = JSON.parse(decodeURIComponent(payload));
+    const config = JSON.parse(decodeURIComponent(payload));
 
     async function install() {
         const server = await McpServer.create(config);
-        goto(`/mcp-servers/${server.name}`);
+        await goto(`/mcp-servers/${server.id}`);
     }
 
     function cancel() {
-        goto('/mcp-servers');
+        history.back();
     }
 </script>
 

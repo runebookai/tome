@@ -69,6 +69,11 @@
     --bgColor-muted: #f5f7fa;
 }
 
+html[data-theme='light'] .markdown-body hr {
+    background-color: var(--border-color-light);
+    height: 2px;
+}
+
 *[data-theme='light'] .markdown-body pre {
     border: 1px solid #e6e6e6;
 }

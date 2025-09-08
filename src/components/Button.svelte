@@ -21,11 +21,10 @@
     let waiting = $state(false);
 
     async function onclick(e: ButtonEvent) {
-        if (_onclick) {
-            waiting = true;
-            await _onclick(e);
-            waiting = false;
-        }
+        e.stopPropagation();
+        waiting = true;
+        await _onclick?.(e);
+        waiting = false;
     }
 </script>
 
@@ -33,7 +32,10 @@
     <Spinner class="h-[16px] w-[16px]" />
 {:else}
     <button
-        class={twMerge('rounded-md border p-2 px-6 text-sm hover:cursor-pointer', cls?.toString())}
+        class={twMerge(
+            'rounded-md border p-2 px-6 text-sm hover:cursor-pointer disabled:pointer-events-none',
+            cls?.toString()
+        )}
         {onclick}
         {...rest}
     >

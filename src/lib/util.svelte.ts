@@ -14,7 +14,7 @@
 export function debounce(fn: (...args: any[]) => any, timeout = 250) {
     let timer: number | undefined;
 
-    return (...args: any[]) => {
+    return async (...args: any[]) => {
         clearTimeout(timer);
 
         timer = setTimeout(() => {
@@ -41,4 +41,18 @@ export function onkey(key: string, fn: (e: KeyboardEvent) => any) {
             fn(e);
         }
     };
+}
+
+/**
+ * Is a value `null`. Exciting, I know.
+ */
+export function isNull(value: unknown): boolean {
+    return value === null;
+}
+
+/**
+ * You guessed it! Is the value NOT null?
+ */
+export function notNull(value: unknown): boolean {
+    return !isNull(value);
 }

@@ -9,21 +9,21 @@
         value?: 'on' | 'off';
         label: string;
         disabled?: boolean;
-        onEnable: () => void;
-        onDisable: () => void;
+        onenable?: (...args: any[]) => any; // eslint-disable-line
+        ondisable?: (...args: any[]) => any; // eslint-disable-line
     }
 
-    const { value, label, disabled, onEnable, onDisable, ...rest }: Props = $props();
+    const { value, label, disabled, onenable, ondisable, ...rest }: Props = $props();
 
     let enabled = $state(false);
 
-    function onChange(e: CheckboxEvent) {
+    function onchange(e: CheckboxEvent) {
         if (e.currentTarget.checked) {
             enabled = true;
-            onEnable();
+            onenable?.();
         } else {
             enabled = false;
-            onDisable();
+            ondisable?.();
         }
     }
 </script>
@@ -33,8 +33,8 @@
         <input
             {...rest}
             {disabled}
+            {onchange}
             checked={value == 'on'}
-            onchange={onChange}
             type="checkbox"
             name={kebabCase(label)}
             class:disabled
