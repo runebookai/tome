@@ -1,6 +1,17 @@
 # Changelog
 
-## 0.10.1 - 2025-08-25
+## 0.11.0 - 2025-09-08
+
+### New Features
+
+- Import & Export Apps
+    - You can now export Apps to share with other folks
+    - Exported Apps generate a URL that opens Tome and installs the App
+      directly.
+
+### Improvements
+
+- Improved onboarding to help setup LLMs and MCP servers
 
 ### Fixes
 
