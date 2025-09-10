@@ -40,7 +40,7 @@
         <LabeledSection icon="Tasks" title="Interval">
             <p>{readableCron(app.trigger.config.period as string)}</p>
         </LabeledSection>
-    {:else}
+    {:else if app.trigger.event == 'filesystem'}
         <LabeledSection icon="Folders" title="Directory">
             <p>{app.trigger.config.path}</p>
         </LabeledSection>
@@ -53,7 +53,7 @@
     <LabeledSection icon="Chat" title="Prompts">
         <Flex class="w-full flex-col items-start">
             {#each app.steps as step, i (i)}
-                <Flex class="border-light mb-2 -ml-4 w-full rounded-sm border p-2">
+                <Flex class="border-light mb-2 w-full rounded-sm border p-2">
                     <p class="ml-2 grow">{step.prompt}</p>
                 </Flex>
             {/each}

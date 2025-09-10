@@ -7,6 +7,7 @@
     import Flex from '$components/Flex.svelte';
     import Section from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';
+    import Server from '$components/Mcp/Server.svelte';
     import McpServerList from '$components/Mcp/ServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Select from '$components/Select.svelte';
@@ -53,17 +54,9 @@
     });
 
     function copyMcpServers() {
-        return McpServer.forChat().map(server => {
-            return (
-                mcpServers.find(s => s.name == server.name) ??
-                McpServer.new({
-                    name: server.name,
-                    command: server.command,
-                    args: server.args,
-                    env: server.env,
-                })
-            );
-        });
+        return mcpServers.map(
+            server => McpServer.forChat().find(s => s.name == server.name) ?? server
+        );
     }
 
     async function setModel(_model: Model) {

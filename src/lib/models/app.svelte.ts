@@ -3,7 +3,6 @@ import moment from 'moment';
 import { execute, type SerializedApp } from '$lib/apps';
 import { AppMcpServer, AppRun, AppStep, McpServer, Trigger } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
-import type { AmbientAction, AmbientEvent } from '$lib/models/trigger.svelte';
 
 const CHAT_APP_ID = 1;
 const TASK_APP_ID = 2;
