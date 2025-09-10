@@ -26,6 +26,9 @@
     // MCP Servers
     let mcpServers: McpServer[] = $state(app.mcpServers.compact());
 
+    // Model
+    let model: Model = $state(Model.default());
+
     // Copied instances of all base MCP servers.
     let mcpServerCopies = $state(copyMcpServers());
 
@@ -58,9 +61,8 @@
         });
     }
 
-    function setModel(step: AppStep, model: Model) {
-        step.engineId = model.engineId as number;
-        step.modelId = model.id as string;
+    async function setModel(_model: Model) {
+        model = _model;
     }
 
     function setInterval(interval: string) {
@@ -116,6 +118,8 @@
 
         await steps.awaitAll(async step => {
             step.appId = app.id;
+            step.engineId = model.engineId as number;
+            step.modelId = model.id as string;
             await step.save();
         });
 
@@ -266,6 +270,10 @@
             </Section>
         {/if}
 
+        <Section icon="Models" title="Model" tooltip="The LLM the App should use">
+            <ModelSelect selected={model} onselect={setModel} class="h-10" />
+        </Section>
+
         <Section
             icon="Chat"
             title="Prompts"
@@ -274,21 +282,9 @@
             <Flex class="grow flex-col items-start">
                 {#each steps as step, i (i)}
                     <Flex
-                        class="border-light relative mb-8 w-full
-                        flex-col items-start rounded-md border"
+                        class="border-light relative mb-8 w-full flex-col items-start rounded-md border"
                     >
-                        <Flex
-                            class="border-b-light w-full items-center
-                            justify-between border-b"
-                        >
-                            <div class="w-64">
-                                <ModelSelect
-                                    class="h-8 rounded-none border-0 border-r"
-                                    selected={step.model}
-                                    onselect={async model => setModel(step, model)}
-                                />
-                            </div>
-
+                        <Flex class="border-b-light w-full items-center justify-end border-b">
                             <Button
                                 onclick={() => removeStep(step)}
                                 class="border-l-light hover:text-red h-8 border-0
