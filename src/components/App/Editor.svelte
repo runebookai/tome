@@ -27,7 +27,7 @@
     let mcpServers: McpServer[] = $state(app.mcpServers.compact());
 
     // Model
-    let model: Model = $state(Model.default());
+    let model: Model = $state(app.steps[0]?.model || Model.default());
 
     // Copied instances of all base MCP servers.
     let mcpServerCopies = $state(copyMcpServers());
