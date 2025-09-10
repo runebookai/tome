@@ -10,7 +10,7 @@ import Base from '$lib/models/base.svelte';
 const AVAILABLE_MODELS: Record<EngineType, 'all' | string[]> = {
     'openai-compat': 'all',
     ollama: 'all',
-    openai: ['gpt-4o', 'o4-mini', 'gpt-4.5-preview', 'gpt-4.1', 'gpt-4.1-mini'],
+    openai: ['gpt-4o', 'o4-mini', 'gpt-4.5-preview', 'gpt-4.1', 'gpt-4.1-mini', 'gpt-5'],
     gemini: ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'],
 };
 
