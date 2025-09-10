@@ -59,7 +59,9 @@
         return capitalCase(engine.type == 'openai-compat' ? 'openai' : engine.type);
     }
 
-    async function select(model: Model) {
+    async function select(e: Event, model: Model) {
+        e.preventDefault();
+        e.stopPropagation();
         selected = model;
         await onselect?.(model);
         close();
@@ -109,7 +111,7 @@
                     <Flex class="w-full flex-col items-start">
                         {#each engine.models as model (model.id)}
                             <button
-                                onclick={async () => await select(model)}
+                                onclick={async e => await select(e, model)}
                                 class="hover:bg-light text-light-lite hover:text-light
                                 mx-2 w-[calc(100%-14px)] rounded-sm p-2 px-4
                                 text-left last:mb-2 hover:cursor-pointer"
