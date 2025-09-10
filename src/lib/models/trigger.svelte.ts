@@ -6,8 +6,8 @@ import App from './app.svelte';
 import type { SerializedTrigger } from '$lib/apps';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
-export type AmbientEvent = 'scheduled' | 'filesystem';
-export type AmbientAction = 'tick' | 'created' | 'updated' | 'deleted';
+export type AmbientEvent = 'manual' | 'scheduled' | 'filesystem';
+export type AmbientAction = 'run' | 'tick' | 'created' | 'updated' | 'deleted';
 
 export interface ScheduledConfig {
     period: string;
@@ -28,8 +28,8 @@ interface Row {
 export default class Trigger extends Base<Row>('triggers') {
     id?: number = $state();
     appId?: number = $state();
-    event: AmbientEvent = $state('scheduled');
-    action: AmbientAction = $state('tick');
+    event: AmbientEvent = $state('manual');
+    action: AmbientAction = $state('run');
     config: object = $state({ period: '0 * * * *' });
 
     static get scheduled() {

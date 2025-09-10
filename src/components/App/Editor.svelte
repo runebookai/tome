@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { capitalCase } from 'change-case';
     import { goto } from '$app/navigation';
 
     import Button from '$components/Button.svelte';
@@ -12,7 +13,11 @@
     import Svg from '$components/Svg.svelte';
     import Textarea from '$components/Textarea.svelte';
     import { App, AppStep, McpServer, Model, Trigger } from '$lib/models';
-    import type { FilesystemConfig, ScheduledConfig } from '$lib/models/trigger.svelte';
+    import type {
+        AmbientEvent,
+        FilesystemConfig,
+        ScheduledConfig,
+    } from '$lib/models/trigger.svelte';
 
     interface Props {
         app: App;
@@ -72,7 +77,17 @@
 
     function setEvent(event: Trigger['event']) {
         trigger.event = event;
-        trigger.action = event == 'scheduled' ? 'tick' : action;
+
+        if (event == 'scheduled') {
+            trigger.action = 'tick';
+            trigger.config = {};
+        } else if (event == 'manual') {
+            trigger.action = 'run';
+            trigger.config = {};
+        } else {
+            trigger.action = action;
+        }
+
         setConfig();
     }
 
@@ -171,21 +186,16 @@
             tooltip="What triggers the App to execute"
             class="items-center"
         >
-            <Button
-                onclick={() => setEvent('scheduled')}
-                class={`border-light mr-4 ${
-                    trigger.event == 'scheduled' ? 'text-light bg-light font-medium' : ''
-                }`}
-            >
-                Scheduled
-            </Button>
-
-            <Button
-                onclick={() => setEvent('filesystem')}
-                class={`border-light mr-4 ${trigger.event == 'filesystem' ? 'text-light' : ''}`}
-            >
-                Filesystem
-            </Button>
+            {#each ['manual', 'scheduled', 'filesystem'] as event (event)}
+                <Button
+                    onclick={() => setEvent(event as AmbientEvent)}
+                    class={`border-light mr-4 ${
+                        trigger.event == event ? 'text-light bg-light font-medium' : ''
+                    }`}
+                >
+                    {capitalCase(event)}
+                </Button>
+            {/each}
         </Section>
 
         {#if trigger.event == 'scheduled'}
