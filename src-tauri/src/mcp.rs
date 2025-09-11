@@ -7,6 +7,7 @@ use std::time::Duration;
 
 use crate::state::State;
 
+use anyhow::bail;
 use anyhow::{anyhow, Result};
 use rmcp::model::CallToolRequestParam;
 use rmcp::model::Tool;
@@ -214,17 +215,23 @@ pub async fn peer_info(
     env: HashMap<String, String>,
     app: AppHandle,
 ) -> Result<String> {
-    if let Ok(Ok(server)) = tokio::time::timeout(
+    match tokio::time::timeout(
         Duration::from_secs(5),
         McpServer::start(command, args, env, app),
     )
     .await
     {
-        let peer_info = server.peer_info();
-        server.kill()?;
-        Ok(serde_json::to_string(&peer_info)?)
-    } else {
-        Err(anyhow!("Could not start MCP server"))
+        Ok(Ok(server)) => {
+            let peer_info = server.peer_info();
+            server.kill()?;
+            Ok(serde_json::to_string(&peer_info)?)
+        }
+        Ok(Err(e)) => {
+            bail!(e)
+        }
+        Err(e) => {
+            bail!(e)
+        }
     }
 }
 
