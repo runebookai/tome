@@ -17,7 +17,8 @@
         try {
             const s = await server.save();
             await onsave?.(s);
-        } catch {
+        } catch (err) {
+            console.error(err);
             error = 'error starting the server';
         }
     }
