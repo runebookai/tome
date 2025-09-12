@@ -1,7 +1,8 @@
+import { invoke } from '@tauri-apps/api/core';
 import CronExpressionParser from 'cron-parser';
 import moment from 'moment';
 
-import type { SerializedTrigger } from '$lib/apps';
+import { initializeBackendWatchers, type SerializedTrigger } from '$lib/apps';
 import App from '$lib/models/app.svelte';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
@@ -72,6 +73,11 @@ export default class Trigger extends Base<Row>('triggers') {
         const now = moment.utc().startOf('hour');
 
         return now.isSame(runAt);
+    }
+
+    protected async afterSave(): Promise<void> {
+        await invoke('unwatch_all');
+        await initializeBackendWatchers();
     }
 
     protected static async fromSql(row: Row): Promise<Trigger> {

@@ -39,8 +39,10 @@
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
-    let interval: 'hourly' | 'daily' = $state('hourly');
-    let hour = $state('0 12 * * *');
+    let interval: 'hourly' | 'daily' = $state(
+        (trigger.config as ScheduledConfig).period == '0 * * * *' ? 'hourly' : 'daily'
+    );
+    let hour = $state((trigger.config as ScheduledConfig).period || '0 12 * * *');
     let action: Trigger['action'] = $state(trigger.action || 'tick');
 
     let filesystemConfig: FilesystemConfig = $state({
@@ -86,7 +88,7 @@
             trigger.action = 'run';
             trigger.config = {};
         } else if (event == 'filesystem') {
-            action = 'created';
+            trigger.action = 'created';
             trigger.config = filesystemConfig;
         } else {
             trigger.action = action;
@@ -286,7 +288,7 @@
         {/if}
 
         <Section icon="Models" title="Model" tooltip="The LLM the App should use">
-            <ModelSelect selected={model} onselect={setModel} class="h-10" />
+            <ModelSelect selected={model} onselect={setModel} class="text-light h-10" />
         </Section>
 
         <Section
