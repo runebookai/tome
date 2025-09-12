@@ -1,9 +1,8 @@
 import CronExpressionParser from 'cron-parser';
 import moment from 'moment';
 
-import App from './app.svelte';
-
 import type { SerializedTrigger } from '$lib/apps';
+import App from '$lib/models/app.svelte';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
 export type AmbientEvent = 'manual' | 'scheduled' | 'filesystem';
@@ -28,8 +27,8 @@ interface Row {
 export default class Trigger extends Base<Row>('triggers') {
     id?: number = $state();
     appId?: number = $state();
-    event: AmbientEvent = $state('manual');
-    action: AmbientAction = $state('run');
+    event: AmbientEvent = $state('scheduled');
+    action: AmbientAction = $state('tick');
     config: object = $state({ period: '0 * * * *' });
 
     static get scheduled() {

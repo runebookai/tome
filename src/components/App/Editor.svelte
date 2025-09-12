@@ -179,7 +179,7 @@
             tooltip="What triggers the App to execute"
             class="items-center"
         >
-            {#each ['manual', 'scheduled', 'filesystem'] as event (event)}
+            {#each ['scheduled', 'filesystem', 'manual'] as event (event)}
                 <Button
                     onclick={() => setEvent(event as AmbientEvent)}
                     class={`border-light mr-4 ${
