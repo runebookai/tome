@@ -1,13 +1,12 @@
 <script lang="ts">
     import { invoke } from '@tauri-apps/api/core';
-    import { type Update } from '@tauri-apps/plugin-updater';
+    import { check, type Update } from '@tauri-apps/plugin-updater';
     import { goto } from '$app/navigation';
 
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
     import Svg from '$components/Svg.svelte';
     import Config from '$lib/models/config.svelte';
-    import { availableUpdate } from '$lib/updates';
 
     let update: Update | null = $state(null);
     let totalDownload: number = $state(0);
@@ -20,7 +19,7 @@
     let ref: HTMLDivElement;
 
     async function install() {
-        update = await availableUpdate();
+        update = await check();
 
         await update?.downloadAndInstall(event => {
             switch (event.event) {
@@ -46,7 +45,7 @@
     }
 
     async function skip() {
-        const update = (await availableUpdate()) as Update;
+        const update = (await check()) as Update;
         const skipped: string[] = Config.skippedVersions || [];
 
         skipped.push(update.version);
