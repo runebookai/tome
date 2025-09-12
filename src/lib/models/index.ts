@@ -1,3 +1,5 @@
+import SessionMcpServer from './session-mcp-server.svelte';
+
 import App from '$lib/models/app.svelte';
 import AppMcpServer from '$lib/models/app-mcp-server.svelte';
 import AppRun from '$lib/models/app-run.svelte';
@@ -38,6 +40,7 @@ export async function resync() {
     await AppStep.sync();
     await AppMcpServer.sync();
     await Session.sync();
+    await SessionMcpServer.sync();
     await Message.sync();
     await McpServer.sync();
     await Relay.sync();

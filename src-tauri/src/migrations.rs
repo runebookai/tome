@@ -512,5 +512,44 @@ WHERE NOT EXISTS (SELECT 1 FROM settings WHERE key = 'labs-mode');
 "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 20,
+            description: "add_sessions_mcp_servers",
+            sql: r#"
+CREATE TABLE IF NOT EXISTS sessions_mcp_servers (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    session_id      INTEGER,
+    mcp_server_id   INTEGER,
+    FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id) ON DELETE CASCADE
+);
+
+WITH servers AS (
+	SELECT
+		sessions.id as session_id,
+		mcp_servers.id as mcp_server_id
+	FROM
+		sessions,
+		json_each(sessions.config->'enabledMcpServers') as s
+	JOIN
+		mcp_servers ON mcp_servers.name = s.value
+),
+
+associations AS (
+    SELECT
+        *
+    FROM
+        servers
+    WHERE
+        mcp_server_id NOT IN (SELECT mcp_server_id FROM apps_mcp_servers)
+)
+
+INSERT INTO sessions_mcp_servers (session_id, mcp_server_id)
+SELECT session_id, mcp_server_id FROM associations;
+
+UPDATE sessions SET config = json_remove(config, '$.enabledMcpServers');
+"#,
+            kind: MigrationKind::Up,
+        },
     ]
 }

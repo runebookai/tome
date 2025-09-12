@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import SessionMcpServer from './session-mcp-server.svelte';
+
 import type { Tool } from '$lib/engines/types';
 import { getMcpTools } from '$lib/mcp';
 import { App, McpServer, Message, Model, Setting } from '$lib/models';
@@ -54,7 +56,6 @@ export default class Session extends Base<Row>('sessions') {
                 engineId: model?.engineId,
                 contextWindow: 4096,
                 temperature: 0.8,
-                enabledMcpServers: [],
             },
         };
     }
@@ -69,8 +70,8 @@ export default class Session extends Base<Row>('sessions') {
     }
 
     get mcpServers(): McpServer[] {
-        return (this.config.enabledMcpServers || [])
-            .map(name => McpServer.findBy({ name }))
+        return SessionMcpServer.where({ sessionId: this.id })
+            .map(s => s.mcpServer)
             .compact();
     }
 
@@ -94,10 +95,6 @@ export default class Session extends Base<Row>('sessions') {
         return Message.exists({ sessionId: this.id, role: 'user' });
     }
 
-    hasMcpServer(server: string): boolean {
-        return !!this.config.enabledMcpServers?.includes(server);
-    }
-
     async addMessage(message: Partial<Message>): Promise<Message> {
         return await Message.create({
             sessionId: this.id,
@@ -106,25 +103,29 @@ export default class Session extends Base<Row>('sessions') {
         });
     }
 
-    async addMcpServer(server: McpServer): Promise<Session> {
-        if (this.hasMcpServer(server.name)) {
-            return this;
-        }
-
-        this.config.enabledMcpServers?.push(server.name);
-        return await this.save();
+    hasMcpServer(id: number): boolean {
+        return !!this.mcpServers.find(s => s.id == id);
     }
 
-    async removeMcpServer(server: McpServer): Promise<Session> {
-        this.config.enabledMcpServers = this.config.enabledMcpServers?.filter(
-            s => s !== server.name
-        );
-        return await this.save();
+    async addMcpServer(server: McpServer): Promise<boolean> {
+        await SessionMcpServer.findByOrCreate({
+            sessionId: this.id,
+            mcpServerId: server.id,
+        });
+        return true;
+    }
+
+    async removeMcpServer(server: McpServer): Promise<boolean> {
+        await SessionMcpServer.findBy({
+            sessionId: this.id,
+            mcpServerId: server.id,
+        })?.delete();
+        return true;
     }
 
     async setMcpServers(servers: McpServer[]) {
-        this.config.enabledMcpServers = servers.map(server => server.name);
-        await this.save();
+        await this.mcpServers.awaitAll(async s => await this.removeMcpServer(s));
+        await servers.awaitAll(async s => await this.addMcpServer(s));
     }
 
     protected async afterCreate(): Promise<void> {

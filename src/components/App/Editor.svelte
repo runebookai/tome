@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { capitalCase } from 'change-case';
     import { goto } from '$app/navigation';
 
     import Button from '$components/Button.svelte';
@@ -12,7 +13,11 @@
     import Svg from '$components/Svg.svelte';
     import Textarea from '$components/Textarea.svelte';
     import { App, AppStep, McpServer, Model, Trigger } from '$lib/models';
-    import type { FilesystemConfig, ScheduledConfig } from '$lib/models/trigger.svelte';
+    import type {
+        AmbientEvent,
+        FilesystemConfig,
+        ScheduledConfig,
+    } from '$lib/models/trigger.svelte';
 
     interface Props {
         app: App;
@@ -26,17 +31,27 @@
     // MCP Servers
     let mcpServers: McpServer[] = $state(app.mcpServers.compact());
 
+    // Model
+    let model: Model = $state(app.steps[0]?.model || Model.default());
+
     // Copied instances of all base MCP servers.
     let mcpServerCopies = $state(copyMcpServers());
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
-    let interval: 'hourly' | 'daily' = $state('hourly');
-    let hour = $state('0 12 * * *');
-    let action: Trigger['action'] = $state('tick');
+    let interval: 'hourly' | 'daily' = $state(
+        (trigger.config as ScheduledConfig).period == '0 * * * *' ? 'hourly' : 'daily'
+    );
+    let hour = $state((trigger.config as ScheduledConfig).period || '0 12 * * *');
+    let action: Trigger['action'] = $state(trigger.action || 'tick');
 
-    let filesystemConfig: FilesystemConfig = $state({ path: '' });
-    let scheduledConfig: ScheduledConfig = $state({ period: '0 * * * *' });
+    let filesystemConfig: FilesystemConfig = $state({
+        path: (trigger.config as FilesystemConfig).path || '',
+    });
+
+    let scheduledConfig: ScheduledConfig = $state({
+        period: (trigger.config as ScheduledConfig).period || '0 * * * *',
+    });
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => {
         const hour = i % 12 === 0 ? 12 : i % 12;
@@ -45,22 +60,17 @@
     });
 
     function copyMcpServers() {
-        return McpServer.forChat().map(server => {
-            return (
-                mcpServers.find(s => s.name == server.name) ??
-                McpServer.new({
-                    name: server.name,
-                    command: server.command,
-                    args: server.args,
-                    env: server.env,
-                })
-            );
-        });
+        return (
+            McpServer.forChat()
+                // Base (Chat) servers that are not associated with the app
+                .filter(server => !mcpServers.mapBy('name').includes(server.name))
+                // Servers associated with the app
+                .concat(mcpServers)
+        );
     }
 
-    function setModel(step: AppStep, model: Model) {
-        step.engineId = model.engineId as number;
-        step.modelId = model.id as string;
+    async function setModel(_model: Model) {
+        model = _model;
     }
 
     function setInterval(interval: string) {
@@ -70,7 +80,20 @@
 
     function setEvent(event: Trigger['event']) {
         trigger.event = event;
-        trigger.action = event == 'scheduled' ? 'tick' : action;
+
+        if (event == 'scheduled') {
+            trigger.action = 'tick';
+            trigger.config = scheduledConfig;
+        } else if (event == 'manual') {
+            trigger.action = 'run';
+            trigger.config = {};
+        } else if (event == 'filesystem') {
+            trigger.action = 'created';
+            trigger.config = filesystemConfig;
+        } else {
+            trigger.action = action;
+        }
+
         setConfig();
     }
 
@@ -116,6 +139,8 @@
 
         await steps.awaitAll(async step => {
             step.appId = app.id;
+            step.engineId = model.engineId as number;
+            step.modelId = model.id as string;
             await step.save();
         });
 
@@ -167,21 +192,16 @@
             tooltip="What triggers the App to execute"
             class="items-center"
         >
-            <Button
-                onclick={() => setEvent('scheduled')}
-                class={`border-light mr-4 ${
-                    trigger.event == 'scheduled' ? 'text-light bg-light font-medium' : ''
-                }`}
-            >
-                Scheduled
-            </Button>
-
-            <Button
-                onclick={() => setEvent('filesystem')}
-                class={`border-light mr-4 ${trigger.event == 'filesystem' ? 'text-light' : ''}`}
-            >
-                Filesystem
-            </Button>
+            {#each ['scheduled', 'filesystem', 'manual'] as event (event)}
+                <Button
+                    onclick={() => setEvent(event as AmbientEvent)}
+                    class={`border-light mr-4 ${
+                        trigger.event == event ? 'text-light bg-light font-medium' : ''
+                    }`}
+                >
+                    {capitalCase(event)}
+                </Button>
+            {/each}
         </Section>
 
         {#if trigger.event == 'scheduled'}
@@ -220,11 +240,12 @@
             >
                 <Flex class="border-b-light grow flex-col items-start">
                     <!-- prettier-ignore -->
-                    <input
+                    <Input
                         class="text-light mb-4 grow font-mono outline-0"
                         placeholder="/path/to/watch-for-changes"
                         type="text"
                         bind:value={filesystemConfig.path}
+                        onchange={setConfig}
                     />
 
                     <Flex class="gap-4">
@@ -266,6 +287,10 @@
             </Section>
         {/if}
 
+        <Section icon="Models" title="Model" tooltip="The LLM the App should use">
+            <ModelSelect selected={model} onselect={setModel} class="text-light h-10" />
+        </Section>
+
         <Section
             icon="Chat"
             title="Prompts"
@@ -274,21 +299,9 @@
             <Flex class="grow flex-col items-start">
                 {#each steps as step, i (i)}
                     <Flex
-                        class="border-light relative mb-8 w-full
-                        flex-col items-start rounded-md border"
+                        class="border-light relative mb-8 w-full flex-col items-start rounded-md border"
                     >
-                        <Flex
-                            class="border-b-light w-full items-center
-                            justify-between border-b"
-                        >
-                            <div class="w-64">
-                                <ModelSelect
-                                    class="h-8 rounded-none border-0 border-r"
-                                    selected={step.model}
-                                    onselect={async model => setModel(step, model)}
-                                />
-                            </div>
-
+                        <Flex class="border-b-light w-full items-center justify-end border-b">
                             <Button
                                 onclick={() => removeStep(step)}
                                 class="border-l-light hover:text-red h-8 border-0

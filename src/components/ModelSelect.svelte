@@ -25,7 +25,21 @@
     }: Props = $props();
 
     let isOpen = $state(false);
-    let ref: ReturnType<typeof Flex>;
+
+    // svelte-ignore non_reactive_update
+    let ref: HTMLDivElement;
+
+    let w = $state(0);
+    let x = $state(0);
+    let y = $state(0);
+
+    function open() {
+        const rect = ref.getBoundingClientRect();
+        w = rect.width;
+        x = rect.x;
+        y = rect.y + rect.height;
+        isOpen = true;
+    }
 
     function close() {
         isOpen = false;
@@ -33,14 +47,21 @@
 
     function toggle(e: Event) {
         e.stopPropagation();
-        isOpen = isOpen ? false : true;
+
+        if (isOpen) {
+            close();
+        } else {
+            open();
+        }
     }
 
     function icon(engine: Engine) {
         return capitalCase(engine.type == 'openai-compat' ? 'openai' : engine.type);
     }
 
-    async function select(model: Model) {
+    async function select(e: Event, model: Model) {
+        e.preventDefault();
+        e.stopPropagation();
         selected = model;
         await onselect?.(model);
         close();
@@ -51,9 +72,9 @@
     });
 </script>
 
-<Flex class="relative w-full">
+<Flex class="w-full">
     <Flex
-        bind:this={ref}
+        bind:ref
         onclick={toggle}
         class={twMerge(
             `border-light h-16 w-full rounded-md border text-sm
@@ -71,9 +92,11 @@
 
     {#if isOpen}
         <Flex
-            class="bg-medium noscrollbar border-light absolute top-full
-            z-50 h-96 max-h-96 w-full flex-col items-start
-            overflow-y-auto rounded-md rounded-t-none border border-t-0 text-sm"
+            style="position: fixed; left: {x}px; top: {y}px; width: {w}px;"
+            class="bg-medium noscrollbar border-light absolute
+            z-50 h-96 max-h-96 flex-col items-start 
+            overflow-y-auto rounded-md rounded-t-none
+            border border-t-0 text-sm"
         >
             {#each engines as engine (engine.id)}
                 {#if engine.models.length}
@@ -88,7 +111,7 @@
                     <Flex class="w-full flex-col items-start">
                         {#each engine.models as model (model.id)}
                             <button
-                                onclick={async () => await select(model)}
+                                onclick={async e => await select(e, model)}
                                 class="hover:bg-light text-light-lite hover:text-light
                                 mx-2 w-[calc(100%-14px)] rounded-sm p-2 px-4
                                 text-left last:mb-2 hover:cursor-pointer"

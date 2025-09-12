@@ -144,9 +144,10 @@ export async function execute(app: App, input?: object): Promise<AppRun> {
         config: {
             engineId: app.steps[0].engineId,
             model: app.steps[0].modelId,
-            enabledMcpServers: app.mcpServers.map(m => m.name),
         },
     });
+
+    await session.setMcpServers(app.mcpServers);
 
     if (input) {
         session.addMessage({
