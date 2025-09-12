@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.1 - 2025-09-12
+
+### Fixes
+
+- Fixes an issue where the update modal doesn't display on startup
+
 ## 0.12.0 - 2025-09-12
 
 ### Improvements
