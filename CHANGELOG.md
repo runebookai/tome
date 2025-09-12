@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.12.0 - 2025-09-12
+
+### Improvements
+
+- Apps now use a single LLM for all steps
+    - You can change the model an App uses on import
+- Added "Manual" trigger for Apps
+- Made Session->McpServer associations explicit in the database
+- Added gpt-5, gemini-2.5-pro, gemini-2.5-flash-lite, gemini-2.0-flash-lite
+- Removed gemini-1.5-pro
+
 ## 0.11.0 - 2025-09-08
 
 ### New Features
