@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.2 - 2025-09-12
+
+### Fixes
+
+- Adds /update to Svelte route list for build 🙃
+
 ## 0.12.1 - 2025-09-12
 
 ### Fixes
