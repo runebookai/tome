@@ -1,14 +1,10 @@
-import { check, type Update } from '@tauri-apps/plugin-updater';
+import { check } from '@tauri-apps/plugin-updater';
 
 import { Config } from '$lib/models';
 
-export async function availableUpdate(): Promise<Update | null> {
-    return await check();
-}
-
 export async function isUpToDate(): Promise<boolean> {
     try {
-        const update = await availableUpdate();
+        const update = await check();
 
         if (!update) {
             return true;
