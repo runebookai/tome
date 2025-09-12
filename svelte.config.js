@@ -37,6 +37,7 @@ const config = {
                 "/apps/[app_id]/edit",
                 "/apps/[app_id]/export",
                 "/apps/[app_id]/runs/[run_id]",
+                "/update",
                 "/relays",
                 "/relays/new",
                 "/relays/[relay_id]",
