@@ -188,7 +188,8 @@
                         <Flex class="text-light z-0 mb-4 ml-2">
                             <Toggle
                                 label={server.name}
-                                value={session.hasMcpServer(server.name) && model?.supportsTools
+                                value={session.hasMcpServer(server.id as number) &&
+                                model?.supportsTools
                                     ? 'on'
                                     : 'off'}
                                 disabled={!model?.supportsTools}

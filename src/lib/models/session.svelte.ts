@@ -56,7 +56,6 @@ export default class Session extends Base<Row>('sessions') {
                 engineId: model?.engineId,
                 contextWindow: 4096,
                 temperature: 0.8,
-                enabledMcpServers: [],
             },
         };
     }
@@ -71,7 +70,9 @@ export default class Session extends Base<Row>('sessions') {
     }
 
     get mcpServers(): McpServer[] {
-        return SessionMcpServer.where({ sessionId: this.id }).map(s => s.mcpServer);
+        return SessionMcpServer.where({ sessionId: this.id })
+            .map(s => s.mcpServer)
+            .compact();
     }
 
     get model() {

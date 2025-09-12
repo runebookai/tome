@@ -520,8 +520,8 @@ CREATE TABLE IF NOT EXISTS sessions_mcp_servers (
     id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     session_id      INTEGER,
     mcp_server_id   INTEGER,
-    FOREIGN KEY(session_id) REFERENCES sessions(id),
-    FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id)
+    FOREIGN KEY(session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY(mcp_server_id) REFERENCES mcp_servers(id) ON DELETE CASCADE
 );
 
 WITH servers AS (
