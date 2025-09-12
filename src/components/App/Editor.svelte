@@ -41,10 +41,15 @@
     let trigger: Trigger = $state(app.trigger);
     let interval: 'hourly' | 'daily' = $state('hourly');
     let hour = $state('0 12 * * *');
-    let action: Trigger['action'] = $state('tick');
+    let action: Trigger['action'] = $state(trigger.action || 'tick');
 
-    let filesystemConfig: FilesystemConfig = $state({ path: '' });
-    let scheduledConfig: ScheduledConfig = $state({ period: '0 * * * *' });
+    let filesystemConfig: FilesystemConfig = $state({
+        path: (trigger.config as FilesystemConfig).path || '',
+    });
+
+    let scheduledConfig: ScheduledConfig = $state({
+        period: (trigger.config as ScheduledConfig).period || '0 * * * *',
+    });
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => {
         const hour = i % 12 === 0 ? 12 : i % 12;
@@ -76,10 +81,13 @@
 
         if (event == 'scheduled') {
             trigger.action = 'tick';
-            trigger.config = {};
+            trigger.config = scheduledConfig;
         } else if (event == 'manual') {
             trigger.action = 'run';
             trigger.config = {};
+        } else if (event == 'filesystem') {
+            action = 'created';
+            trigger.config = filesystemConfig;
         } else {
             trigger.action = action;
         }
@@ -230,11 +238,12 @@
             >
                 <Flex class="border-b-light grow flex-col items-start">
                     <!-- prettier-ignore -->
-                    <input
+                    <Input
                         class="text-light mb-4 grow font-mono outline-0"
                         placeholder="/path/to/watch-for-changes"
                         type="text"
                         bind:value={filesystemConfig.path}
+                        onchange={setConfig}
                     />
 
                     <Flex class="gap-4">
