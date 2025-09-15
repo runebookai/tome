@@ -2,6 +2,8 @@
     import { emit } from '@tauri-apps/api/event';
     import { appLogDir } from '@tauri-apps/api/path';
     import { openPath } from '@tauri-apps/plugin-opener';
+    import { check } from '@tauri-apps/plugin-updater';
+    import { goto } from '$app/navigation';
 
     import Button from '$components/Button.svelte';
     import Flex from '$components/Flex.svelte';
@@ -41,6 +43,10 @@
         adding = false;
     }
 
+    async function installUpdate() {
+        await goto('/update');
+    }
+
     async function viewLogs() {
         var logDir = await appLogDir();
         logDir += '/Tome.log';
@@ -74,8 +80,30 @@
 {/snippet}
 
 <Layout {titlebar}>
-    <Scrollable class="!h-content bg-medium">
+    <Scrollable class="!h-content bg-medium relative">
+        <Button
+            onclick={viewLogs}
+            class="border-purple
+            text-purple absolute top-6 right-12 mt-2 ml-auto"
+        >
+            View Logs
+        </Button>
+
         <Flex class="w-full flex-col gap-8 overflow-y-auto p-8">
+            {#await check() then update}
+                {#if update}
+                    <Flex class="w-full items-start gap-4">
+                        <section class="w-2/5">
+                            <h2 class="font-semibold uppercase">Update</h2>
+                            <p class="text-medium font-light">There is an update available</p>
+                        </section>
+
+                        <Flex class="w-full items-start">
+                            <Button onclick={installUpdate}>Install Tome {update.version}</Button>
+                        </Flex>
+                    </Flex>
+                {/if}
+            {/await}
             <Flex class="w-full items-start gap-4">
                 <section class="w-2/5">
                     <h2 class="font-semibold uppercase">Color Scheme</h2>
@@ -92,12 +120,6 @@
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                     </select>
-
-                    <section class="ml-auto">
-                        <Button onclick={viewLogs} class="border-purple text-purple mt-2 ml-auto">
-                            View Logs
-                        </Button>
-                    </section>
                 </Flex>
             </Flex>
 
@@ -170,8 +192,8 @@
                     </section>
 
                     <Flex class="w-full flex-col items-start gap-2">
-                        <h3>Deeplinks</h3>
                         <Flex class="w-full gap-4">
+                            <h3>Deeplinks:</h3>
                             <Button class="text-medium border-xlight" onclick={smitheryInstall}>
                                 Smithery Install
                             </Button>
