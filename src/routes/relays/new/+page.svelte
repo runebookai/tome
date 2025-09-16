@@ -1,8 +1,9 @@
 <script lang="ts">
     import Editor from '$components/Relays/Editor.svelte';
-    import { Relay } from '$lib/models';
+    import { McpServer, Relay } from '$lib/models';
 
     const relay: Relay = Relay.new();
+    const mcpServers: McpServer[] = relay.savableMcpServers;
 </script>
 
-<Editor {relay} />
+<Editor {relay} {mcpServers} />

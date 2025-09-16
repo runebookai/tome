@@ -3,6 +3,7 @@
     import { App } from '$lib/models';
 
     const app: App = App.new();
+    const mcpServers = app.savableMcpServers;
 </script>
 
-<Editor {app} />
+<Editor {app} {mcpServers} />

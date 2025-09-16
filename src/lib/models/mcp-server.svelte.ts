@@ -127,7 +127,7 @@ export default class McpServer extends Base<Row>('mcp_servers') {
         // Update the server name in any active sessions
         const sessions = Session.all();
         for (const session of sessions) {
-            if (session.hasMcpServer(oldName)) {
+            if (session.hasMcpServer(this.id as number)) {
                 await invoke('rename_mcp_server', {
                     sessionId: session.id,
                     oldName,

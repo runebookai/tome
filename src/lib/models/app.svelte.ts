@@ -80,6 +80,34 @@ export default class App extends Base<Row>('apps') {
         return AppMcpServer.where({ appId: this.id }).map(m => m.mcpServer);
     }
 
+    /**
+     * Combined list of App-specific `McpServer` records + copies of all "base"
+     * `McpServer` records.
+     *
+     * "base" `McpServer`s are ones that are managed in the MCP tab. We want
+     * copies of these so that when the App/Relay editor saves them, they
+     * become _new_ records in the database.
+     */
+    get savableMcpServers(): McpServer[] {
+        const comp = (a: McpServer, b: McpServer) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+
+        return this.mcpServers.sort(comp).concat(
+            McpServer.forChat()
+                .filter(s => !this.mcpServers.mapBy('name').includes(s.name))
+                .map(s =>
+                    McpServer.new({
+                        name: s.name,
+                        command: s.command,
+                        args: s.args,
+                        env: s.env,
+                        metadata: s.metadata,
+                    })
+                )
+                .sort(comp)
+        );
+    }
+
     get steps(): AppStep[] {
         const steps = AppStep.where({ appId: this.id }).sortBy('id');
         return steps.length > 0 ? steps : [AppStep.new({ appId: this.id })];

@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import SessionMcpServer from './session-mcp-server.svelte';
+
 import { App, McpServer, Session } from '$lib/models';
 import Base, { type ToSqlRow } from '$lib/models/base.svelte';
 
@@ -32,9 +34,42 @@ export default class Relay extends Base<Row>('relays') {
         return this.session.mcpServers;
     }
 
+    get savableMcpServers(): McpServer[] {
+        const comp = (a: McpServer, b: McpServer) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+
+        return this.mcpServers.sort(comp).concat(
+            McpServer.forChat()
+                .filter(s => !this.mcpServers.mapBy('name').includes(s.name))
+                .map(s =>
+                    McpServer.new({
+                        name: s.name,
+                        command: s.command,
+                        args: s.args,
+                        env: s.env,
+                        metadata: s.metadata,
+                    })
+                )
+                .sort(comp)
+        );
+    }
+
     get session(): Session | undefined {
         if (!this.sessionId) return;
         return Session.find(this.sessionId);
+    }
+
+    async delete(): Promise<boolean> {
+        if (!this.session || !this.session.isPersisted()) {
+            return true;
+        }
+
+        await SessionMcpServer.where({ sessionId: this.session.id }).awaitAll(async join => {
+            await McpServer.find(join.mcpServerId as number)?.delete();
+            await join.delete();
+        });
+
+        return await super.delete();
     }
 
     protected async afterSave() {
