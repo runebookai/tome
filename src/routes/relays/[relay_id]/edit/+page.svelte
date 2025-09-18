@@ -4,9 +4,10 @@
     import Editor from '$components/Relays/Editor.svelte';
     import { Relay } from '$lib/models';
 
-    const relay = $derived(Relay.find(Number(page.params.relay_id)));
+    const relay = Relay.find(Number(page.params.relay_id));
+    const mcpServers = relay.savableMcpServers;
 </script>
 
 {#key relay}
-    <Editor {relay} />
+    <Editor {relay} {mcpServers} />
 {/key}

@@ -79,6 +79,10 @@ Array.prototype.awaitAll = async function <T>(
     return await Promise.all(this.map(fn));
 };
 
+Array.prototype.reject = function <T>(this: T[], filter: (arg: T) => boolean) {
+    return this.filter(item => !filter(item));
+};
+
 // String
 
 String.prototype.ellipsize = function (length: number = 25) {

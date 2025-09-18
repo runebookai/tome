@@ -12,7 +12,7 @@
     import Select from '$components/Select.svelte';
     import Svg from '$components/Svg.svelte';
     import Textarea from '$components/Textarea.svelte';
-    import { App, AppStep, McpServer, Model, Trigger } from '$lib/models';
+    import { App, AppMcpServer, AppStep, McpServer, Model, Trigger } from '$lib/models';
     import type {
         AmbientEvent,
         FilesystemConfig,
@@ -21,21 +21,21 @@
 
     interface Props {
         app: App;
+        mcpServers: McpServer[];
     }
 
-    let { app }: Props = $props();
+    let { app, mcpServers: allMcpServers }: Props = $props();
+
+    // MCP Servers
+    let mcpServers: McpServer[] = $state(allMcpServers);
+    let mcpServersToSave: McpServer[] = $state(app.mcpServers);
+    let mcpServersToDelete: McpServer[] = $state([]);
 
     // Steps
     let steps: AppStep[] = $state(app.steps);
 
-    // MCP Servers
-    let mcpServers: McpServer[] = $state(app.mcpServers.compact());
-
     // Model
     let model: Model = $state(app.steps[0]?.model || Model.default());
-
-    // Copied instances of all base MCP servers.
-    let mcpServerCopies = $state(copyMcpServers());
 
     // Trigger
     let trigger: Trigger = $state(app.trigger);
@@ -58,16 +58,6 @@
         const ampm = i < 12 ? 'AM' : 'PM';
         return { label: `${hour}:00 ${ampm}`, value: `0 ${i} * * *` };
     });
-
-    function copyMcpServers() {
-        return (
-            McpServer.forChat()
-                // Base (Chat) servers that are not associated with the app
-                .filter(server => !mcpServers.mapBy('name').includes(server.name))
-                // Servers associated with the app
-                .concat(mcpServers)
-        );
-    }
 
     async function setModel(_model: Model) {
         model = _model;
@@ -120,15 +110,20 @@
     }
 
     function hasMcpServer(server: McpServer) {
-        return mcpServers.includes(server);
+        return mcpServersToSave.includes(server);
     }
 
     function addMcpServer(server: McpServer) {
-        mcpServers.push(server);
+        mcpServersToDelete.remove(server);
+        mcpServersToSave.push(server);
     }
 
     function removeMcpServer(server: McpServer) {
-        mcpServers = mcpServers.filter(s => s !== server);
+        mcpServersToSave.remove(server);
+
+        if (server.isPersisted()) {
+            mcpServersToDelete.push(server);
+        }
     }
 
     async function save() {
@@ -144,33 +139,41 @@
             await step.save();
         });
 
-        await app.mcpServers.awaitAll(async server => {
-            if (!mcpServers.mapBy('name').includes(server.name)) {
-                if (server.id) {
-                    await app.removeMcpServer(server);
-                    await server.delete();
-                }
-            }
+        // MCP servers that are toggled OFF are tracked via
+        // `mcpServersToDelete`.
+        //
+        // For each one we intend to remove, we sever it's association with the
+        // app (`AppMcpServer`) and if it's an existing server in
+        // `mcp_servers`, we delete that row too.
+        //
+        await mcpServersToDelete.awaitAll(async server => {
+            await AppMcpServer.findBy({ appId: app.id, mcpServerId: server.id })?.delete();
+            await McpServer.find(server.id as number)?.delete();
         });
 
-        await mcpServers.awaitAll(async server => {
-            const mcp = await server.save();
-
-            // Ensure the instance in `mcpServers` is updated to match to
-            // persisted one in the database, so that subsequent saves act on
-            // the correct record.
-            server.id = mcp.id;
-            server.metadata = mcp.metadata;
-
-            await app.addMcpServer(mcp);
+        // MCP servers that are toggled ON are tracked via `mcpServersToSave`.
+        //
+        // These can be either existing, persisted, `McpServer` objects or
+        // unsaved, instantiated, `McpServer` objects. In both cases, we need
+        // to save it and create the join in `AppMcpServer`.
+        //
+        // In the case of servers that were previously enabled and have not
+        // changed, we do nothing (via idempotent `save()` and `findByOrCreate`)
+        //
+        await mcpServersToSave.awaitAll(async server => {
+            server = await server.save();
+            await AppMcpServer.findByOrCreate({ appId: app.id, mcpServerId: server.id });
         });
 
-        // Reset MCP servers to match the new state of the world after we
-        // reconcile them above.
-        mcpServers = app.mcpServers.compact();
-        mcpServerCopies = copyMcpServers();
-
-        await goto(`/apps/${app.id}/edit`);
+        // Reset the list of servers so that saved ones have an `id`. Without
+        // this, subsequent saves would be attempting to store duplicate record
+        // or delete ones that don't exist in the database.
+        //
+        await AppMcpServer.sync();
+        await McpServer.sync();
+        mcpServers = app.savableMcpServers;
+        mcpServersToSave = app.mcpServers;
+        mcpServersToDelete = [];
     }
 </script>
 
@@ -345,12 +348,14 @@
             tooltip="The collection of MCP servers to enable when this App executes"
         >
             <Flex class="grow">
-                <McpServerList
-                    servers={mcpServerCopies}
-                    enabled={hasMcpServer}
-                    onadd={addMcpServer}
-                    onremove={removeMcpServer}
-                />
+                {#key mcpServers}
+                    <McpServerList
+                        servers={mcpServers}
+                        enabled={hasMcpServer}
+                        onadd={addMcpServer}
+                        onremove={removeMcpServer}
+                    />
+                {/key}
             </Flex>
         </Section>
     </Flex>

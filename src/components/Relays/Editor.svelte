@@ -5,19 +5,25 @@
     import Flex from '$components/Flex.svelte';
     import Section from '$components/Forms/LabeledSection.svelte';
     import Input from '$components/Input.svelte';
-    import McpServerList from '$components/McpServerList.svelte';
+    import ServerList from '$components/Mcp/ServerList.svelte';
+    import McpServerList from '$components/Mcp/ServerList.svelte';
     import ModelSelect from '$components/ModelSelect.svelte';
     import Toggle from '$components/Toggle.svelte';
     import { App, McpServer, Model, Relay, Session } from '$lib/models';
+    import SessionMcpServer from '$lib/models/session-mcp-server.svelte';
 
     interface Props {
         relay: Relay;
+        mcpServers: McpServer[];
     }
 
-    let { relay }: Props = $props();
+    let { relay, mcpServers: allMcpServers }: Props = $props();
+
+    let mcpServers: McpServer[] = $state(allMcpServers);
+    let mcpServersToSave: McpServer[] = $state(relay.mcpServers);
+    let mcpServersToDelete: McpServer[] = $state([]);
 
     let status = $state('');
-    let mcpServers: McpServer[] = $state(relay.mcpServers);
     let enabled = $state(relay.active);
     let session = $state(
         relay.session || Session.new({ appId: App.RELAY.id, relay: true, ephemeral: true })
@@ -37,15 +43,20 @@
     }
 
     function hasMcpServer(server: McpServer) {
-        return mcpServers.includes(server);
+        return mcpServersToSave.includes(server);
     }
 
     function addMcpServer(server: McpServer) {
-        mcpServers.push(server);
+        mcpServersToDelete.remove(server);
+        mcpServersToSave.push(server);
     }
 
     function removeMcpServer(server: McpServer) {
-        mcpServers = mcpServers.filter(s => s !== server);
+        mcpServersToSave.remove(server);
+
+        if (server.isPersisted()) {
+            mcpServersToDelete.push(server);
+        }
     }
 
     async function save() {
@@ -55,7 +66,23 @@
         relay.sessionId = session.id;
         relay = await relay.save();
 
-        await session.setMcpServers(mcpServers);
+        // Delete any, already persisted, `McpServer`s that were toggled OFF
+        await mcpServersToDelete.awaitAll(async server => {
+            await SessionMcpServer.findBy({
+                sessionId: session.id,
+                mcpServerId: server.id,
+            })?.delete();
+            await McpServer.find(server.id as number)?.delete();
+        });
+
+        // Save any, new OR already persisted, `McpServer`s that were toggle ON
+        await mcpServersToSave.awaitAll(async server => {
+            server = await server.save();
+            await SessionMcpServer.findByOrCreate({
+                sessionId: session.id,
+                mcpServerId: server.id,
+            });
+        });
 
         if (relay.active) {
             status = 'Starting MCP servers';
@@ -66,7 +93,13 @@
         }
 
         status = '';
-        await goto(`/relays/${relay.id}/edit`);
+
+        await McpServer.sync();
+        await SessionMcpServer.sync();
+        await Session.sync();
+        mcpServers = relay.savableMcpServers;
+        mcpServersToSave = relay.mcpServers;
+        mcpServersToDelete = [];
     }
 </script>
 
@@ -119,7 +152,14 @@
             tooltip="The collection of MCP servers to enable for this Relay"
         >
             <Flex class="grow">
-                <McpServerList {hasMcpServer} {addMcpServer} {removeMcpServer} />
+                {#key mcpServers}
+                    <McpServerList
+                        servers={mcpServers}
+                        enabled={hasMcpServer}
+                        onadd={addMcpServer}
+                        onremove={removeMcpServer}
+                    />
+                {/key}
             </Flex>
         </Section>
 

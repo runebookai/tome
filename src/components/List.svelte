@@ -1,4 +1,4 @@
-<script lang="ts" generics="Item">
+<script lang="ts" generics="Item extends { key: string }">
     import type { Snippet } from 'svelte';
     import type { HTMLAttributes } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
@@ -64,7 +64,7 @@
     {/if}
 
     {#if items.length > 0}
-        {#each filter() as item, i (i)}
+        {#each filter() as item (item.key)}
             <div class={twMerge('w-full', css?.toString())}>
                 {@render itemView(item)}
             </div>

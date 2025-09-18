@@ -148,6 +148,11 @@ declare global {
          * Does every element in this array also exist in `other`
          */
         equals(other: T[]): boolean;
+
+        /**
+         * Inverse of `filter`
+         */
+        reject(filter: (arg0: T) => boolean): T[];
     }
 
     interface String {

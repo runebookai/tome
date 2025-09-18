@@ -1,4 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
+import uuid4 from 'uuid4';
 
 import { info } from '$lib/logger';
 
@@ -125,6 +126,10 @@ export type ToSqlRow<R> = Omit<R, 'id' | 'created' | 'modified'>;
  */
 export default function Model<Row extends object>(table: string) {
     class ModelClass {
+        // UUID used UI component `key`s
+        _key: string;
+
+        // All model instances MAY have an `id`
         id?: number;
 
         constructor(params: Partial<object>, privateInvocation = false) {
@@ -283,6 +288,14 @@ export default function Model<Row extends object>(table: string) {
          */
         async save(): Promise<this> {
             return this.id ? await this._update() : await this._create();
+        }
+
+        /**
+         * Unique value that can be used as the `key` in UI components
+         */
+        get key(): string {
+            this._key = this._key || (this.id && `${table}-${this.id}`) || uuid4();
+            return this._key;
         }
 
         /**
