@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.3 - 2025-09-18
+
+### Fixes
+
+- Fixes an issue with saving MCP servers for Apps/Relays
+- Fixes ordering issue with App/Relay MCP servers
+
 ## 0.12.2 - 2025-09-12
 
 ### Fixes
