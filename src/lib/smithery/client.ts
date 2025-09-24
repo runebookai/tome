@@ -5,6 +5,9 @@ export class Client extends HttpClient {
     options: RequestInit = {
         signal: AbortSignal.timeout(30000),
         headers: {
+            // Smithery requires an API Key even when fetching public info
+            // about servers. This key is only ever used for that – never
+            // anything private, hence it being okay to be in plaintext here.
             Authorization: 'Bearer 4f91ed5c-d3ae-4ba6-9169-10455db2e626',
         },
     };
@@ -14,9 +17,9 @@ export class Client extends HttpClient {
     }
 
     async servers(page: number = 1): Promise<CompactServer[]> {
-        return (
-            (await this.get(`/servers?q=is:local&pageSize=24&page=${page}`)) as ServerList
-        ).servers.filter(s => Number(s.useCount) > 0);
+        return ((await this.get(`/servers?pageSize=24&page=${page}`)) as ServerList).servers.filter(
+            s => Number(s.useCount) > 0
+        );
     }
 
     async server(name: string): Promise<Server> {
@@ -26,7 +29,7 @@ export class Client extends HttpClient {
     async search(query: string): Promise<CompactServer[]> {
         const q = encodeURIComponent(query).replace(/%20/g, '+');
 
-        return ((await this.get(`/servers?q=is:local+${q}`)) as ServerList).servers.filter(
+        return ((await this.get(`/servers?q=${q}`)) as ServerList).servers.filter(
             s => Number(s.useCount) > 0
         );
     }
