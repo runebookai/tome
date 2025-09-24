@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.4 - 2025-09-24
+
+### Fixes
+
+- Smithery seems to have removed their `is:local` query filter in the API,
+  resulting in Tome's Smithery tab being broken. - This change removes that filter
+
 ## 0.12.3 - 2025-09-18
 
 ### Fixes

@@ -59,7 +59,7 @@
     },
     "productName": "Tome",
     "mainBinaryName": "tome",
-    "version": "0.12.3",
+    "version": "0.12.4",
     "identifier": "co.runebook",
     "plugins": {
         "sql": {
