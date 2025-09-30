@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.5 - 2025-09-30
+
+### Fixes
+
+- Fixes issue where Tome shows Smithery MCP servers it's not capable of running.
+
 ## 0.12.4 - 2025-09-24
 
 ### Fixes

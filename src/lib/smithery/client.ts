@@ -17,9 +17,9 @@ export class Client extends HttpClient {
     }
 
     async servers(page: number = 1): Promise<CompactServer[]> {
-        return ((await this.get(`/servers?pageSize=24&page=${page}`)) as ServerList).servers.filter(
-            s => Number(s.useCount) > 0
-        );
+        return (
+            (await this.get(`/servers?q=is:local&pageSize=24&page=${page}`)) as ServerList
+        ).servers.filter(s => Number(s.useCount) > 0);
     }
 
     async server(name: string): Promise<Server> {
