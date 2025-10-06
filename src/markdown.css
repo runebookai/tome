@@ -22,7 +22,7 @@
     --fgColor-danger: #f85149;
     --fgColor-done: #ab7df8;
     --bgColor-default: transparent;
-    --bgColor-muted: #151b23;
+    --bgColor-muted: #141414;
     --bgColor-neutral-muted: #656c7633;
     --bgColor-attention-muted: #bb800926;
     --borderColor-default: #3d444d;
@@ -63,6 +63,10 @@
     --color-prettylights-syntax-markup-ignored-bg: #1158c7;
     --color-prettylights-syntax-meta-diff-range: #d2a8ff;
     --color-prettylights-syntax-sublimelinter-gutter-mark: #3d444d;
+}
+
+.markdown-body.message.user-message pre {
+    margin-bottom: 16px !important;
 }
 
 *[data-theme='light'] .markdown-body {
