@@ -4,7 +4,9 @@ import { Config } from '$lib/models';
 
 export async function isUpToDate(): Promise<boolean> {
     try {
-        const update = await check();
+        const update = await check({
+            timeout: 3000,
+        });
 
         if (!update) {
             return true;

@@ -80,7 +80,7 @@ export default class Engine extends Base<Row>('engines') {
             models: [],
         });
 
-        if (engine.client) {
+        if (engine.client && (await engine.client.connected())) {
             try {
                 engine.models = (await engine.client.models())
                     .filter(
