@@ -40,7 +40,7 @@ function fromOne(tool: Tool): FunctionDeclaration {
         name,
         {
             ...prop,
-            type: toGeminiType(prop.type),
+            ...(prop.type && !prop.anyOf ? { type: toGeminiType(prop.type) } : {}),
         },
     ]);
 

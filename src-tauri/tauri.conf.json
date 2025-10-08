@@ -44,6 +44,7 @@
         },
         "resources": {
             "python": "python",
+            "uv": "uv",
             "uvx": "uvx",
             "node": "node",
             "npx": "npx",
