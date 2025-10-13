@@ -27,6 +27,13 @@ pub fn get_os_specific_command(command: &str, app: &AppHandle) -> Result<Command
                 "python"
             }
         }
+        "uv" => {
+            if cfg!(windows) {
+                "uv.exe"
+            } else {
+                "uv"
+            }
+        }
         "uvx" => {
             if cfg!(windows) {
                 "uvx.exe"
@@ -216,7 +223,7 @@ pub async fn peer_info(
     app: AppHandle,
 ) -> Result<String> {
     match tokio::time::timeout(
-        Duration::from_secs(5),
+        Duration::from_secs(30),
         McpServer::start(command, args, env, app),
     )
     .await
