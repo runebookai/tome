@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.0 - 2025-10-20
+
+### New Features
+
+- Syntax highlights code within User input
+- MCP server commands now support `uv`
+
 ## 0.12.5 - 2025-09-30
 
 ### Fixes
